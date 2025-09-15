@@ -1,0 +1,5 @@
+/* Global styles for Next.js scaffold */
+html,body{margin:0;padding:0;min-height:100%;background:#f8fafc;color:#0f172a;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:#4f46e5;text-decoration:none;}a:hover{text-decoration:underline;}
+*{box-sizing:border-box;}
+@media (prefers-color-scheme: dark){html,body{background:#0f172a;color:#f1f5f9;} a{color:#6366f1;} }

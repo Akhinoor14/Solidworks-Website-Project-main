@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Md Akhinoor Islam - Project Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="#home">Portfolio</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#projects" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Hi, I'm <span class="highlight">Md Akhinoor Islam</span>
+                    </h1>
+                    <h2 class="hero-subtitle">
+                        Energy Science and Engineering Student, KUET
+                    </h2>
+                    <p class="hero-description">
+                        Passionate about creating innovative solutions and building amazing projects. 
+                        Currently studying in the Department of Energy Science and Engineering at KUET, exploring the latest 
+                        technologies and developing my skills in web development, mobile apps, and more.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#projects" class="btn btn-primary">View Projects</a>
+                        <a href="#contact" class="btn btn-secondary">Contact Me</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="profile-card">
+                        <div class="profile-image">
+                       <picture id="profile-photo-wrapper">
+                          <source srcset="./images/profile.webp" type="image/webp">
+                          <img id="profile-photo" src="./images/profile.jpg" 
+                              alt="Md Akhinoor Islam Profile Picture" 
+                              decoding="async" loading="lazy" data-fallback="placeholder">
+                       </picture>
+                            <div class="profile-upload-controls" aria-label="Profile photo controls">
+                                <input type="file" id="profile-upload-input" accept="image/*" aria-label="Upload profile photo" hidden>
+                                <button type="button" class="profile-upload-btn" id="trigger-profile-upload" aria-controls="profile-upload-input">
+                                    <i class="fas fa-camera"></i>
+                                    <span class="txt">Upload</span>
+                                </button>
+                                <button type="button" class="profile-reset-btn" id="reset-profile-photo" hidden title="Reset profile photo">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <div class="profile-upload-hint" id="profile-upload-hint">PNG / JPG / WebP • Max 1.2MB</div>
+                                <div class="profile-upload-status" id="profile-upload-status" aria-live="polite" aria-atomic="true"></div>
+                            </div>
+                        </div>
+                        <div class="floating-elements">
+                            <div class="floating-element solidworks">SOLIDWORKS</div>
+                            <div class="floating-element arduino">Arduino</div>
+                            <div class="floating-element matlab">MATLAB</div>
+                            <div class="floating-element cad">CAD</div>
+                            <div class="floating-element circuit">Circuits</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Department of Energy Science and Engineering, KUET</h3>
+                    <p>
+                        I'm a dedicated Energy Science and Engineering student with a passion for creating 
+                        innovative solutions and building meaningful projects. My journey in technology 
+                        started with curiosity and has evolved into a commitment to excellence in 
+                        software development and energy systems.
+                    </p>
+                    <div class="skills">
+                        <div class="skill-category">
+                            <h4>CAD & Design</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">SOLIDWORKS</span>
+                                <span class="skill-tag">AutoCAD</span>
+                                <span class="skill-tag">3D Modeling</span>
+                                <span class="skill-tag">Technical Drawing</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <h4>Programming</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Arduino</span>
+                                <span class="skill-tag">C/C++</span>
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">HTML/CSS</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <h4>Engineering Tools</h4>
+                            <div class="skill-tags">
+                                <span class="skill-tag">MATLAB</span>
+                                <span class="skill-tag">Simulink</span>
+                                <span class="skill-tag">Tinkercad</span>
+                                <span class="skill-tag">Circuit Design</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Projects Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3+</div>
+                        <div class="stat-label">Years Learning</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">Technologies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">My Projects</h2>
+            <p class="section-subtitle">A collection of projects I've worked on</p>
+            
+            <div class="project-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="mobile">Mobile</button>
+                <button class="filter-btn" data-filter="desktop">Desktop</button>
+            </div>
+
+            <div class="projects-grid" id="projects-grid">
+                <!-- Projects will be loaded dynamically -->
+                <!-- SOLIDWORKS Beginner Projects Card (Embedded Navigation) -->
+                <div class="project-card solidworks-featured desktop visible" id="solidworks-beginner-card" aria-labelledby="sw-heading" aria-describedby="sw-intro" role="group">
+                    <header class="sw-header">
+                        <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
+                        <div class="sw-header-text">
+                            <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
+                            <p id="sw-intro" class="sw-intro">Curated starter models & structured assignments to build strong CAD fundamentals.</p>
+                        </div>
+                        <div class="sw-meta-counters" aria-label="Progress overview">
+                            <div class="sw-meta-item"><span class="sw-meta-num">2</span><span class="sw-meta-label">CW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">2</span><span class="sw-meta-label">HW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">4</span><span class="sw-meta-label">Total</span></div>
+                        </div>
+                    </header>
+                    <nav class="sw-mode-switch" aria-label="Section selector">
+                        <button class="sw-mode-btn" data-target="root" aria-current="true">Overview</button>
+                        <button class="sw-mode-btn" data-target="cw">Class Work</button>
+                        <button class="sw-mode-btn" data-target="hw">Home Work</button>
+                    </nav>
+                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
+                    <div class="sw-view sw-root" data-view="root" aria-label="Overview section">
+                        <div class="sw-root-layout">
+                            <div class="sw-root-info">
+                                <p class="sw-lede">Select a section to explore assignment folders or jump directly via quick links below. Each set focuses on parametric modeling, constraints, and clean feature design.</p>
+                                <ul class="sw-focus-points" aria-label="Skill focus areas">
+                                    <li>Sketch discipline & constraints</li>
+                                    <li>Feature ordering & intent</li>
+                                    <li>Clean parametric dimensions</li>
+                                    <li>Assembly readiness</li>
+                                </ul>
+                                <div class="sw-quick-links" aria-label="Quick access">
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a>
+                                </div>
+                                <div class="sw-ext-actions">
+                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-primary" target="_blank"><i class="fab fa-github"></i> Repository</a>
+                                </div>
+                            </div>
+                            <div class="sw-root-panels">
+                                <div class="sw-section-buttons" role="list" aria-label="Primary sections">
+                                    <button class="sw-tile" data-target="cw" role="listitem" aria-label="Open Class Work section">
+                                        <span class="sw-tile-icon">📂</span>
+                                        <span class="sw-tile-title">Class Work (CW)</span>
+                                        <span class="sw-tile-desc">Guided practice parts</span>
+                                    </button>
+                                    <button class="sw-tile" data-target="hw" role="listitem" aria-label="Open Home Work section">
+                                        <span class="sw-tile-icon">🏠</span>
+                                        <span class="sw-tile-title">Home Work (HW)</span>
+                                        <span class="sw-tile-desc">Independent tasks</span>
+                                    </button>
+                                </div>
+                                <div class="sw-tip-box" aria-label="Tip">
+                                    <strong>Tip:</strong> Start with CW parts before attempting HW for smoother progression.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sw-view sw-cw" data-view="cw" hidden>
+                        <div class="sw-view-header">
+                            <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
+                            <h4>Class Work (CW)</h4>
+                            <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
+                        </div>
+                        <div class="sw-files-wrap">
+                            <h5 class="sw-sub-heading">Files</h5>
+                            <ul class="sw-file-list" aria-label="Class Work file list">
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a></li>
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a></li>
+                            </ul>
+                            <div class="sw-note-box">
+                                <small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sw-view sw-hw" data-view="hw" hidden>
+                        <div class="sw-view-header">
+                            <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
+                            <h4>Home Work (HW)</h4>
+                            <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
+                        </div>
+                        <div class="sw-files-wrap">
+                            <h5 class="sw-sub-heading">Files</h5>
+                            <ul class="sw-file-list" aria-label="Home Work file list">
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a></li>
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a></li>
+                            </ul>
+                            <div class="sw-note-box">
+                                <small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
+            </div>
+
+            <div class="github-section">
+                <h3>Want to see more?</h3>
+                <p>Check out my GitHub profile for all my repositories and SOLIDWORKS projects</p>
+                <a href="https://github.com/Akhinoor14" class="btn btn-primary" target="_blank">
+                    <i class="fab fa-github"></i> Visit GitHub
+                </a>
+                <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-github"></i> SOLIDWORKS Projects
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="section-subtitle">Let's connect and discuss opportunities</p>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>mdakhinoorislam.official.2005@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Phone</h4>
+                            <p>01724812042 / 01518956815</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>LinkedIn</h4>
+                            <a href="https://www.linkedin.com/in/mdakhinoorislam/" target="_blank">linkedin.com/in/mdakhinoorislam</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>GitHub</h4>
+                            <a href="https://github.com/Akhinoor14" target="_blank">github.com/Akhinoor14</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-facebook"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Facebook</h4>
+                            <a href="https://www.facebook.com/mdakhinoorislam" target="_blank">facebook.com/mdakhinoorislam</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>WhatsApp</h4>
+                            <a href="https://wa.me/qr/6LUI5SF346NCP1" target="_blank">Chat on WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Md Akhinoor Islam. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/Akhinoor14" class="social-link" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/mdakhinoorislam/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.facebook.com/mdakhinoorislam" class="social-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://wa.me/qr/6LUI5SF346NCP1" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+    <!-- Removed legacy duplicate SOLIDWORKS list & modal -->
