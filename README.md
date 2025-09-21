@@ -1,24 +1,32 @@
 # SOLIDWORKS Beginner Projects
 
-<details>
-   <summary><strong>Class Work (CW)</strong> &nbsp; <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">[Main Folder]</a></summary>
-   <ul>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%203" target="_blank">CW 3</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%204" target="_blank">CW 4</a></li>
-   </ul>
-</details>
 
-<details>
-   <summary><strong>Home Work (HW)</strong> &nbsp; <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">[Main Folder]</a></summary>
-   <ul>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%203" target="_blank">HW 3</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%204" target="_blank">HW 4</a></li>
-   </ul>
-</details>
+## 📁 Daily Structure
+
+All homework (HW) and classwork (CW) are organized by day:
+
+- `Day 01/HW/` — Day 01 Homework
+- `Day 01/CW/` — Day 01 Classwork
+- `Day 02/HW/` — Day 02 Homework
+- `Day 02/CW/` — Day 02 Classwork
+
+Place your files in the appropriate folder. For 3D models, upload `.glb` files to the `models/` folder or inside each day’s HW/CW folder as needed.
+
+## 🧩 3D Model Viewing (.glb)
+
+To preview a SolidWorks part as a 3D model on the website:
+
+1. Upload your `.glb` file to the `models/` folder (or another location).
+2. Update the `<model-viewer src="...">` path in `index.html` to point to your file.
+3. The model will be viewable in the SolidWorks section of the site.
+
+Example:
+
+```html
+<model-viewer src="models/your-part.glb" ... ></model-viewer>
+```
+
+See the `models/README.md` for more info.
 
 ---
 
@@ -179,7 +187,6 @@ This is a comprehensive portfolio website for **Md Akhinoor Islam**, an Energy S
   - [CW01 - Simple Bracket](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/CW01.SLDPRT)
   - [CW02 - Shaft Coupling](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/CW02.SLDPRT)
   - [CW03 - Flange](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/CW03.SLDPRT)
-  - [CW04 - Bracket Assembly](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/CW04.SLDASM)
   - ...and more in the folder!
 </details>
 
@@ -189,7 +196,6 @@ This is a comprehensive portfolio website for **Md Akhinoor Islam**, an Energy S
   - [HW01 - Pulley](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/HW01.SLDPRT)
   - [HW02 - Gear](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/HW02.SLDPRT)
   - [HW03 - Clamp](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/HW03.SLDPRT)
-  - [HW04 - Complete Gearbox](https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/HW04.SLDASM)
   - ...and more in the folder!
 </details>
 
@@ -531,46 +537,3 @@ If you have any questions or need assistance:
 [![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/mdakhinoorislam)
 
 </div>
-
-# Solidworks Website Project
-
-This is the project portfolio website for Md Akhinoor Islam, featuring SOLIDWORKS beginner projects and more.
-
-## 🚀 Features
-
-- **SOLIDWORKS Beginner Projects:**  
-  - Class Work (CW 1, CW 2, CW 3, CW 4)
-  - Home Work (HW 1, HW 2, HW 3, HW 4)
-- **3D Model Viewer:**  
-  - All CW and HW parts now include `.glb` files.
-  - You can view the 3D models directly on the website using the integrated [model-viewer](https://modelviewer.dev/) component.
-- **Quick Links:**  
-  - Direct links to each assignment folder and GitHub repository.
-- **Contact & Social:**  
-  - Email, phone, LinkedIn, GitHub, Facebook, WhatsApp.
-
-## 🖼️ 3D Model Viewing
-
-On the [Projects](./index.html#projects) section of the website, click the 👁️ (View 3D) button next to any CW/HW part to open an interactive 3D viewer for the `.glb` file.  
-No extra software needed—works in all modern browsers.
-
-## 📁 Project Structure
-
-- `index.html` — Main website, with integrated 3D viewer.
-- `styles.css` — Styling for the website.
-- `script.js` — JS for interactivity and 3D viewer modal.
-- `images/` — Profile and other images.
-- `CW/`, `HW/` — Assignment folders (see [SOLIDWORKS-Projects repo](https://github.com/Akhinoor14/SOLIDWORKS-Projects)).
-
-## 🔗 SOLIDWORKS Projects Repository
-
-All assignment files and `.glb` models are hosted at:  
-[https://github.com/Akhinoor14/SOLIDWORKS-Projects](https://github.com/Akhinoor14/SOLIDWORKS-Projects)
-
-## ✨ Live Demo
-
-Visit the portfolio site and try the 3D viewer!
-
----
-
-© 2025 Md Akhinoor Islam. All rights reserved.

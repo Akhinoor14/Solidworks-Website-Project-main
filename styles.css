@@ -1192,69 +1192,92 @@ body {
     text-decoration: underline;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hamburger {
-        display: flex;
-    }
-    
-    .nav-menu {
-        position: fixed;
-        left: -100%;
-        top: 70px;
-        flex-direction: column;
-        background-color: var(--bg-color);
-        width: 100%;
-        text-align: center;
-        transition: 0.3s;
-        box-shadow: var(--shadow);
-        padding: 2rem 0;
-    }
-    
-    .nav-menu.active {
-        left: 0;
-    }
-    
-    .hero-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        text-align: center;
-    }
-    
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .contact-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .footer .container {
-        flex-direction: column;
-    }
+/* --- Embedded Project Card Styles for Web, Mobile, Desktop (same as SOLIDWORKS) --- */
+.project-card.web-featured,
+.project-card.mobile-featured,
+.project-card.desktop-featured {
+    position: relative;
+    padding: 2.4rem 2.3rem 2rem;
+    background:
+        radial-gradient(circle at 18% 28%, rgba(180,210,255,.35), rgba(255,255,255,0) 60%),
+        radial-gradient(circle at 82% 70%, rgba(160,200,255,.25), rgba(255,255,255,0) 62%),
+        linear-gradient(130deg,#f5faff 0%, #ffffff 50%, #eef5ff 100%);
+    border: 1px solid #d9e3ee;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px -4px rgba(20,40,90,.13), 0 2px 4px rgba(30,60,110,.06);
+    margin-bottom: 2rem;
+}
+.project-card.web-featured:before,
+.project-card.web-featured:after,
+.project-card.mobile-featured:before,
+.project-card.mobile-featured:after,
+.project-card.desktop-featured:before,
+.project-card.desktop-featured:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .45;
+}
+.project-card.web-featured:before,
+.project-card.mobile-featured:before,
+.project-card.desktop-featured:before {
+    background-image: linear-gradient(55deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 28%),
+        repeating-linear-gradient(135deg, rgba(120,150,200,.07) 0 2px, rgba(120,150,200,0) 2px 6px);
+    mix-blend-mode: overlay;
+}
+.project-card.web-featured:after,
+.project-card.mobile-featured:after,
+.project-card.desktop-featured:after {
+    background: radial-gradient(circle at 65% 35%, rgba(90,130,200,.10), rgba(255,255,255,0) 55%);
+    filter: blur(18px);
+    opacity: .45;
+}
+.project-card.web-featured:hover,
+.project-card.mobile-featured:hover,
+.project-card.desktop-featured:hover {
+    box-shadow: 0 8px 28px -6px rgba(20,40,90,.18), 0 4px 12px rgba(30,60,110,.08);
+}
+[data-theme="dark"] .project-card.web-featured,
+[data-theme="dark"] .project-card.mobile-featured,
+[data-theme="dark"] .project-card.desktop-featured {
+    background:
+        radial-gradient(circle at 18% 28%, rgba(56,85,140,.25), rgba(15,23,42,0) 62%),
+        radial-gradient(circle at 82% 70%, rgba(40,70,120,.18), rgba(15,23,42,0) 65%),
+        linear-gradient(135deg,#0f172a 0%, #162337 55%, #1e2f47 100%);
+    border-color: #253447;
+    box-shadow: 0 4px 16px -4px rgba(0,0,0,.45), 0 0 0 1px rgba(60,90,140,.18);
+}
+[data-theme="dark"] .project-card.web-featured:before,
+[data-theme="dark"] .project-card.mobile-featured:before,
+[data-theme="dark"] .project-card.desktop-featured:before {
+    background-image: linear-gradient(55deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 30%),
+        repeating-linear-gradient(135deg, rgba(120,170,250,.04) 0 2px, rgba(120,170,250,0) 2px 6px);
+}
+[data-theme="dark"] .project-card.web-featured:after,
+[data-theme="dark"] .project-card.mobile-featured:after,
+[data-theme="dark"] .project-card.desktop-featured:after {
+    background: radial-gradient(circle at 70% 40%, rgba(120,170,250,.12), rgba(15,23,42,0) 60%);
 }
 
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
+/* Embedded navigation views for all cards */
+.project-card.web-featured .sw-view,
+.project-card.mobile-featured .sw-view,
+.project-card.desktop-featured .sw-view {
+    animation: swViewFadeCalm .55s cubic-bezier(.25,.65,.25,1);
+}
+@keyframes swViewFadeCalm {
+    from { opacity:0; transform:translateY(10px) scale(.985);}
+    to { opacity:1; transform:translateY(0) scale(1);}
+}
+.project-card.web-featured .sw-section-buttons,
+.project-card.mobile-featured .sw-section-buttons,
+.project-card.desktop-featured .sw-section-buttons {
+    margin-top: 4px;
+}
+.project-card.web-featured .sw-section-buttons .sw-tile,
+.project-card.mobile-featured .sw-section-buttons .sw-tile,
+.project-card.desktop-featured .sw-section-buttons .sw-tile {
+    min-height: 110px;
 }

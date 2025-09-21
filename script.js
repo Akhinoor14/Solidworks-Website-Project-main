@@ -1204,4 +1204,106 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-console.log('Portfolio website loaded successfully! 🚀 Engineering Projects Ready!');
+// Add embedded card navigation for other project cards (Web, Mobile, Desktop)
+function initEmbeddedProjectCard(cardId, sectionDefs) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const views = card.querySelectorAll('.sw-view');
+    const tiles = card.querySelectorAll('.sw-tile');
+    const backButtons = card.querySelectorAll('.sw-back');
+    const modeBtns = card.querySelectorAll('.sw-mode-btn');
+    let current = sectionDefs[0].view;
+
+    function showView(name) {
+        current = name;
+        views.forEach(v => {
+            const match = v.getAttribute('data-view') === name;
+            if (match) {
+                v.removeAttribute('hidden');
+                v.classList.add('active-sw-view');
+            } else {
+                v.setAttribute('hidden', '');
+                v.classList.remove('active-sw-view');
+            }
+        });
+        modeBtns.forEach(btn => {
+            const target = btn.getAttribute('data-target');
+            if (target === name || (name !== sectionDefs[1].view && name !== sectionDefs[2].view && target === sectionDefs[0].view)) {
+                btn.setAttribute('aria-current', 'true');
+            } else {
+                btn.removeAttribute('aria-current');
+            }
+        });
+    }
+    tiles.forEach(t => t.addEventListener('click', () => {
+        const target = t.getAttribute('data-target');
+        if (target) showView(target);
+    }));
+    backButtons.forEach(b => b.addEventListener('click', () => {
+        const back = b.getAttribute('data-back');
+        if (back) showView(back);
+    }));
+    modeBtns.forEach(mb => mb.addEventListener('click', () => {
+        const target = mb.getAttribute('data-target');
+        if (target) showView(target);
+    }));
+    card.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && current !== sectionDefs[0].view) {
+            showView(sectionDefs[0].view);
+        }
+        if (e.target.classList.contains('sw-mode-btn')) {
+            const btnArray = Array.from(modeBtns);
+            const idx = btnArray.indexOf(e.target);
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                const next = btnArray[(idx + 1) % btnArray.length];
+                next.focus();
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                const prev = btnArray[(idx - 1 + btnArray.length) % btnArray.length];
+                prev.focus();
+                e.preventDefault();
+            } else if (e.key === 'Home') { btnArray[0].focus(); e.preventDefault(); }
+            else if (e.key === 'End') { btnArray[btnArray.length - 1].focus(); e.preventDefault(); }
+        }
+        if (e.target.classList.contains('sw-tile') && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            const target = e.target.getAttribute('data-target');
+            if (target) showView(target);
+        }
+    });
+    tiles.forEach(t => { if (!t.hasAttribute('tabindex')) t.setAttribute('tabindex', '0'); });
+    function addRipple(e) {
+        const el = e.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'sw-ripple';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        el.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 650);
+    }
+    [...tiles, ...modeBtns].forEach(el => {
+        el.addEventListener('click', addRipple);
+    });
+    showView(sectionDefs[0].view);
+}
+
+// Initialize embedded navigation for Web, Mobile, Desktop cards
+document.addEventListener('DOMContentLoaded', function () {
+    // Web Projects Card
+    initEmbeddedProjectCard('web-projects-card', [
+        { view: 'web-root' }, { view: 'web-list' }
+    ]);
+    // Mobile Projects Card
+    initEmbeddedProjectCard('mobile-projects-card', [
+        { view: 'mobile-root' }, { view: 'mobile-list' }
+    ]);
+    // Desktop Projects Card
+    initEmbeddedProjectCard('desktop-projects-card', [
+        { view: 'desktop-root' }, { view: 'desktop-list' }
+    ]);
+});
+
+// ...existing code...

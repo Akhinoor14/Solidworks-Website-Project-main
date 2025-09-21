@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -184,9 +183,9 @@
                             <p id="sw-intro" class="sw-intro">Curated starter models & structured assignments to build strong CAD fundamentals.</p>
                         </div>
                         <div class="sw-meta-counters" aria-label="Progress overview">
-                            <div class="sw-meta-item"><span class="sw-meta-num">4</span><span class="sw-meta-label">CW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">4</span><span class="sw-meta-label">HW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">8</span><span class="sw-meta-label">Total</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">2</span><span class="sw-meta-label">CW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">2</span><span class="sw-meta-label">HW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">4</span><span class="sw-meta-label">Total</span></div>
                         </div>
                     </header>
                     <nav class="sw-mode-switch" aria-label="Section selector">
@@ -205,7 +204,12 @@
                                     <li>Clean parametric dimensions</li>
                                     <li>Assembly readiness</li>
                                 </ul>
-                               
+                                <div class="sw-quick-links" aria-label="Quick access">
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a>
+                                    <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a>
+                                </div>
                                 <div class="sw-ext-actions">
                                     <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-primary" target="_blank"><i class="fab fa-github"></i> Repository</a>
                                 </div>
@@ -226,6 +230,17 @@
                                 <div class="sw-tip-box" aria-label="Tip">
                                     <strong>Tip:</strong> Start with CW parts before attempting HW for smoother progression.
                                 </div>
+                                <!-- 3D Model Viewer for .glb files -->
+                                <div class="sw-3d-viewer" style="margin-top:2rem;">
+                                    <h5>Preview SolidWorks 3D Model (.glb)</h5>
+                                    <!--
+                                        Replace 'models/sample.glb' with your actual .glb file path.
+                                        Upload your .glb file to the repo (e.g., images/ or models/ folder).
+                                    -->
+                                    <model-viewer src="models/sample.glb" alt="SolidWorks 3D Model" auto-rotate camera-controls style="width:100%;max-width:400px;height:300px;background:#f3f3f3;border-radius:8px;" ar ar-modes="webxr scene-viewer quick-look" shadow-intensity="1"></model-viewer>
+                                    <p style="font-size:0.9em;color:#666;">Upload your .glb file and update the path above to preview your SolidWorks part here.</p>
+                                </div>
+                                <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
                             </div>
                         </div>
                     </div>
@@ -235,8 +250,15 @@
                             <h4>Class Work (CW)</h4>
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
                         </div>
-                        <div class="sw-files-wrap" id="cw-files-wrap">
-                            <!-- JS will inject CW Day 01/02 lists here -->
+                        <div class="sw-files-wrap">
+                            <h5 class="sw-sub-heading">Files</h5>
+                            <ul class="sw-file-list" aria-label="Class Work file list">
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a></li>
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a></li>
+                            </ul>
+                            <div class="sw-note-box">
+                                <small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small>
+                            </div>
                         </div>
                     </div>
                     <div class="sw-view sw-hw" data-view="hw" hidden>
@@ -245,8 +267,15 @@
                             <h4>Home Work (HW)</h4>
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
                         </div>
-                        <div class="sw-files-wrap" id="hw-files-wrap">
-                            <!-- JS will inject HW Day 01/02 lists here -->
+                        <div class="sw-files-wrap">
+                            <h5 class="sw-sub-heading">Files</h5>
+                            <ul class="sw-file-list" aria-label="Home Work file list">
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a></li>
+                                <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a></li>
+                            </ul>
+                            <div class="sw-note-box">
+                                <small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -360,108 +389,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-    // 3D viewer modal logic
-    document.querySelectorAll('.view-3d-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const glbPath = this.getAttribute('data-glb');
-            // You must host the .glb files in your public directory or use raw.githubusercontent.com links
-            // Example: `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/cw%203/model.glb`
-            let src = '';
-            if (glbPath.startsWith('CW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            } else if (glbPath.startsWith('HW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            }
-            document.getElementById('inline-model-viewer').setAttribute('src', src);
-            document.getElementById('model-viewer-modal').style.display = 'flex';
-        });
-    });
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
-    </script>
-    <script>
-    // --- Dynamic Day Grouping Logic ---
-    const cwFiles = [
-        { num: 1, name: "CW 1", folder: "CW/cw 1", glb: "CW/cw 1/model.glb" },
-        { num: 2, name: "CW 2", folder: "CW/cw 2", glb: "CW/cw 2/model.glb" },
-        { num: 3, name: "CW 3", folder: "CW/cw 3", glb: "CW/cw 3/model.glb" },
-        { num: 4, name: "CW 4", folder: "CW/cw 4", glb: "CW/cw 4/model.glb" }
-    ];
-    const hwFiles = [
-        { num: 1, name: "HW 1", folder: "HW/HW 1", glb: "HW/HW 1/model.glb" },
-        { num: 2, name: "HW 2", folder: "HW/HW 2", glb: "HW/HW 2/model.glb" },
-        { num: 3, name: "HW 3", folder: "HW/HW 3", glb: "HW/HW 3/model.glb" },
-        { num: 4, name: "HW 4", folder: "HW/HW 4", glb: "HW/HW 4/model.glb" }
-    ];
-
-    function renderDaySection(files, type) {
-        let html = '';
-        for (let day = 1; day <= 2; day++) {
-            const dayFiles = files.filter(f => f.num === (day-1)*2+1 || f.num === (day-1)*2+2);
-            if (dayFiles.length) {
-                html += `<h5 class="sw-sub-heading day-highlight">Day 0${day}</h5>`;
-                html += `<ul class="sw-file-list" aria-label="${type} Day 0${day} file list">`;
-                dayFiles.forEach(f => {
-                    html += `<li>
-                        <span>${f.name}</span>
-                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${encodeURIComponent(f.folder)}" target="_blank">Folder</a>
-                        <button class="view-3d-btn" data-glb="${f.glb}" aria-label="View ${f.name} 3D">&#128065;</button>
-                    </li>`;
-                });
-                html += `</ul>`;
-            }
-        }
-        // Add Bengali note
-        if (type === "CW") {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small></div>`;
-        } else {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small></div>`;
-        }
-        return html;
-    }
-
-    function attach3DViewers() {
-        document.querySelectorAll('.view-3d-btn').forEach(btn => {
-            btn.onclick = function() {
-                const glbPath = this.getAttribute('data-glb');
-                let src = '';
-                if (glbPath.startsWith('CW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                } else if (glbPath.startsWith('HW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                }
-                document.getElementById('inline-model-viewer').setAttribute('src', src);
-                document.getElementById('model-viewer-modal').style.display = 'flex';
-            };
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('cw-files-wrap').innerHTML = renderDaySection(cwFiles, "CW");
-        document.getElementById('hw-files-wrap').innerHTML = renderDaySection(hwFiles, "HW");
-        attach3DViewers();
-    });
-
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
-    </script>
-    <style>
-    .day-highlight {
-        color: #fff;
-        background: #007bff;
-        display: inline-block;
-        padding: 0.2em 0.8em;
-        border-radius: 1em;
-        margin: 1em 0 0.5em 0;
-        font-weight: bold;
-        font-size: 1.1em;
-        letter-spacing: 0.05em;
-    }
-    </style>
 </body>
     <!-- Removed legacy duplicate SOLIDWORKS list & modal -->

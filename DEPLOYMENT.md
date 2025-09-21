@@ -1,24 +1,36 @@
 # SOLIDWORKS Beginner Projects
 
-<details>
-   <summary><strong>Class Work (CW)</strong> &nbsp; <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">[Main Folder]</a></summary>
-   <ul>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">CW 1</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">CW 2</a></li>
-   </ul>
-</details>
+## Deployment Structure
 
-<details>
-   <summary><strong>Home Work (HW)</strong> &nbsp; <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">[Main Folder]</a></summary>
-   <ul>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">HW 1</a></li>
-      <li><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">HW 2</a></li>
+All assignments are organized by day and type:
+
+- `Day 01/HW/` — Day 01 Homework
+- `Day 01/CW/` — Day 01 Classwork
+- `Day 02/HW/` — Day 02 Homework
+- `Day 02/CW/` — Day 02 Classwork
+
+For 3D model viewing, upload your `.glb` files to the `models/` folder or inside each day’s HW/CW folder as needed. Update the `<model-viewer>` path in `index.html` to preview them on the website.
+
+Example:
+
+```html
+<model-viewer src="models/your-part.glb" ... ></model-viewer>
+```
+
+See `models/README.md` for more info.
+            <li>
+               <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%204" target="_blank">HW 4</a>
+               &nbsp;|&nbsp;
+               <a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/HW%204/model.glb" target="_blank">View 3D (.glb)</a>
+            </li>
+         </ul>
+      </li>
    </ul>
 </details>
 
 ---
 
-<sub>Click the arrows to expand and see specific files. Main folder links open the full collection on GitHub. This structure keeps navigation clean and user-friendly!</sub>
+<sub>Click the arrows to expand and see specific files. Main folder links open the full collection on GitHub. 3D (.glb) links open the model directly in the browser or compatible viewer.</sub>
 # 🚀 Md Akhinoor Islam - Engineering Portfolio Deployment Guide
 
 > Complete deployment guide for the interactive engineering portfolio website
