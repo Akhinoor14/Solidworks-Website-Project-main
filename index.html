@@ -244,36 +244,8 @@
                             <h4>Class Work (CW)</h4>
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
                         </div>
-                        <div class="sw-files-wrap">
-                            <h5 class="sw-sub-heading">Day 01</h5>
-                            <ul class="sw-file-list" aria-label="CW Day 01 file list">
-                                <li>
-                                    <span> CW 1 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%201" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="CW/cw 1/model.glb" aria-label="View CW 1 3D">&#128065;</button>
-                                </li>
-                                <li>
-                                    <span> CW 2 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%202" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="CW/cw 2/model.glb" aria-label="View CW 2 3D">&#128065;</button>
-                                </li>
-                            </ul>
-                            <h5 class="sw-sub-heading">Day 02</h5>
-                            <ul class="sw-file-list" aria-label="CW Day 02 file list">
-                                <li>
-                                    <span> CW 3 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%203" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="CW/cw 3/model.glb" aria-label="View CW 3 3D">&#128065;</button>
-                                </li>
-                                <li>
-                                    <span> CW 4 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/cw%204" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="CW/cw 4/model.glb" aria-label="View CW 4 3D">&#128065;</button>
-                                </li>
-                            </ul>
-                            <div class="sw-note-box">
-                                <small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small>
-                            </div>
+                        <div class="sw-files-wrap" id="cw-files-wrap">
+                            <!-- JS will inject CW Day 01/02 lists here -->
                         </div>
                     </div>
                     <div class="sw-view sw-hw" data-view="hw" hidden>
@@ -282,36 +254,8 @@
                             <h4>Home Work (HW)</h4>
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
                         </div>
-                        <div class="sw-files-wrap">
-                            <h5 class="sw-sub-heading">Day 01</h5>
-                            <ul class="sw-file-list" aria-label="HW Day 01 file list">
-                                <li>
-                                    <span> HW 1 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%201" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="HW/HW 1/model.glb" aria-label="View HW 1 3D">&#128065;</button>
-                                </li>
-                                <li>
-                                    <span> HW 2 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%202" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="HW/HW 2/model.glb" aria-label="View HW 2 3D">&#128065;</button>
-                                </li>
-                            </ul>
-                            <h5 class="sw-sub-heading">Day 02</h5>
-                            <ul class="sw-file-list" aria-label="HW Day 02 file list">
-                                <li>
-                                    <span> HW 3 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%203" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="HW/HW 3/model.glb" aria-label="View HW 3 3D">&#128065;</button>
-                                </li>
-                                <li>
-                                    <span> HW 4 </span>
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/HW%204" target="_blank">Folder</a>
-                                    <button class="view-3d-btn" data-glb="HW/HW 4/model.glb" aria-label="View HW 4 3D">&#128065;</button>
-                                </li>
-                            </ul>
-                            <div class="sw-note-box">
-                                <small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small>
-                            </div>
+                        <div class="sw-files-wrap" id="hw-files-wrap">
+                            <!-- JS will inject HW Day 01/02 lists here -->
                         </div>
                     </div>
                 </div>
@@ -446,6 +390,68 @@
         document.getElementById('model-viewer-modal').style.display = 'none';
         document.getElementById('inline-model-viewer').removeAttribute('src');
     };
+
+    // --- Dynamic Day Grouping Logic ---
+    // Define your CW/HW files here (update only this array when adding new files)
+    const cwFiles = [
+        { num: 1, name: "CW 1", folder: "CW/cw 1", glb: "CW/cw 1/model.glb" },
+        { num: 2, name: "CW 2", folder: "CW/cw 2", glb: "CW/cw 2/model.glb" },
+        { num: 3, name: "CW 3", folder: "CW/cw 3", glb: "CW/cw 3/model.glb" },
+        { num: 4, name: "CW 4", folder: "CW/cw 4", glb: "CW/cw 4/model.glb" }
+    ];
+    const hwFiles = [
+        { num: 1, name: "HW 1", folder: "HW/HW 1", glb: "HW/HW 1/model.glb" },
+        { num: 2, name: "HW 2", folder: "HW/HW 2", glb: "HW/HW 2/model.glb" },
+        { num: 3, name: "HW 3", folder: "HW/HW 3", glb: "HW/HW 3/model.glb" },
+        { num: 4, name: "HW 4", folder: "HW/HW 4", glb: "HW/HW 4/model.glb" }
+    ];
+
+    function renderDaySection(files, type) {
+        let html = '';
+        for (let day = 1; day <= 2; day++) {
+            const dayFiles = files.filter(f => f.num === (day-1)*2+1 || f.num === (day-1)*2+2);
+            if (dayFiles.length) {
+                html += `<h5 class="sw-sub-heading day-highlight">Day 0${day}</h5>`;
+                html += `<ul class="sw-file-list" aria-label="${type} Day 0${day} file list">`;
+                dayFiles.forEach(f => {
+                    html += `<li>
+                        <span>${f.name}</span>
+                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${encodeURIComponent(f.folder)}" target="_blank">Folder</a>
+                        <button class="view-3d-btn" data-glb="${f.glb}" aria-label="View ${f.name} 3D">&#128065;</button>
+                    </li>`;
+                });
+                html += `</ul>`;
+            }
+        }
+        // Add Bengali note
+        if (type === "CW") {
+            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small></div>`;
+        } else {
+            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small></div>`;
+        }
+        return html;
+    }
+
+    // Inject the lists on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('cw-files-wrap').innerHTML = renderDaySection(cwFiles, "CW");
+        document.getElementById('hw-files-wrap').innerHTML = renderDaySection(hwFiles, "HW");
+
+        // Re-attach 3D viewer modal logic for dynamically created buttons
+        document.querySelectorAll('.view-3d-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const glbPath = this.getAttribute('data-glb');
+                let src = '';
+                if (glbPath.startsWith('CW/')) {
+                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
+                } else if (glbPath.startsWith('HW/')) {
+                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
+                }
+                document.getElementById('inline-model-viewer').setAttribute('src', src);
+                document.getElementById('model-viewer-modal').style.display = 'flex';
+            });
+        });
+    });
     </script>
 
     <!-- 3D Model Modal -->
@@ -455,5 +461,20 @@
             <model-viewer id="inline-model-viewer" src="" alt="3D Model" camera-controls auto-rotate style="width:100%;height:100%;background:#222;"></model-viewer>
         </div>
     </div>
+
+    <style>
+    /* Highlight Day headings */
+    .day-highlight {
+        color: #fff;
+        background: #007bff;
+        display: inline-block;
+        padding: 0.2em 0.8em;
+        border-radius: 1em;
+        margin: 1em 0 0.5em 0;
+        font-weight: bold;
+        font-size: 1.1em;
+        letter-spacing: 0.05em;
+    }
+    </style>
 </body>
     <!-- Removed legacy duplicate SOLIDWORKS list & modal -->
