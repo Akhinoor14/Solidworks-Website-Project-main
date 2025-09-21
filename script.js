@@ -1180,4 +1180,28 @@ function closeProjectModal() {
     }
 }
 
+// 3D viewer modal logic (moved from index.html for maintainability)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.view-3d-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const glbPath = this.getAttribute('data-glb');
+            let src = '';
+            if (glbPath.startsWith('CW/')) {
+                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
+            } else if (glbPath.startsWith('HW/')) {
+                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
+            }
+            document.getElementById('inline-model-viewer').setAttribute('src', src);
+            document.getElementById('model-viewer-modal').style.display = 'flex';
+        });
+    });
+    const closeBtn = document.getElementById('close-model-viewer');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            document.getElementById('model-viewer-modal').style.display = 'none';
+            document.getElementById('inline-model-viewer').removeAttribute('src');
+        };
+    }
+});
+
 console.log('Portfolio website loaded successfully! 🚀 Engineering Projects Ready!');
