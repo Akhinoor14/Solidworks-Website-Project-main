@@ -370,29 +370,29 @@
 
     <script src="script.js"></script>
     <script>
-    // 3D viewer modal logic
-    document.querySelectorAll('.view-3d-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const glbPath = this.getAttribute('data-glb');
-            // You must host the .glb files in your public directory or use raw.githubusercontent.com links
-            // Example: `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/cw%203/model.glb`
-            let src = '';
-            if (glbPath.startsWith('CW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            } else if (glbPath.startsWith('HW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            }
-            document.getElementById('inline-model-viewer').setAttribute('src', src);
-            document.getElementById('model-viewer-modal').style.display = 'flex';
+    // 3D viewer modal logic (for static and dynamic buttons)
+    function attach3DViewers() {
+        document.querySelectorAll('.view-3d-btn').forEach(btn => {
+            btn.onclick = function() {
+                const glbPath = this.getAttribute('data-glb');
+                let src = '';
+                if (glbPath.startsWith('CW/')) {
+                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
+                } else if (glbPath.startsWith('HW/')) {
+                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
+                }
+                document.getElementById('inline-model-viewer').setAttribute('src', src);
+                document.getElementById('model-viewer-modal').style.display = 'flex';
+            };
         });
-    });
+    }
     document.getElementById('close-model-viewer').onclick = function() {
         document.getElementById('model-viewer-modal').style.display = 'none';
         document.getElementById('inline-model-viewer').removeAttribute('src');
     };
 
     // --- Dynamic Day Grouping Logic ---
-    // Define your CW/HW files here (update only this array when adding new files)
+    // Update these arrays to add/remove files
     const cwFiles = [
         { num: 1, name: "CW 1", folder: "CW/cw 1", glb: "CW/cw 1/model.glb" },
         { num: 2, name: "CW 2", folder: "CW/cw 2", glb: "CW/cw 2/model.glb" },
@@ -432,49 +432,28 @@
         return html;
     }
 
-    // Inject the lists on page load
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('cw-files-wrap').innerHTML = renderDaySection(cwFiles, "CW");
         document.getElementById('hw-files-wrap').innerHTML = renderDaySection(hwFiles, "HW");
-
-        // Re-attach 3D viewer modal logic for dynamically created buttons
-        document.querySelectorAll('.view-3d-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const glbPath = this.getAttribute('data-glb');
-                let src = '';
-                if (glbPath.startsWith('CW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-                } else if (glbPath.startsWith('HW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-                }
-                document.getElementById('inline-model-viewer').setAttribute('src', src);
-                document.getElementById('model-viewer-modal').style.display = 'flex';
-            });
-        });
+        attach3DViewers();
     });
-    </script>
-
-    <!-- 3D Model Modal -->
-    <div id="model-viewer-modal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;">
-        <div style="position:relative;width:90vw;max-width:600px;height:80vh;background:#222;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-            <button id="close-model-viewer" style="position:absolute;top:10px;right:10px;font-size:1.5rem;background:none;border:none;color:#fff;cursor:pointer;">&times;</button>
-            <model-viewer id="inline-model-viewer" src="" alt="3D Model" camera-controls auto-rotate style="width:100%;height:100%;background:#222;"></model-viewer>
+</script>
+<style>
+/* Highlight Day headings */
+.day-highlight {
+    color: #fff;
+    background: #007bff;
+    display: inline-block;
+    padding: 0.2em 0.8em;
+    border-radius: 1em;
+    margin: 1em 0 0.5em 0;
+    font-weight: bold;
+    font-size: 1.1em;
+    letter-spacing: 0.05em;
+}
+</style>
+<!-- ...existing code... -->
         </div>
     </div>
-
-    <style>
-    /* Highlight Day headings */
-    .day-highlight {
-        color: #fff;
-        background: #007bff;
-        display: inline-block;
-        padding: 0.2em 0.8em;
-        border-radius: 1em;
-        margin: 1em 0 0.5em 0;
-        font-weight: bold;
-        font-size: 1.1em;
-        letter-spacing: 0.05em;
-    }
-    </style>
 </body>
     <!-- Removed legacy duplicate SOLIDWORKS list & modal -->
