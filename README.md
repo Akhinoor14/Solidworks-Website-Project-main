@@ -1,5 +1,21 @@
 # SOLIDWORKS Beginner Projects
 
+## 📝 Recent Updates
+
+### Day 3 Projects Added (December 2024)
+- **New CW Projects**: 2 new class work assignments
+  - CW 1: [GitHub Link](https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%201)
+  - CW 2: [GitHub Link](https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%202)
+
+- **New HW Projects**: 2 new homework assignments  
+  - HW 1: [GitHub Link](https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%201)
+  - HW 2: [GitHub Link](https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%202)
+
+- **Website Updates**:
+  - Dynamic content injection for day-specific projects
+  - Updated project counters (5 CW + 5 HW = 10 total projects)
+  - Enhanced styling for day sections with icons and hover effects
+  - Responsive design improvements for mobile devices
 
 ## 📁 Daily Structure
 

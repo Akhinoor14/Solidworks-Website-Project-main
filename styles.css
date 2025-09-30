@@ -1281,3 +1281,106 @@ body {
 .project-card.desktop-featured .sw-section-buttons .sw-tile {
     min-height: 110px;
 }
+
+/* Day-specific project sections */
+.sw-day-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(79, 70, 229, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.sw-day-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sw-day-title:before {
+    content: "📅";
+    font-size: 0.9rem;
+}
+
+.sw-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sw-file-item {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.sw-file-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.sw-file-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.sw-file-link:hover {
+    color: var(--primary-color);
+}
+
+.sw-file-link i:first-child {
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.sw-file-link span {
+    flex: 1;
+}
+
+.sw-external-icon {
+    opacity: 0.6;
+    font-size: 0.8rem;
+    transition: opacity 0.2s ease;
+}
+
+.sw-file-link:hover .sw-external-icon {
+    opacity: 1;
+}
+
+/* Dark theme support for day sections */
+[data-theme="dark"] .sw-day-section {
+    background: rgba(79, 70, 229, 0.15);
+    border-left-color: #818cf8;
+}
+
+[data-theme="dark"] .sw-day-title {
+    color: #a5b4fc;
+}
+
+[data-theme="dark"] .sw-file-item {
+    background: #1f2937;
+    border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .sw-file-link {
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .sw-file-link:hover {
+    color: #a5b4fc;
+}
+
+[data-theme="dark"] .sw-file-link i:first-child {
+    color: #818cf8;
+}

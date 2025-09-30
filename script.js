@@ -10,6 +10,66 @@ document.addEventListener('DOMContentLoaded', function() {
             const modeBtns = card.querySelectorAll('.sw-mode-btn');
         let current = 'root';
 
+        // Inject day-specific projects into CW and HW sections
+        function injectDayProjects() {
+            const solidworksProject = sampleProjects.find(p => p.title === "SOLIDWORKS Beginner Projects");
+            if (!solidworksProject || !solidworksProject.dayProjects) return;
+
+            const cwFilesWrap = document.getElementById('cw-files-wrap');
+            const hwFilesWrap = document.getElementById('hw-files-wrap');
+
+            if (cwFilesWrap) {
+                let cwHtml = '';
+                Object.keys(solidworksProject.dayProjects).forEach(day => {
+                    const dayData = solidworksProject.dayProjects[day];
+                    cwHtml += `
+                        <div class="sw-day-section">
+                            <h5 class="sw-day-title">${day}</h5>
+                            <div class="sw-file-list">
+                                ${dayData.cw.map(file => `
+                                    <div class="sw-file-item">
+                                        <a href="${file.url}" target="_blank" class="sw-file-link">
+                                            <i class="fas fa-cube"></i>
+                                            <span>${file.name}</span>
+                                            <i class="fas fa-external-link-alt sw-external-icon"></i>
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                cwFilesWrap.innerHTML = cwHtml;
+            }
+
+            if (hwFilesWrap) {
+                let hwHtml = '';
+                Object.keys(solidworksProject.dayProjects).forEach(day => {
+                    const dayData = solidworksProject.dayProjects[day];
+                    hwHtml += `
+                        <div class="sw-day-section">
+                            <h5 class="sw-day-title">${day}</h5>
+                            <div class="sw-file-list">
+                                ${dayData.hw.map(file => `
+                                    <div class="sw-file-item">
+                                        <a href="${file.url}" target="_blank" class="sw-file-link">
+                                            <i class="fas fa-home"></i>
+                                            <span>${file.name}</span>
+                                            <i class="fas fa-external-link-alt sw-external-icon"></i>
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                hwFilesWrap.innerHTML = hwHtml;
+            }
+        }
+
+        // Call the injection function after DOM is ready
+        setTimeout(injectDayProjects, 100);
+
         function showView(name){
             current = name;
             views.forEach(v=>{
@@ -256,7 +316,36 @@ const sampleProjects = [
                     { name: "HW03 - Clamp", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/HW03.SLDPRT" }
                 ]
             }
-        ]
+        ],
+        // Day-specific project structure for dynamic injection
+        dayProjects: {
+            "Day 01": {
+                cw: [
+                    { name: "CW01 - Simple Bracket", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2001/CW01.SLDPRT" }
+                ],
+                hw: [
+                    { name: "HW01 - Pulley", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%201/HW01.SLDPRT" }
+                ]
+            },
+            "Day 02": {
+                cw: [
+                    { name: "CW02 - Shaft Coupling", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2002/CW02.SLDPRT" }
+                ],
+                hw: [
+                    { name: "HW02 - Gear", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%202/HW02.SLDPRT" }
+                ]
+            },
+            "Day 03": {
+                cw: [
+                    { name: "CW 1", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%201" },
+                    { name: "CW 2", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%202" }
+                ],
+                hw: [
+                    { name: "HW 1", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%201" },
+                    { name: "HW 2", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%202" }
+                ]
+            }
+        }
     },
     {
         title: "Arduino UNO Projects with Tinkercad",
