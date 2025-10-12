@@ -175,82 +175,116 @@
 
             <div class="projects-grid" id="projects-grid">
                 <!-- Projects will be loaded dynamically -->
-                <!-- SOLIDWORKS Beginner Projects Card (Embedded Navigation) -->
-                <div class="project-card solidworks-featured desktop visible" id="solidworks-beginner-card" aria-labelledby="sw-heading" aria-describedby="sw-intro" role="group">
-                    <header class="sw-header">
-                        <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
-                        <div class="sw-header-text">
-                            <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
-                            <p id="sw-intro" class="sw-intro">Curated starter models & structured assignments to build strong CAD fundamentals.</p>
-                        </div>
-                        <div class="sw-meta-counters" aria-label="Progress overview">
-                            <div class="sw-meta-item"><span class="sw-meta-num">5</span><span class="sw-meta-label">CW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">5</span><span class="sw-meta-label">HW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">10</span><span class="sw-meta-label">Total</span></div>
+                <!-- SOLIDWORKS Projects (Minimal Section) -->
+                <div class="project-card visible" id="solidworks-projects-minimal" role="group" aria-labelledby="swm-heading" style="padding:16px;">
+                    <header style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                        <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem;"><i class="fas fa-cube"></i></div>
+                        <div>
+                            <h3 id="swm-heading" style="margin:0; font-size:1.1rem;">SOLIDWORKS Projects</h3>
+                            <p style="margin:2px 0 0; font-size:.85rem; color:var(--text-muted,#475569);">Compact index: quick links, CW/HW tables, and folder tree.</p>
                         </div>
                     </header>
-                    <nav class="sw-mode-switch" aria-label="Section selector">
-                        <button class="sw-mode-btn" data-target="root" aria-current="true">Overview</button>
-                        <button class="sw-mode-btn" data-target="cw">Class Work</button>
-                        <button class="sw-mode-btn" data-target="hw">Home Work</button>
+
+                    <!-- Quick Links -->
+                    <nav class="sw-quick-links" aria-label="Quick links">
+                        <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank" rel="noopener">Coursework (CW)</a>
+                        <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank" rel="noopener">Homework (HW)</a>
+                        <a class="sw-chip" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" target="_blank" rel="noopener">3D Models</a>
                     </nav>
-                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
-                    <div class="sw-view sw-root" data-view="root" aria-label="Overview section">
-                        <div class="sw-root-layout">
-                            <div class="sw-root-info">
-                                <p class="sw-lede">Select a section to explore assignment folders or jump directly via quick links below. Each set focuses on parametric modeling, constraints, and clean feature design.</p>
-                                <ul class="sw-focus-points" aria-label="Skill focus areas">
-                                    <li>Sketch discipline & constraints</li>
-                                    <li>Feature ordering & intent</li>
-                                    <li>Clean parametric dimensions</li>
-                                    <li>Assembly readiness</li>
-                                </ul>
-                               
-                                <div class="sw-ext-actions">
-                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-primary" target="_blank"><i class="fab fa-github"></i> Repository</a>
-                                </div>
-                            </div>
-                            <div class="sw-root-panels">
-                                <div class="sw-section-buttons" role="list" aria-label="Primary sections">
-                                    <button class="sw-tile" data-target="cw" role="listitem" aria-label="Open Class Work section">
-                                        <span class="sw-tile-icon">📂</span>
-                                        <span class="sw-tile-title">Class Work (CW)</span>
-                                        <span class="sw-tile-desc">Guided practice parts</span>
-                                    </button>
-                                    <button class="sw-tile" data-target="hw" role="listitem" aria-label="Open Home Work section">
-                                        <span class="sw-tile-icon">🏠</span>
-                                        <span class="sw-tile-title">Home Work (HW)</span>
-                                        <span class="sw-tile-desc">Independent tasks</span>
-                                    </button>
-                                </div>
-                                <div class="sw-tip-box" aria-label="Tip">
-                                    <strong>Tip:</strong> Start with CW parts before attempting HW for smoother progression.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="sw-view sw-cw" data-view="cw" hidden>
-                        <div class="sw-view-header">
-                            <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
-                            <h4>Class Work (CW)</h4>
-                            <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
-                        </div>
-                        <div class="sw-files-wrap" id="cw-files-wrap">
-                            <!-- JS will inject CW Day 01/02 lists here -->
-                        </div>
-                    </div>
-                    <div class="sw-view sw-hw" data-view="hw" hidden>
-                        <div class="sw-view-header">
-                            <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
-                            <h4>Home Work (HW)</h4>
-                            <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
-                        </div>
-                        <div class="sw-files-wrap" id="hw-files-wrap">
-                            <!-- JS will inject HW Day 01/02 lists here -->
-                        </div>
-                    </div>
+
+                    <!-- CW Table -->
+                    <section aria-labelledby="cw-table-title" style="margin-top:12px;">
+                        <h4 id="cw-table-title" style="margin:0 0 6px; font-size:.95rem;">Coursework (CW)</h4>
+                        <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px; width:28%;">Label</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Page</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Download</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Preview</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">3D</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px; white-space:nowrap;">CW Day 03-1</td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%201" target="_blank" rel="noopener">Folder</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%201/CW01.SLDPRT" target="_blank" rel="noopener">SLDPRT</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%201/preview.png" target="_blank" rel="noopener">PNG</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%201/model.glb" target="_blank" rel="noopener">GLB</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px; white-space:nowrap;">CW Day 03-2</td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%202" target="_blank" rel="noopener">Folder</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%202/CW02.SLDPRT" target="_blank" rel="noopener">SLDPRT</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%202/preview.png" target="_blank" rel="noopener">PNG</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%202/model.glb" target="_blank" rel="noopener">GLB</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- HW Table -->
+                    <section aria-labelledby="hw-table-title" style="margin-top:12px;">
+                        <h4 id="hw-table-title" style="margin:0 0 6px; font-size:.95rem;">Homework (HW)</h4>
+                        <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px; width:28%;">Label</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Page</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Download</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">Preview</th>
+                                    <th style="text-align:left; border:1px solid #e5e7eb; padding:6px 8px;">3D</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px; white-space:nowrap;">HW Day 03-1</td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%201" target="_blank" rel="noopener">Folder</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%201/HW01.SLDPRT" target="_blank" rel="noopener">SLDPRT</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%201/preview.png" target="_blank" rel="noopener">PNG</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%201/model.glb" target="_blank" rel="noopener">GLB</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px; white-space:nowrap;">HW Day 03-2</td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%202" target="_blank" rel="noopener">Folder</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%202/HW02.SLDPRT" target="_blank" rel="noopener">SLDPRT</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%202/preview.png" target="_blank" rel="noopener">PNG</a></td>
+                                    <td style="border:1px solid #e5e7eb; padding:6px 8px;"><a href="https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%203/hw%202/model.glb" target="_blank" rel="noopener">GLB</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- Folder Structure (Collapsible) -->
+                    <details style="margin-top:12px;">
+                        <summary style="cursor:pointer; font-weight:600;">Folder Structure</summary>
+<pre style="margin:8px 0 0; font-size:.85rem; background:var(--card-bg,#f8fafc); padding:8px 10px; border-radius:8px; border:1px solid #e5e7eb;">
+SOLIDWORKS-Projects/
+├─ CW/
+│  ├─ Day 01/
+│  ├─ Day 02/
+│  ├─ Day 03/
+│  │  ├─ cw 1/
+│  │  └─ cw 2/
+│  └─ cw 1 day 4/
+│     ├─ cw 1/
+│     └─ cw 2/
+└─ HW/
+   ├─ Day 01/
+   ├─ Day 02/
+   ├─ Day 03/
+   │  ├─ hw 1/
+   │  └─ hw 2/
+   └─ day 4/
+      ├─ hw 1/
+      └─ hw 2/
+</pre>
+                    </details>
+
+                    <p style="margin-top:10px; font-size:.8rem; color:var(--text-muted,#64748b);">Last updated: October 13, 2025</p>
                 </div>
-                <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
+                <!-- End SOLIDWORKS Projects (Minimal) -->
             </div>
 
             <div class="github-section">
@@ -360,108 +394,7 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-    // 3D viewer modal logic
-    document.querySelectorAll('.view-3d-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const glbPath = this.getAttribute('data-glb');
-            // You must host the .glb files in your public directory or use raw.githubusercontent.com links
-            // Example: `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/cw%203/model.glb`
-            let src = '';
-            if (glbPath.startsWith('CW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            } else if (glbPath.startsWith('HW/')) {
-                src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(' ', '%20')}`;
-            }
-            document.getElementById('inline-model-viewer').setAttribute('src', src);
-            document.getElementById('model-viewer-modal').style.display = 'flex';
-        });
-    });
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
-    </script>
-    <script>
-    // --- Dynamic Day Grouping Logic ---
-    const cwFiles = [
-        { num: 1, name: "CW 1", folder: "CW/cw 1", glb: "CW/cw 1/model.glb" },
-        { num: 2, name: "CW 2", folder: "CW/cw 2", glb: "CW/cw 2/model.glb" },
-        { num: 3, name: "CW 3", folder: "CW/cw 3", glb: "CW/cw 3/model.glb" },
-        { num: 4, name: "CW 4", folder: "CW/cw 4", glb: "CW/cw 4/model.glb" }
-    ];
-    const hwFiles = [
-        { num: 1, name: "HW 1", folder: "HW/HW 1", glb: "HW/HW 1/model.glb" },
-        { num: 2, name: "HW 2", folder: "HW/HW 2", glb: "HW/HW 2/model.glb" },
-        { num: 3, name: "HW 3", folder: "HW/HW 3", glb: "HW/HW 3/model.glb" },
-        { num: 4, name: "HW 4", folder: "HW/HW 4", glb: "HW/HW 4/model.glb" }
-    ];
-
-    function renderDaySection(files, type) {
-        let html = '';
-        for (let day = 1; day <= 2; day++) {
-            const dayFiles = files.filter(f => f.num === (day-1)*2+1 || f.num === (day-1)*2+2);
-            if (dayFiles.length) {
-                html += `<h5 class="sw-sub-heading day-highlight">Day 0${day}</h5>`;
-                html += `<ul class="sw-file-list" aria-label="${type} Day 0${day} file list">`;
-                dayFiles.forEach(f => {
-                    html += `<li>
-                        <span>${f.name}</span>
-                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${encodeURIComponent(f.folder)}" target="_blank">Folder</a>
-                        <button class="view-3d-btn" data-glb="${f.glb}" aria-label="View ${f.name} 3D">&#128065;</button>
-                    </li>`;
-                });
-                html += `</ul>`;
-            }
-        }
-        // Add Bengali note
-        if (type === "CW") {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small></div>`;
-        } else {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small></div>`;
-        }
-        return html;
-    }
-
-    function attach3DViewers() {
-        document.querySelectorAll('.view-3d-btn').forEach(btn => {
-            btn.onclick = function() {
-                const glbPath = this.getAttribute('data-glb');
-                let src = '';
-                if (glbPath.startsWith('CW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                } else if (glbPath.startsWith('HW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                }
-                document.getElementById('inline-model-viewer').setAttribute('src', src);
-                document.getElementById('model-viewer-modal').style.display = 'flex';
-            };
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('cw-files-wrap').innerHTML = renderDaySection(cwFiles, "CW");
-        document.getElementById('hw-files-wrap').innerHTML = renderDaySection(hwFiles, "HW");
-        attach3DViewers();
-    });
-
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
-    </script>
-    <style>
-    .day-highlight {
-        color: #fff;
-        background: #007bff;
-        display: inline-block;
-        padding: 0.2em 0.8em;
-        border-radius: 1em;
-        margin: 1em 0 0.5em 0;
-        font-weight: bold;
-        font-size: 1.1em;
-        letter-spacing: 0.05em;
-    }
-    </style>
+    
+    
+    
 </body>
-    <!-- Removed legacy duplicate SOLIDWORKS list & modal -->
