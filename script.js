@@ -320,7 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
     (function initProfileUpload(){
         const fileInput = document.getElementById('profile-upload-input');
         const triggerBtn = document.getElementById('trigger-profile-upload');
-        const resetBtn = document.getElementById('reset-profile-photo');
         const statusEl = document.getElementById('profile-upload-status');
         const img = document.getElementById('profile-photo');
         const controls = document.querySelector('.profile-upload-controls');
@@ -363,7 +362,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const result = reader.result;
                     img.src = result;
                     localStorage.setItem(LS_KEY, result);
-                    if(resetBtn) resetBtn.hidden = false;
                     setStatus('Profile updated ✓');
                 } catch(e){ setStatus('Store failed', true); }
             };
@@ -377,15 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(f) handleFile(f);
             fileInput.value = '';
         });
-        if(resetBtn){
-            resetBtn.addEventListener('click', ()=>{
-                localStorage.removeItem(LS_KEY);
-                // revert to original src
-                img.src = './images/WhatsApp Image 2025-10-13 at 13.43.34_2436f070.jpg';
-                resetBtn.hidden = true;
-                setStatus('Reset to default');
-            });
-        }
+
 
         // Drag & drop support
         if(controls){
