@@ -389,12 +389,16 @@ body {
 /* Dark Mode Variables */
 [data-theme="dark"] {
     --primary-color: #6366f1;
-    --primary-light: #1e1b4b;
+    --primary-light: #312e81;
+    --secondary-color: #8b5cf6;
+    --accent-color: #10b981;
     --text-color: #f9fafb;
     --text-light: #d1d5db;
-    --bg-color: #111827;
-    --bg-secondary: #1f2937;
-    --border-color: #374151;
+    --bg-color: #0f172a;
+    --bg-secondary: #1e293b;
+    --border-color: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset and Base Styles */
@@ -414,7 +418,16 @@ body {
     color: var(--text-color);
     background-color: var(--bg-color);
     overflow-x: hidden;
-    transition: var(--transition);
+    transition: all 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure all text elements inherit proper colors */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, div {
+    color: inherit;
 }
 
 .container {
@@ -1341,24 +1354,131 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Dark Theme Adjustments */
+/* Comprehensive Dark Theme Adjustments */
+[data-theme="dark"] {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .hero-title {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .hero-subtitle {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .hero-description {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .description-text {
+    color: var(--text-light);
+}
+
 [data-theme="dark"] .skill-badge {
-    background: rgba(31, 41, 55, 0.95);
-    border-color: rgba(55, 65, 81, 0.3);
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(71, 85, 105, 0.5);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .skill-name {
+    color: var(--text-color);
 }
 
 [data-theme="dark"] .hero-stats {
-    background: rgba(31, 41, 55, 0.3);
-    border-color: rgba(55, 65, 81, 0.3);
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(71, 85, 105, 0.3);
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--text-light);
 }
 
 [data-theme="dark"] .social-link {
-    background: rgba(31, 41, 55, 0.5);
-    border-color: rgba(55, 65, 81, 0.3);
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(71, 85, 105, 0.4);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .social-tooltip {
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .upload-tooltip {
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 [data-theme="dark"] #profile-photo-wrapper {
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+[data-theme="dark"] .scroll-text {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .mouse {
+    border-color: var(--text-light);
+}
+
+[data-theme="dark"] .wheel {
+    background: var(--text-light);
+}
+
+[data-theme="dark"] .text-highlight {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .cursor {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-outline {
+    background: rgba(30, 41, 59, 0.4);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+    background: rgba(30, 41, 59, 0.6);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-modern {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-modern:hover {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-secondary) 100%);
+}
+
+/* Dark mode for geometric shapes */
+[data-theme="dark"] .shape-1 {
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.2));
+}
+
+[data-theme="dark"] .shape-2 {
+    background: linear-gradient(45deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.15));
+}
+
+[data-theme="dark"] .shape-3 {
+    background: linear-gradient(45deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.2));
+}
+
+[data-theme="dark"] .shape-4 {
+    background: linear-gradient(45deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.15));
+}
+
+[data-theme="dark"] .shape-5 {
+    background: linear-gradient(45deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.2));
 }
 
 /* Responsive Design for Enhanced Hero */
@@ -1419,6 +1539,27 @@ body {
 .dark .profile-image .profile-fallback { background:linear-gradient(135deg,#312e81,#4338ca); }
 .profile-image.loading img { opacity:0; transition:opacity .4s ease; }
 .profile-image.ready img { opacity:1; }
+
+/* Enhanced profile fallback */
+.profile-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    font-family: 'Inter', sans-serif;
+    border-radius: 50%;
+}
+
+[data-theme="dark"] .profile-fallback {
+    background: linear-gradient(135deg, #4338ca, #7c3aed);
+    color: #f1f5f9;
+}
 
 /* Profile upload controls */
 .profile-upload-controls { position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:.4rem; z-index:5; }

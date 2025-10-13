@@ -246,28 +246,74 @@ document.addEventListener('DOMContentLoaded', function() {
         showView('root');
     })();
     // Removed legacy modal code in favor of embedded navigation
-    // Profile image fallback logic
+    // Enhanced profile image fallback logic
     (function initProfilePhoto(){
         const img = document.getElementById('profile-photo');
         if(!img) return;
-        const wrapper = img.closest('.profile-image');
-        if(wrapper){ wrapper.classList.add('loading'); }
-        function markReady(){ if(wrapper){ wrapper.classList.remove('loading'); wrapper.classList.add('ready'); } }
-        img.addEventListener('load', ()=> {
-            if(img.naturalWidth > 0) { markReady(); }
-            else fallback();
-        });
-        img.addEventListener('error', fallback);
+        const wrapper = img.closest('#profile-photo-wrapper') || img.closest('.profile-image');
+        
+        if(wrapper) { 
+            wrapper.classList.add('loading'); 
+        }
+        
+        function markReady() { 
+            if(wrapper) { 
+                wrapper.classList.remove('loading'); 
+                wrapper.classList.add('ready'); 
+            } 
+        }
+        
         function fallback(){
+            console.log('Profile image fallback triggered');
             if(document.getElementById('profile-fallback')) return;
             const fb = document.createElement('div');
             fb.id = 'profile-fallback';
             fb.className = 'profile-fallback';
-            fb.textContent = 'MI'; // Initials
-            if(wrapper){ wrapper.appendChild(fb); wrapper.classList.add('ready'); }
+            fb.textContent = 'MAI'; // Md Akhinoor Islam initials
+            fb.style.position = 'absolute';
+            fb.style.inset = '0';
+            fb.style.display = 'flex';
+            fb.style.alignItems = 'center';
+            fb.style.justifyContent = 'center';
+            fb.style.fontSize = '2.5rem';
+            fb.style.fontWeight = '700';
+            fb.style.color = '#ffffff';
+            fb.style.background = 'linear-gradient(135deg, #4f46e5, #7c3aed)';
+            fb.style.borderRadius = '50%';
+            
+            if(wrapper) { 
+                wrapper.appendChild(fb); 
+                wrapper.classList.add('ready'); 
+            }
         }
-        // If after short delay still not loaded, trigger fallback
-        setTimeout(()=> { if(!img.complete || img.naturalWidth===0) fallback(); }, 1800);
+        
+        img.addEventListener('load', ()=> {
+            console.log('Profile image loaded successfully');
+            if(img.naturalWidth > 0) { 
+                markReady(); 
+            } else { 
+                fallback(); 
+            }
+        });
+        
+        img.addEventListener('error', (e) => {
+            console.log('Profile image failed to load:', e);
+            fallback();
+        });
+        
+        // Check if image is already loaded (cached)
+        if(img.complete && img.naturalWidth > 0) {
+            console.log('Profile image already loaded from cache');
+            markReady();
+        } else {
+            // If after delay still not loaded, trigger fallback
+            setTimeout(()=> { 
+                if(!img.complete || img.naturalWidth === 0) {
+                    console.log('Profile image loading timeout, using fallback');
+                    fallback(); 
+                }
+            }, 3000);
+        }
     })();
 
     // Profile upload & persistence logic
@@ -335,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resetBtn.addEventListener('click', ()=>{
                 localStorage.removeItem(LS_KEY);
                 // revert to original src
-                img.src = './images/profile.jpg';
+                img.src = './images/WhatsApp Image 2025-10-13 at 13.43.34_2436f070.jpg';
                 resetBtn.hidden = true;
                 setStatus('Reset to default');
             });
@@ -1277,41 +1323,17 @@ function initializeHomepageAnimations() {
 
 // Download Resume Function
 function downloadResume() {
-    // Create a sample resume download
-    const resumeContent = `
-Md Akhinoor Islam
-Energy Science & Engineering Student, KUET
-Contact: mdakhinoorislam.official.2005@gmail.com
-
-SKILLS:
-• SOLIDWORKS - Advanced CAD Design
-• Arduino Programming - IoT Development  
-• MATLAB - Engineering Analysis
-• Web Development - Modern Technologies
-• Circuit Design - Electronics Projects
-
-PROJECTS:
-• 17+ SOLIDWORKS Projects (4 Days of Learning)
-• Arduino IoT Experiments
-• Interactive Portfolio Website
-• Engineering Simulations
-
-EDUCATION:
-• Department of Energy Science and Engineering
-• Khulna University of Engineering & Technology (KUET)
-
-GitHub: https://github.com/Akhinoor14
-`;
-
-    const blob = new Blob([resumeContent], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
+    // Download the actual PDF CV file
+    const cvPath = './CV/2313014 CV.pdf';
+    
+    // Create a temporary link to download the CV
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Md_Akhinoor_Islam_Resume.txt';
+    a.href = cvPath;
+    a.download = 'Md_Akhinoor_Islam_CV.pdf';
+    a.target = '_blank'; // Open in new tab if download fails
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
     
     // Show success message
     const btn = event.target.closest('.btn-download');
@@ -1321,6 +1343,9 @@ GitHub: https://github.com/Akhinoor14
     setTimeout(() => {
         btn.querySelector('.btn-text').textContent = originalText;
     }, 2000);
+    
+    // Analytics tracking (optional)
+    console.log('CV downloaded by user');
 }
 
 // Parallax Effect for Hero Section
