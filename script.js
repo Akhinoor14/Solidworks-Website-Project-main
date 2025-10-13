@@ -1070,6 +1070,300 @@ function createParticles() {
 // Initialize particles (enable for cool background effect)
 createParticles();
 
+// Enhanced Homepage Interactive Features
+document.addEventListener('DOMContentLoaded', function() {
+    initializeHomepageAnimations();
+    createParticleSystem();
+    initializeTypingAnimation();
+    initializeCounterAnimation();
+    initializeSkillBadgeInteractions();
+});
+
+// Particle System for Background
+function createParticleSystem() {
+    const canvas = document.getElementById('particles-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    
+    // Set canvas size
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Particle class
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 2 + 1;
+            this.opacity = Math.random() * 0.5 + 0.2;
+            this.color = `hsl(${Math.random() * 60 + 200}, 70%, 60%)`;
+        }
+        
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color + Math.floor(this.opacity * 255).toString(16).padStart(2, '0');
+            ctx.fill();
+        }
+    }
+    
+    // Create particles
+    for (let i = 0; i < 50; i++) {
+        particles.push(new Particle());
+    }
+    
+    // Animation loop
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+        
+        // Draw connections between nearby particles
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - distance / 100)})`;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+}
+
+// Typing Animation
+function initializeTypingAnimation() {
+    const typingElement = document.querySelector('.typing-text');
+    if (!typingElement) return;
+    
+    const text = typingElement.getAttribute('data-text');
+    let index = 0;
+    
+    function type() {
+        if (index < text.length) {
+            typingElement.textContent += text.charAt(index);
+            index++;
+            setTimeout(type, 100);
+        }
+    }
+    
+    // Start typing after page load
+    setTimeout(type, 1000);
+}
+
+// Counter Animation
+function initializeCounterAnimation() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-target'));
+                let current = 0;
+                const increment = target / 100;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                updateCounter();
+                observer.unobserve(counter);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    counters.forEach(counter => observer.observe(counter));
+}
+
+// Skill Badge Interactions
+function initializeSkillBadgeInteractions() {
+    const skillBadges = document.querySelectorAll('.skill-badge');
+    
+    skillBadges.forEach(badge => {
+        badge.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1) translateY(-10px) rotate(2deg)';
+            
+            // Add glow effect
+            this.style.boxShadow = '0 15px 45px rgba(79, 70, 229, 0.3)';
+        });
+        
+        badge.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+            this.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
+        });
+        
+        badge.addEventListener('click', function() {
+            // Create ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s linear';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.marginLeft = '-10px';
+            ripple.style.marginTop = '-10px';
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+}
+
+// Homepage Load Animations
+function initializeHomepageAnimations() {
+    // Stagger animation for hero elements
+    const animatedElements = document.querySelectorAll('.animate-on-load');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.animationPlayState = 'running';
+                }, index * 200);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    animatedElements.forEach(element => {
+        element.style.animationPlayState = 'paused';
+        observer.observe(element);
+    });
+}
+
+// Download Resume Function
+function downloadResume() {
+    // Create a sample resume download
+    const resumeContent = `
+Md Akhinoor Islam
+Energy Science & Engineering Student, KUET
+Contact: mdakhinoorislam.official.2005@gmail.com
+
+SKILLS:
+• SOLIDWORKS - Advanced CAD Design
+• Arduino Programming - IoT Development  
+• MATLAB - Engineering Analysis
+• Web Development - Modern Technologies
+• Circuit Design - Electronics Projects
+
+PROJECTS:
+• 17+ SOLIDWORKS Projects (4 Days of Learning)
+• Arduino IoT Experiments
+• Interactive Portfolio Website
+• Engineering Simulations
+
+EDUCATION:
+• Department of Energy Science and Engineering
+• Khulna University of Engineering & Technology (KUET)
+
+GitHub: https://github.com/Akhinoor14
+`;
+
+    const blob = new Blob([resumeContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Md_Akhinoor_Islam_Resume.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    // Show success message
+    const btn = event.target.closest('.btn-download');
+    const originalText = btn.querySelector('.btn-text').textContent;
+    btn.querySelector('.btn-text').textContent = 'Downloaded! ✓';
+    
+    setTimeout(() => {
+        btn.querySelector('.btn-text').textContent = originalText;
+    }, 2000);
+}
+
+// Parallax Effect for Hero Section
+window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    const heroHeight = hero.offsetHeight;
+    const scrollRatio = scrolled / heroHeight;
+    
+    if (scrollRatio <= 1) {
+        // Move background elements at different speeds
+        const shapes = document.querySelectorAll('.shape');
+        const orbs = document.querySelectorAll('.orb');
+        
+        shapes.forEach((shape, index) => {
+            const speed = 0.3 + (index * 0.1);
+            shape.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+        
+        orbs.forEach((orb, index) => {
+            const speed = 0.2 + (index * 0.05);
+            orb.style.transform = `translateY(${scrolled * speed}px) scale(${1 - scrollRatio * 0.2})`;
+        });
+        
+        // Fade out hero content as user scrolls
+        const heroContent = document.querySelector('.hero-content');
+        heroContent.style.opacity = Math.max(0, 1 - scrollRatio);
+        heroContent.style.transform = `translateY(${scrolled * 0.1}px)`;
+    }
+});
+
+// Add CSS for ripple animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
 // Project search functionality
 function addProjectSearch() {
     const searchInput = document.createElement('input');

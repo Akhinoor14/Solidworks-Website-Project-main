@@ -50,57 +50,204 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <!-- Animated Background Elements -->
+        <div class="hero-bg-elements">
+            <div class="geometric-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+                <div class="shape shape-4"></div>
+                <div class="shape shape-5"></div>
+            </div>
+            <div class="gradient-orbs">
+                <div class="orb orb-1"></div>
+                <div class="orb orb-2"></div>
+                <div class="orb orb-3"></div>
+            </div>
+            <canvas id="particles-canvas" class="particles-canvas"></canvas>
+        </div>
+
         <div class="hero-container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1 class="hero-title">
-                        Hi, I'm <span class="highlight">Md Akhinoor Islam</span>
-                    </h1>
-                    <h2 class="hero-subtitle">
-                        Energy Science and Engineering Student, KUET
-                    </h2>
-                    <p class="hero-description">
-                        Passionate about creating innovative solutions and building amazing projects. 
-                        Currently studying in the Department of Energy Science and Engineering at KUET, exploring the latest 
-                        technologies and developing my skills in web development, mobile apps, and more.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="#projects" class="btn btn-primary">View Projects</a>
-                        <a href="#contact" class="btn btn-secondary">Contact Me</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <div class="profile-card">
-                        <div class="profile-image">
-                       <picture id="profile-photo-wrapper">
-                          <source srcset="./images/profile.webp" type="image/webp">
-                          <img id="profile-photo" src="./images/profile.jpg" 
-                              alt="Md Akhinoor Islam Profile Picture" 
-                              decoding="async" loading="lazy" data-fallback="placeholder">
-                       </picture>
-                            <div class="profile-upload-controls" aria-label="Profile photo controls">
-                                <input type="file" id="profile-upload-input" accept="image/*" aria-label="Upload profile photo" hidden>
-                                <button type="button" class="profile-upload-btn" id="trigger-profile-upload" aria-controls="profile-upload-input">
-                                    <i class="fas fa-camera"></i>
-                                    <span class="txt">Upload</span>
-                                </button>
-                                <button type="button" class="profile-reset-btn" id="reset-profile-photo" hidden title="Reset profile photo">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                                <div class="profile-upload-hint" id="profile-upload-hint">PNG / JPG / WebP • Max 1.2MB</div>
-                                <div class="profile-upload-status" id="profile-upload-status" aria-live="polite" aria-atomic="true"></div>
+                    <!-- Animated Text with Stagger Effect -->
+                    <div class="hero-text-wrapper">
+                        <h1 class="hero-title">
+                            <span class="title-line animate-on-load">
+                                <span class="word">Hi,</span>
+                                <span class="word">I'm</span>
+                            </span>
+                            <span class="title-line animate-on-load">
+                                <span class="highlight-wrapper">
+                                    <span class="highlight">Md Akhinoor Islam</span>
+                                    <div class="highlight-underline"></div>
+                                </span>
+                            </span>
+                        </h1>
+                        
+                        <h2 class="hero-subtitle animate-on-load">
+                            <span class="typing-text" data-text="Energy Science & Engineering Student • KUET"></span>
+                            <span class="cursor">|</span>
+                        </h2>
+                        
+                        <p class="hero-description animate-on-load">
+                            <span class="description-text">
+                                Passionate about creating <span class="text-highlight">innovative solutions</span> and building amazing projects. 
+                                Currently studying in the Department of Energy Science and Engineering at KUET, exploring the latest 
+                                technologies and developing my skills in <span class="text-highlight">CAD design</span>, 
+                                <span class="text-highlight">web development</span>, and <span class="text-highlight">engineering simulations</span>.
+                            </span>
+                        </p>
+                        
+                        <!-- Interactive Stats Counter -->
+                        <div class="hero-stats animate-on-load">
+                            <div class="stat-item">
+                                <div class="stat-number" data-target="17">0</div>
+                                <div class="stat-label">Projects Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" data-target="4">0</div>
+                                <div class="stat-label">Days of Learning</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" data-target="8">0</div>
+                                <div class="stat-label">Technologies</div>
                             </div>
                         </div>
-                        <div class="floating-elements">
-                            <div class="floating-element solidworks">SOLIDWORKS</div>
-                            <div class="floating-element arduino">Arduino</div>
-                            <div class="floating-element matlab">MATLAB</div>
-                            <div class="floating-element cad">CAD</div>
-                            <div class="floating-element circuit">Circuits</div>
+
+                        <!-- Enhanced Buttons -->
+                        <div class="hero-buttons animate-on-load">
+                            <a href="#projects" class="btn btn-primary btn-glow">
+                                <span class="btn-text">View Projects</span>
+                                <span class="btn-icon">🚀</span>
+                                <div class="btn-hover-effect"></div>
+                            </a>
+                            <a href="#contact" class="btn btn-secondary btn-modern">
+                                <span class="btn-text">Let's Connect</span>
+                                <span class="btn-icon">💬</span>
+                                <div class="btn-ripple"></div>
+                            </a>
+                            <button class="btn btn-outline btn-download" onclick="downloadResume()">
+                                <span class="btn-text">Download CV</span>
+                                <span class="btn-icon">📄</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Profile Section -->
+                <div class="hero-image">
+                    <div class="profile-container">
+                        <!-- Interactive Profile Card -->
+                        <div class="profile-card-3d">
+                            <div class="profile-image-wrapper">
+                                <div class="profile-frame">
+                                    <div class="frame-glow"></div>
+                                    <picture id="profile-photo-wrapper">
+                                        <source srcset="./images/profile.webp" type="image/webp">
+                                        <img id="profile-photo" src="./images/profile.jpg" 
+                                            alt="Md Akhinoor Islam Profile Picture" 
+                                            decoding="async" loading="lazy" data-fallback="placeholder">
+                                    </picture>
+                                    
+                                    <!-- Interactive Upload Controls -->
+                                    <div class="profile-upload-controls" aria-label="Profile photo controls">
+                                        <input type="file" id="profile-upload-input" accept="image/*" aria-label="Upload profile photo" hidden>
+                                        <button type="button" class="profile-upload-btn modern-upload-btn" id="trigger-profile-upload">
+                                            <i class="fas fa-camera"></i>
+                                            <span class="upload-tooltip">Update Photo</span>
+                                        </button>
+                                        <button type="button" class="profile-reset-btn modern-reset-btn" id="reset-profile-photo" hidden>
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                        <div class="profile-upload-status" id="profile-upload-status"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating Skill Badges with Animation -->
+                            <div class="floating-skills">
+                                <div class="skill-badge skill-1" data-skill="SOLIDWORKS">
+                                    <div class="skill-icon">🎯</div>
+                                    <div class="skill-name">SOLIDWORKS</div>
+                                    <div class="skill-level">
+                                        <div class="skill-progress" style="width: 85%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-badge skill-2" data-skill="Arduino">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Arduino</div>
+                                    <div class="skill-level">
+                                        <div class="skill-progress" style="width: 90%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-badge skill-3" data-skill="MATLAB">
+                                    <div class="skill-icon">📊</div>
+                                    <div class="skill-name">MATLAB</div>
+                                    <div class="skill-level">
+                                        <div class="skill-progress" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-badge skill-4" data-skill="CAD Design">
+                                    <div class="skill-icon">🔧</div>
+                                    <div class="skill-name">CAD Design</div>
+                                    <div class="skill-level">
+                                        <div class="skill-progress" style="width: 88%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-badge skill-5" data-skill="Web Dev">
+                                    <div class="skill-icon">💻</div>
+                                    <div class="skill-name">Web Dev</div>
+                                    <div class="skill-level">
+                                        <div class="skill-progress" style="width: 75%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Achievement Badges -->
+                            <div class="achievement-badges">
+                                <div class="achievement active" title="SOLIDWORKS Certified">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="achievement active" title="Engineering Student">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="achievement active" title="Project Builder">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Links with Hover Effects -->
+                        <div class="hero-social-links">
+                            <a href="https://github.com/Akhinoor14" class="social-link" target="_blank" title="GitHub">
+                                <i class="fab fa-github"></i>
+                                <span class="social-tooltip">GitHub</span>
+                            </a>
+                            <a href="#" class="social-link" target="_blank" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                                <span class="social-tooltip">LinkedIn</span>
+                            </a>
+                            <a href="mailto:mdakhinoorislam.official.2005@gmail.com" class="social-link" title="Email">
+                                <i class="fas fa-envelope"></i>
+                                <span class="social-tooltip">Email</span>
+                            </a>
+                            <a href="#" class="social-link" target="_blank" title="Portfolio">
+                                <i class="fas fa-globe"></i>
+                                <span class="social-tooltip">Website</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <div class="scroll-text">Scroll to explore</div>
         </div>
     </section>
 
