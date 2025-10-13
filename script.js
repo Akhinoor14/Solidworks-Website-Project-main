@@ -18,6 +18,40 @@ document.addEventListener('DOMContentLoaded', function() {
             const cwFilesWrap = document.getElementById('cw-files-wrap');
             const hwFilesWrap = document.getElementById('hw-files-wrap');
 
+            function createProjectItem(file, type) {
+                const spotTestBadge = file.isSpotTest ? '<span class="spot-test-badge">📝 Spot Test</span>' : '';
+                const actionButtons = `
+                    <div class="sw-file-actions">
+                        <a href="${file.page}" target="_blank" class="sw-action-btn sw-btn-page" title="View Details">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a>
+                        <a href="${file.download}" target="_blank" class="sw-action-btn sw-btn-download" title="Download SLDPRT">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        ${file.preview ? `<a href="${file.preview}" target="_blank" class="sw-action-btn sw-btn-preview" title="View Preview">
+                            <i class="fas fa-eye"></i> Preview
+                        </a>` : ''}
+                        ${file.preview2 ? `<a href="${file.preview2}" target="_blank" class="sw-action-btn sw-btn-preview" title="View Preview 2">
+                            <i class="fas fa-eye"></i> Preview 2
+                        </a>` : ''}
+                        ${file.model3d ? `<button class="sw-action-btn sw-btn-3d" onclick="open3DViewer('${file.model3d}')" title="View 3D Model">
+                            <i class="fas fa-cube"></i> 3D View
+                        </button>` : ''}
+                    </div>
+                `;
+                
+                return `
+                    <div class="sw-file-item ${file.isSpotTest ? 'spot-test' : ''}">
+                        <div class="sw-file-header">
+                            <i class="fas ${type === 'cw' ? 'fa-chalkboard-teacher' : 'fa-home'}"></i>
+                            <span class="sw-file-name">${file.name}</span>
+                            ${spotTestBadge}
+                        </div>
+                        ${actionButtons}
+                    </div>
+                `;
+            }
+
             if (cwFilesWrap) {
                 let cwHtml = '';
                 Object.keys(solidworksProject.dayProjects).forEach(day => {
@@ -26,15 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="sw-day-section">
                             <h5 class="sw-day-title">${day}</h5>
                             <div class="sw-file-list">
-                                ${dayData.cw.map(file => `
-                                    <div class="sw-file-item">
-                                        <a href="${file.url}" target="_blank" class="sw-file-link">
-                                            <i class="fas fa-cube"></i>
-                                            <span>${file.name}</span>
-                                            <i class="fas fa-external-link-alt sw-external-icon"></i>
-                                        </a>
-                                    </div>
-                                `).join('')}
+                                ${dayData.cw.map(file => createProjectItem(file, 'cw')).join('')}
                             </div>
                         </div>
                     `;
@@ -50,21 +76,89 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="sw-day-section">
                             <h5 class="sw-day-title">${day}</h5>
                             <div class="sw-file-list">
-                                ${dayData.hw.map(file => `
-                                    <div class="sw-file-item">
-                                        <a href="${file.url}" target="_blank" class="sw-file-link">
-                                            <i class="fas fa-home"></i>
-                                            <span>${file.name}</span>
-                                            <i class="fas fa-external-link-alt sw-external-icon"></i>
-                                        </a>
-                                    </div>
-                                `).join('')}
+                                ${dayData.hw.map(file => createProjectItem(file, 'hw')).join('')}
                             </div>
                         </div>
                     `;
                 });
                 hwFilesWrap.innerHTML = hwHtml;
             }
+
+            // Add quick links section
+            addQuickLinksSection();
+        }
+
+        // Function to add quick links section
+        function addQuickLinksSection() {
+            const solidworksProject = sampleProjects.find(p => p.title === "SOLIDWORKS Beginner Projects");
+            if (!solidworksProject || !solidworksProject.quickLinks) return;
+
+            const quickLinksHtml = `
+                <div class="sw-quick-links">
+                    <h4 class="sw-quick-title">🚀 Quick Access</h4>
+                    <div class="sw-quick-buttons">
+                        <a href="${solidworksProject.quickLinks.coursework}" target="_blank" class="sw-quick-btn">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>All Coursework</span>
+                        </a>
+                        <a href="${solidworksProject.quickLinks.homework}" target="_blank" class="sw-quick-btn">
+                            <i class="fas fa-home"></i>
+                            <span>All Homework</span>
+                        </a>
+                        <a href="${solidworksProject.quickLinks.models3d}" target="_blank" class="sw-quick-btn">
+                            <i class="fas fa-cube"></i>
+                            <span>3D Models</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            // Add to root view
+            const rootView = card.querySelector('.sw-root .sw-root-info');
+            if (rootView && !rootView.querySelector('.sw-quick-links')) {
+                rootView.insertAdjacentHTML('beforeend', quickLinksHtml);
+            }
+        }
+
+        // Global function for 3D viewer
+        window.open3DViewer = function(modelUrl) {
+            const modal = document.getElementById('model-viewer-modal') || createModelViewerModal();
+            const viewer = document.getElementById('inline-model-viewer');
+            viewer.setAttribute('src', modelUrl);
+            modal.style.display = 'flex';
+        };
+
+        // Create 3D viewer modal if it doesn't exist
+        function createModelViewerModal() {
+            const modalHtml = `
+                <div id="model-viewer-modal" class="model-viewer-modal" style="display: none;">
+                    <div class="model-viewer-backdrop" onclick="closeModelViewer()"></div>
+                    <div class="model-viewer-content">
+                        <div class="model-viewer-header">
+                            <h3>3D Model Viewer</h3>
+                            <button onclick="closeModelViewer()" class="close-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <model-viewer id="inline-model-viewer" 
+                            camera-controls 
+                            auto-rotate 
+                            shadow-intensity="1"
+                            style="width: 100%; height: 500px;">
+                        </model-viewer>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Add close function
+            window.closeModelViewer = function() {
+                const modal = document.getElementById('model-viewer-modal');
+                modal.style.display = 'none';
+                document.getElementById('inline-model-viewer').removeAttribute('src');
+            };
+
+            return document.getElementById('model-viewer-modal');
         }
 
         // Call the injection function after DOM is ready
@@ -321,30 +415,136 @@ const sampleProjects = [
         dayProjects: {
             "Day 01": {
                 cw: [
-                    { name: "CW01 - Simple Bracket", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2001/CW01.SLDPRT" }
+                    { 
+                        name: "CW 1 - Day 01", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2001/cw%201%20day%2001/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2001/cw%201%20day%2001/cWW1.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2001/cw%201%20day%2001/cw%201.png"
+                    },
+                    { 
+                        name: "CW 2 - Day 01", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2001/cw%202%20day%2001/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2001/cw%202%20day%2001/cw2.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2001/cw%202%20day%2001/cw%202.png"
+                    }
                 ],
                 hw: [
-                    { name: "HW01 - Pulley", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%201/HW01.SLDPRT" }
+                    { 
+                        name: "HW 1 - Day 01", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2001/hw%2001%20day%2001/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2001/hw%2001%20day%2001/HW%201.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2001/hw%2001%20day%2001/hw%201.png"
+                    },
+                    { 
+                        name: "HW 2 - Day 01", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2001/hw%2002%20day%2001/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2001/hw%2002%20day%2001/HW%202.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2001/hw%2002%20day%2001/2.1.png",
+                        preview2: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2001/hw%2002%20day%2001/2.2.png"
+                    }
                 ]
             },
             "Day 02": {
                 cw: [
-                    { name: "CW02 - Shaft Coupling", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2002/CW02.SLDPRT" }
+                    { 
+                        name: "CW 1 - Day 02", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2002/cw%201%20day%2002/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%201%20day%2002/cw%203%20DAY%2002%2C%2001.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%201%20day%2002/cw%203%20DAY%2002%2C%2001.JPG",
+                        model3d: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%201%20day%2002/cw_3_day_02%2C_01.glb"
+                    },
+                    { 
+                        name: "CW 2 - Day 02", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2002/cw%202%20day%2002/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%202%20day%2002/cw%20%20DAY%2002%2C%2002.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%202%20day%2002/cw%20%20DAY%2002%2C%2002.JPG",
+                        model3d: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2002/cw%202%20day%2002/cw%20%20DAY%2002%2C%2002.glb"
+                    }
                 ],
                 hw: [
-                    { name: "HW02 - Gear", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%202/HW02.SLDPRT" }
+                    { 
+                        name: "HW 1 - Day 02", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2002/hw%2001%20day%2002/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2001%20day%2002/HW%203%20DAY%2002%2C%2001.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2001%20day%2002/HW%203%20DAY%2002%2C%2001.JPG",
+                        model3d: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2001%20day%2002/hw_3_day_02%2C_01.glb"
+                    },
+                    { 
+                        name: "HW 2 - Day 02", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2002/hw%2002%20day%2002/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2002%20day%2002/HW%204%20DAY%2002%2C%2002.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2002%20day%2002/HW%204%20DAY%2002%2C%2002.JPG",
+                        model3d: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2002/hw%2002%20day%2002/hw_4_day_02%2C_02.glb"
+                    }
                 ]
             },
             "Day 03": {
                 cw: [
-                    { name: "CW 1", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%201" },
-                    { name: "CW 2", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2003/cw%202" }
+                    { 
+                        name: "CW 1 - Day 03", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2003/cw%201%20day%2003/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%201%20day%2003/cw%2001%2C%20day%2003.SLDPRT"
+                    },
+                    { 
+                        name: "CW 2 - Day 03", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2003/cw%202%20day%2003/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2003/cw%202%20day%2003/cw%2002%2C%20day%2003.SLDPRT"
+                    }
                 ],
                 hw: [
-                    { name: "HW 1", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%201" },
-                    { name: "HW 2", url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%203/hw%202" }
+                    { 
+                        name: "HW 1 - Day 03", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2003/hw%201%20day%2003/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2003/hw%201%20day%2003/hw%20day%203%2C%2001.SLDPRT"
+                    },
+                    { 
+                        name: "HW 2 - Day 03", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2003/hw%202%20day%2003/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2003/hw%202%20day%2003/hw%20day%203%2C%2002.SLDPRT"
+                    }
+                ]
+            },
+            "Day 04": {
+                cw: [
+                    { 
+                        name: "CW 1 - Day 04", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2004/cw%201%20day%204/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/cw%201%20day%204/cw%2001.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/cw%201%20day%204/Screenshot%202025-10-13%20032712.png"
+                    },
+                    { 
+                        name: "CW 2 - Day 04", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2004/cw%202%20day%204/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/cw%202%20day%204/cw%2002.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/cw%202%20day%204/Screenshot%202025-10-13%20032801.png"
+                    },
+                    { 
+                        name: "Spot Test - Day 04", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2004/spot%20test%20Day%2004/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/spot%20test%20Day%2004/cw%20spot%20test.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2004/spot%20test%20Day%2004/Screenshot%202025-10-13%20032734.png",
+                        isSpotTest: true
+                    }
+                ],
+                hw: [
+                    { 
+                        name: "HW 1 - Day 04", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2004/hw%201%20day%204/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2004/hw%201%20day%204/02.SLDPRT"
+                    },
+                    { 
+                        name: "HW 2 - Day 04", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2004/hw%202%20day%204/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2004/hw%202%20day%204/01.SLDPRT"
+                    }
                 ]
             }
+        },
+        // Quick access links
+        quickLinks: {
+            coursework: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW",
+            homework: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW", 
+            models3d: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2002/cw%201%20day%2002/README.md"
         }
     },
     {
