@@ -574,6 +574,45 @@ const sampleProjects = [
                         download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2004/hw%202%20day%204/01.SLDPRT"
                     }
                 ]
+            },
+            "Day 05": {
+                cw: [
+                    { 
+                        name: "CW 1 - Day 05", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2005/day%205%20cw%201/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2005/day%205%20cw%201/day%205%20cw%201.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2005/day%205%20cw%201/Screenshot%202025-10-20%20122707.png"
+                    },
+                    { 
+                        name: "CW 2 - Day 05", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2005/day%205%20cw%202/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2005/day%205%20cw%202/day%205%20cw%202.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2005/day%205%20cw%202/Screenshot%202025-10-20%20122757.png"
+                    }
+                ],
+                hw: [
+                    { 
+                        name: "HW 1 - Day 05", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%205/hw%2001%20day%205/README.md",
+                        download: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2001%20day%205/hw%2001%20day%205%20drill.SLDPRT",
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2001%20day%205/Screenshot%202025-10-19%20225850.png"
+                    },
+                    { 
+                        name: "HW 2 - Day 05", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%205/hw%2002%20day%205/README.md",
+                        downloads: [
+                            {
+                                type: "Part",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2002%20day%205/hw%2002%20day%205%20spanner%20main.SLDPRT"
+                            },
+                            {
+                                type: "Drawing",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2002%20day%205/hw%2002%20day%205%20spanner.SLDDRW"
+                            }
+                        ],
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2002%20day%205/Screenshot%202025-10-20%20120639.png"
+                    }
+                ]
             }
         },
         // Quick access links
