@@ -20,14 +20,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function createProjectItem(file, type) {
                 const spotTestBadge = file.isSpotTest ? '<span class="spot-test-badge">📝 Spot Test</span>' : '';
+                
+                // Handle multiple downloads for projects like Day 5 HW 2
+                let downloadButtons = '';
+                if (file.downloads && Array.isArray(file.downloads)) {
+                    downloadButtons = file.downloads.map(dl => `
+                        <a href="${dl.url}" target="_blank" class="sw-action-btn sw-btn-download" title="Download ${dl.type}">
+                            <i class="fas fa-download"></i> ${dl.type}
+                        </a>
+                    `).join('');
+                } else if (file.download) {
+                    downloadButtons = `
+                        <a href="${file.download}" target="_blank" class="sw-action-btn sw-btn-download" title="Download SLDPRT">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    `;
+                }
+                
                 const actionButtons = `
                     <div class="sw-file-actions">
                         <a href="${file.page}" target="_blank" class="sw-action-btn sw-btn-page" title="View Details">
                             <i class="fas fa-info-circle"></i> Details
                         </a>
-                        <a href="${file.download}" target="_blank" class="sw-action-btn sw-btn-download" title="Download SLDPRT">
-                            <i class="fas fa-download"></i> Download
-                        </a>
+                        ${downloadButtons}
                         ${file.preview ? `<a href="${file.preview}" target="_blank" class="sw-action-btn sw-btn-preview" title="View Preview">
                             <i class="fas fa-eye"></i> Preview
                         </a>` : ''}
