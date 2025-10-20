@@ -313,7 +313,7 @@
                         <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
                         <div class="sw-header-text">
                             <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
-                            <p id="sw-intro" class="sw-intro">Curated starter models & structured assignments with downloads, previews, and 3D models to build strong CAD fundamentals.</p>
+                            <p id="sw-intro" class="sw-intro">21 SOLIDWORKS projects across 5 days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.</p>
                         </div>
                         <div class="sw-meta-counters" aria-label="Progress overview">
                             <div class="sw-meta-item"><span class="sw-meta-num">11</span><span class="sw-meta-label">CW</span></div>
@@ -368,7 +368,7 @@
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
                         </div>
                         <div class="sw-files-wrap" id="cw-files-wrap">
-                            <!-- JS will inject CW Day 01/02 lists here -->
+                            <!-- JS will inject CW Day 01-05 lists here -->
                         </div>
                     </div>
                     <div class="sw-view sw-hw" data-view="hw" hidden>
@@ -378,7 +378,7 @@
                             <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
                         </div>
                         <div class="sw-files-wrap" id="hw-files-wrap">
-                            <!-- JS will inject HW Day 01/02 lists here -->
+                            <!-- JS will inject HW Day 01-05 lists here -->
                         </div>
                     </div>
                 </div>
@@ -509,74 +509,6 @@
             document.getElementById('model-viewer-modal').style.display = 'flex';
         });
     });
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
-    </script>
-    <script>
-    // --- Dynamic Day Grouping Logic ---
-    const cwFiles = [
-        { num: 1, name: "CW 1", folder: "CW/cw 1", glb: "CW/cw 1/model.glb" },
-        { num: 2, name: "CW 2", folder: "CW/cw 2", glb: "CW/cw 2/model.glb" },
-        { num: 3, name: "CW 3", folder: "CW/cw 3", glb: "CW/cw 3/model.glb" },
-        { num: 4, name: "CW 4", folder: "CW/cw 4", glb: "CW/cw 4/model.glb" }
-    ];
-    const hwFiles = [
-        { num: 1, name: "HW 1", folder: "HW/HW 1", glb: "HW/HW 1/model.glb" },
-        { num: 2, name: "HW 2", folder: "HW/HW 2", glb: "HW/HW 2/model.glb" },
-        { num: 3, name: "HW 3", folder: "HW/HW 3", glb: "HW/HW 3/model.glb" },
-        { num: 4, name: "HW 4", folder: "HW/HW 4", glb: "HW/HW 4/model.glb" }
-    ];
-
-    function renderDaySection(files, type) {
-        let html = '';
-        for (let day = 1; day <= 2; day++) {
-            const dayFiles = files.filter(f => f.num === (day-1)*2+1 || f.num === (day-1)*2+2);
-            if (dayFiles.length) {
-                html += `<h5 class="sw-sub-heading day-highlight">Day 0${day}</h5>`;
-                html += `<ul class="sw-file-list" aria-label="${type} Day 0${day} file list">`;
-                dayFiles.forEach(f => {
-                    html += `<li>
-                        <span>${f.name}</span>
-                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${encodeURIComponent(f.folder)}" target="_blank">Folder</a>
-                        <button class="view-3d-btn" data-glb="${f.glb}" aria-label="View ${f.name} 3D">&#128065;</button>
-                    </li>`;
-                });
-                html += `</ul>`;
-            }
-        }
-        // Add Bengali note
-        if (type === "CW") {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: গিটহাব থেকে ফাইল ক্লোন/ডাউনলোড করে SOLIDWORKS এ ওপেন করুন।</small></div>`;
-        } else {
-            html += `<div class="sw-note-box"><small class="sw-note">বাংলা নির্দেশনা: হোমওয়ার্ক ফাইল ডাউনলোড করে প্রথমে স্কেচ কনস্ট্রেইন্ট যাচাই করুন।</small></div>`;
-        }
-        return html;
-    }
-
-    function attach3DViewers() {
-        document.querySelectorAll('.view-3d-btn').forEach(btn => {
-            btn.onclick = function() {
-                const glbPath = this.getAttribute('data-glb');
-                let src = '';
-                if (glbPath.startsWith('CW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                } else if (glbPath.startsWith('HW/')) {
-                    src = `https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/${glbPath.replace(/ /g, '%20')}`;
-                }
-                document.getElementById('inline-model-viewer').setAttribute('src', src);
-                document.getElementById('model-viewer-modal').style.display = 'flex';
-            };
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('cw-files-wrap').innerHTML = renderDaySection(cwFiles, "CW");
-        document.getElementById('hw-files-wrap').innerHTML = renderDaySection(hwFiles, "HW");
-        attach3DViewers();
-    });
-
     document.getElementById('close-model-viewer').onclick = function() {
         document.getElementById('model-viewer-modal').style.display = 'none';
         document.getElementById('inline-model-viewer').removeAttribute('src');
