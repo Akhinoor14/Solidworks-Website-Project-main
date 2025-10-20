@@ -1,5 +1,7 @@
 // Modal interactivity for project details
+console.log('Script.js loaded successfully!');
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded event fired!');
     // Embedded SOLIDWORKS Beginner Projects navigation
     (function initSolidworksEmbedded(){
         const card = document.getElementById('solidworks-beginner-card');
@@ -12,11 +14,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Inject day-specific projects into CW and HW sections
         function injectDayProjects() {
+            console.log('injectDayProjects called');
             const solidworksProject = sampleProjects.find(p => p.title === "SOLIDWORKS Beginner Projects");
-            if (!solidworksProject || !solidworksProject.dayProjects) return;
+            console.log('solidworksProject found:', !!solidworksProject);
+            if (!solidworksProject || !solidworksProject.dayProjects) {
+                console.log('No solidworks project or dayProjects found');
+                return;
+            }
 
+            console.log('dayProjects keys:', Object.keys(solidworksProject.dayProjects));
+            console.table(Object.keys(solidworksProject.dayProjects));
             const cwFilesWrap = document.getElementById('cw-files-wrap');
             const hwFilesWrap = document.getElementById('hw-files-wrap');
+            console.log('cwFilesWrap found:', !!cwFilesWrap);
+            console.log('hwFilesWrap found:', !!hwFilesWrap);
 
             function createProjectItem(file, type) {
                 const spotTestBadge = file.isSpotTest ? '<span class="spot-test-badge">📝 Spot Test</span>' : '';
@@ -177,7 +188,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Call the injection function after DOM is ready
+        console.log('About to call injectDayProjects with setTimeout');
         setTimeout(injectDayProjects, 100);
+        
+        // Backup call in case timing is an issue
+        setTimeout(() => {
+            console.log('Backup call to injectDayProjects');
+            injectDayProjects();
+        }, 2000);
 
         function showView(name){
             current = name;

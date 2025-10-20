@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Script Loading</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <div id="solidworks-beginner-card">
+        <div id="cw-files-wrap">CW content should appear here</div>
+        <div id="hw-files-wrap">HW content should appear here</div>
+    </div>
+    
+    <script src="script.js"></script>
+    
+    <script>
+        // Check if our debugging works
+        console.log('Test HTML loaded');
+        
+        // Wait and check what's in the elements
+        setTimeout(() => {
+            console.log('CW wrap content:', document.getElementById('cw-files-wrap').innerHTML);
+            console.log('HW wrap content:', document.getElementById('hw-files-wrap').innerHTML);
+        }, 3000);
+    </script>
+</body>
+</html>
