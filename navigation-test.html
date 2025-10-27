@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+    <style>
+        .sw-view { display: none; padding: 20px; border: 2px solid #ccc; margin: 10px 0; }
+        .sw-view:not([hidden]) { display: block; }
+        .sw-mode-btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .sw-mode-btn[aria-current="true"] { background: #007bff; color: white; }
+        #solidworks-beginner-card { max-width: 800px; margin: 20px auto; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div id="solidworks-beginner-card">
+        <h2>SOLIDWORKS Navigation Test</h2>
+        
+        <!-- Navigation Buttons -->
+        <nav class="sw-mode-switch">
+            <button class="sw-mode-btn" data-target="root" aria-current="true">Overview</button>
+            <button class="sw-mode-btn" data-target="cw">Class Work</button>
+            <button class="sw-mode-btn" data-target="hw">Home Work</button>
+        </nav>
+        
+        <!-- Root View (Overview) -->
+        <div class="sw-view sw-root" data-view="root">
+            <h3>Overview Section</h3>
+            <p>This is the overview of SOLIDWORKS projects</p>
+            <div class="sw-tile" data-target="cw">Go to Class Work</div>
+            <div class="sw-tile" data-target="hw">Go to Home Work</div>
+        </div>
+        
+        <!-- CW View -->
+        <div class="sw-view sw-cw" data-view="cw" hidden>
+            <button class="sw-back" data-back="root">← Back</button>
+            <h3>Class Work Section</h3>
+            <div id="cw-files-wrap">CW content will be loaded here</div>
+        </div>
+        
+        <!-- HW View -->
+        <div class="sw-view sw-hw" data-view="hw" hidden>
+            <button class="sw-back" data-back="root">← Back</button>
+            <h3>Home Work Section</h3>
+            <div id="hw-files-wrap">HW content will be loaded here</div>
+        </div>
+    </div>
+
+    <script src="script.js?v=20251027153757"></script>
+    
+    <script>
+        // Additional debugging
+        console.log('Test page loaded');
+        setTimeout(() => {
+            console.log('After 2 seconds:');
+            console.log('Card found:', !!document.getElementById('solidworks-beginner-card'));
+            console.log('Mode buttons:', document.querySelectorAll('.sw-mode-btn').length);
+            console.log('Views:', document.querySelectorAll('.sw-view').length);
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -4,12 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded event fired!');
     // Embedded SOLIDWORKS Beginner Projects navigation
     (function initSolidworksEmbedded(){
+        console.log('initSolidworksEmbedded starting...');
         const card = document.getElementById('solidworks-beginner-card');
+        console.log('SOLIDWORKS card found:', !!card);
         if(!card) return;
         const views = card.querySelectorAll('.sw-view');
         const tiles = card.querySelectorAll('.sw-tile');
         const backButtons = card.querySelectorAll('.sw-back');
-            const modeBtns = card.querySelectorAll('.sw-mode-btn');
+        const modeBtns = card.querySelectorAll('.sw-mode-btn');
+        console.log('Elements found - views:', views.length, 'tiles:', tiles.length, 'backButtons:', backButtons.length, 'modeBtns:', modeBtns.length);
         let current = 'root';
 
         // Inject day-specific projects into CW and HW sections
@@ -198,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
 
         function showView(name){
+            console.log('showView called with name:', name);
             current = name;
             views.forEach(v=>{
                 const match = v.getAttribute('data-view') === name;
@@ -229,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
         modeBtns.forEach(mb => mb.addEventListener('click', ()=>{
             const target = mb.getAttribute('data-target');
+            console.log('Mode button clicked! Target:', target);
             if(target) showView(target);
         }));
         // Keyboard support: ESC to go back if not root
