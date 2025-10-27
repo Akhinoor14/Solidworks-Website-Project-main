@@ -444,8 +444,8 @@ const sampleProjects = [
     },
     {
         title: "SOLIDWORKS Beginner Projects",
-        shortDescription: "21+ SOLIDWORKS projects for beginners with step-by-step tutorials covering mechanical parts, assemblies, and technical drawings across 5 days of structured learning.",
-        fullDescription: "A comprehensive collection of 21+ SOLIDWORKS projects specifically designed for beginners entering the world of CAD design. This repository serves as a complete learning resource featuring mechanical parts design, complex assemblies, and professional technical drawings across 5 days of structured coursework and homework assignments. Each project includes detailed step-by-step tutorials with screenshots, downloadable SOLIDWORKS files, preview images, and real-world engineering applications. Perfect for students, engineers, and hobbyists looking to master 3D modeling techniques used in modern engineering design. Projects range from simple bracket designs to complex mechanical assemblies and technical drawings, providing a progressive learning path that builds skills systematically from Day 1 through Day 5.",
+        shortDescription: "24+ SOLIDWORKS projects for beginners with step-by-step tutorials covering mechanical parts, assemblies, and technical drawings across 6 days of structured learning.",
+        fullDescription: "A comprehensive collection of 24+ SOLIDWORKS projects specifically designed for beginners entering the world of CAD design. This repository serves as a complete learning resource featuring mechanical parts design, complex assemblies, and professional technical drawings across 6 days of structured coursework and homework assignments. Each project includes detailed step-by-step tutorials with screenshots, downloadable SOLIDWORKS files, preview images, and real-world engineering applications. Perfect for students, engineers, and hobbyists looking to master 3D modeling techniques used in modern engineering design. Projects range from simple bracket designs to complex mechanical assemblies and technical drawings, providing a progressive learning path that builds skills systematically from Day 1 through Day 6.",
         tech: ["SOLIDWORKS", "CAD Design", "3D Modeling", "Technical Drawing", "Engineering"],
         category: "desktop",
         github: "https://github.com/Akhinoor14/SOLIDWORKS-Projects",
@@ -644,6 +644,97 @@ const sampleProjects = [
                             }
                         ],
                         preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2002%20day%205/Screenshot%202025-10-20%20120639.png"
+                    }
+                ]
+            },
+            "Day 06": {
+                CW: [
+                    { 
+                        name: "CW 1 - Day 06", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2006/cw%2001%20day%206/README.md",
+                        downloads: [
+                            {
+                                type: "Assembly",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2001%20day%206/day%206%20assembly.SLDASM"
+                            },
+                            {
+                                type: "Main Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2001%20day%206/cw%2001%20day%206.SLDPRT"
+                            },
+                            {
+                                type: "Pin Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2001%20day%206/cw%2001%20day%206%20part%202%20pin.SLDPRT"
+                            }
+                        ],
+                        preview: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2001%20day%206/Screenshot%202025-10-27%20135102.png"
+                    },
+                    { 
+                        name: "CW 2 - Day 06", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2006/cw%2002%20day%206/README.md",
+                        downloads: [
+                            {
+                                type: "Assembly",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/day%206%20cw%202%20%20assembly.SLDASM"
+                            },
+                            {
+                                type: "Fork Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/cw%2002%20day%206%20part%201%20fork.SLDPRT"
+                            },
+                            {
+                                type: "Pin Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/cw%2002%20day%206%20part%202%20pin.SLDPRT"
+                            },
+                            {
+                                type: "Collar Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/cw%2002%20day%206%20part%203%20collar.SLDPRT"
+                            },
+                            {
+                                type: "Tapper Pin",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/cw%2002%20day%206%20part%204%20tapper%20pin.SLDPRT"
+                            },
+                            {
+                                type: "Center Block",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/cw%2002%20day%206%20part%205%20centre%20block.SLDPRT"
+                            },
+                            {
+                                type: "Additional Part",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/Part2.SLDPRT"
+                            }
+                        ],
+                        preview: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/CW/Day%2006/cw%2002%20day%206/Screenshot%202025-10-27%20141129.png"
+                    }
+                ],
+                HW: [
+                    { 
+                        name: "HW 1 - Day 06", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/HW/Day%2006/hw%201%20day%206/README.md",
+                        downloads: [
+                            {
+                                type: "Assembly",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20Assem.SLDASM"
+                            },
+                            {
+                                type: "Part 1",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20part%201.SLDPRT"
+                            },
+                            {
+                                type: "Part 2",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20part%202.SLDPRT"
+                            },
+                            {
+                                type: "Part 3",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20part%203.SLDPRT"
+                            },
+                            {
+                                type: "Part 4",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20part%204.SLDPRT"
+                            },
+                            {
+                                type: "Part 5",
+                                url: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/day%206%20hw%20part%205.SLDPRT"
+                            }
+                        ],
+                        preview: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/raw/main/HW/Day%2006/hw%201%20day%206/Screenshot%202025-10-27%20140310.png"
                     }
                 ]
             }
