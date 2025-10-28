@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLIDWORKS Auto Upload System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .upload-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .radio-item:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .radio-item input[type="radio"] {
+            margin: 0;
+        }
+
+        .radio-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .file-upload-zone {
+            border: 3px dashed #e1e5e9;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-zone.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .upload-text h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-text p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .file-requirements {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .requirement-item .status {
+            font-size: 1.1rem;
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 1.2rem;
+        }
+
+        .file-details .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .file-details .file-size {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .file-status {
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .progress-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .progress-section.show {
+            display: block;
+        }
+
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .progress-step.completed {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .progress-step.error {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .step-icon {
+            font-size: 1.5rem;
+        }
+
+        .step-status {
+            margin-left: auto;
+            font-size: 1.2rem;
+        }
+
+        .progress-bar-container {
+            background: #e1e5e9;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Repository Status Styles */
+        .repo-status-connected {
+            background: #4CAF50 !important;
+            color: white !important;
+        }
+
+        .repo-status-error {
+            background: #f44336 !important;
+            color: white !important;
+        }
+
+        .repo-status-checking {
+            background: #ff9800 !important;
+            color: white !important;
+        }
+
+        .repo-link:hover {
+            color: #764ba2 !important;
+            text-decoration: underline !important;
+        }
+
+        @media (max-width: 768px) {
+            .upload-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .upload-header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            /* Repository info responsive */
+            .repo-info-mobile {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <!-- Header -->
+        <div class="upload-header">
+            <h1>🚀 SOLIDWORKS Auto Upload</h1>
+            <p>Upload your SOLIDWORKS projects and watch them automatically appear on GitHub and your website!</p>
+        </div>
+
+        <!-- Upload Form -->
+        <form id="upload-form">
+            <!-- System Requirements Check -->
+            <div class="form-section" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(139, 195, 74, 0.05)); border: 2px solid rgba(76, 175, 80, 0.3);">
+                <h2 class="section-title">✅ Requirements Check</h2>
+                
+                <div class="requirements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <!-- Browser Compatibility -->
+                    <div class="requirement-item" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="req-icon" style="font-size: 1.5rem;">🌐</span>
+                            <div>
+                                <strong>Browser Support</strong>
+                                <div id="browser-status" style="color: #4CAF50; font-size: 0.9rem;">✓ Compatible</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Internet Connection -->  
+                    <div class="requirement-item" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="req-icon" style="font-size: 1.5rem;">📡</span>
+                            <div>
+                                <strong>Internet Connection</strong>
+                                <div id="network-status" style="color: #FF9800; font-size: 0.9rem;">⏳ Checking...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- GitHub Token -->
+                    <div class="requirement-item" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f44336;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="req-icon" style="font-size: 1.5rem;">🔑</span>
+                            <div>
+                                <strong>GitHub Token</strong>
+                                <div id="token-status" style="color: #f44336; font-size: 0.9rem;">❌ Required</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Repository Access -->
+                    <div class="requirement-item" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="req-icon" style="font-size: 1.5rem;">🎯</span>
+                            <div>
+                                <strong>Repository Access</strong>
+                                <div id="repo-access-status" style="color: #FF9800; font-size: 0.9rem;">⏳ Will check with token</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Help Button -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" onclick="showSetupGuide()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        📚 Setup Guide & Troubleshooting
+                    </button>
+                </div>
+            </div>
+
+            <!-- Repository Info Section -->
+            <div class="form-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border: 2px solid rgba(102, 126, 234, 0.2);">
+                <h2 class="section-title">🎯 Target Repository</h2>
+                
+                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 10px; margin-bottom: 20px;">
+                    <i class="fab fa-github" style="font-size: 2rem; color: #333;"></i>
+                    <div>
+                        <h3 style="margin: 0; color: #333;">
+                            <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" target="_blank" style="text-decoration: none; color: #667eea;">
+                                Akhinoor14/SOLIDWORKS-Projects
+                            </a>
+                        </h3>
+                        <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9rem;">
+                            Files will be uploaded to this repository automatically
+                        </p>
+                    </div>
+                    <span id="repo-status" style="background: #4CAF50; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                        Ready
+                    </span>
+                </div>
+            </div>
+
+            <!-- Project Details Section -->
+            <div class="form-section">
+                <h2 class="section-title">📋 Project Details</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="day-select">Day Number</label>
+                        <select id="day-select" class="form-control" required>
+                            <option value="">Select Day...</option>
+                            <option value="06">Day 06</option>
+                            <option value="07">Day 07</option>
+                            <option value="08">Day 08</option>
+                            <option value="09">Day 09</option>
+                            <option value="10">Day 10</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Project Type</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="project-type" value="CW" required>
+                                <span>📚 Class Work (CW)</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="project-type" value="HW" required>
+                                <span>🏠 Home Work (HW)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-number">Project Number</label>
+                        <select id="project-number" class="form-control" required>
+                            <option value="">Select Number...</option>
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload Section -->
+            <div class="form-section">
+                <h2 class="section-title">📁 File Upload</h2>
+                
+                <div class="file-upload-zone" id="file-upload-zone">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">
+                        <h3>Drag & Drop Your Files Here</h3>
+                        <p>or click to browse and select files</p>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('file-input').click()">
+                            📎 Choose Files
+                        </button>
+                    </div>
+                    <input type="file" id="file-input" multiple accept=".SLDASM,.SLDPRT,.png,.jpg,.jpeg,.pdf" class="hidden">
+                </div>
+
+                <!-- File Requirements -->
+                <div class="file-requirements">
+                    <h4 style="margin-bottom: 10px;">📋 File Requirements:</h4>
+                    <div class="requirement-item">
+                        <span class="status" id="assembly-status">⏳</span>
+                        <span><strong>Assembly File (.SLDASM)</strong> - Required</span>
+                    </div>
+                    <div class="requirement-item">
+                        <span class="status" id="parts-status">⏳</span>
+                        <span><strong>Part Files (.SLDPRT)</strong> - One or more</span>
+                    </div>
+                    <div class="requirement-item">
+                        <span class="status" id="screenshot-status">⏳</span>
+                        <span><strong>Screenshot (.PNG/.JPG)</strong> - Required</span>
+                    </div>
+                    <div class="requirement-item">
+                        <span class="status" id="guide-status">✅</span>
+                        <span><strong>Guide (.PDF)</strong> - Optional</span>
+                    </div>
+                </div>
+
+                <!-- File Preview -->
+                <div class="file-preview" id="file-preview">
+                    <h4 style="margin-bottom: 15px;">📋 Selected Files:</h4>
+                    <ul class="file-list" id="file-list"></ul>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" id="clear-btn">❌ Clear All</button>
+                <button type="submit" class="btn btn-primary" id="upload-btn" disabled>
+                    🚀 Upload & Auto-Generate
+                </button>
+            </div>
+        </form>
+
+        <!-- Progress Section -->
+        <div class="progress-section" id="progress-section">
+            <h2 class="section-title">⏳ Upload Progress</h2>
+            
+            <div class="progress-steps">
+                <div class="progress-step" id="step-validate">
+                    <span class="step-icon">📋</span>
+                    <div>
+                        <div style="font-weight: 600;">Validating Files</div>
+                        <div style="font-size: 0.8rem; color: #666;">Checking file types and requirements</div>
+                    </div>
+                    <span class="step-status">⏳</span>
+                </div>
+
+                <div class="progress-step" id="step-github">
+                    <span class="step-icon">📤</span>
+                    <div>
+                        <div style="font-weight: 600;">Uploading to GitHub</div>
+                        <div style="font-size: 0.8rem; color: #666;">Creating folders and uploading files</div>
+                    </div>
+                    <span class="step-status">⏳</span>
+                </div>
+
+                <div class="progress-step" id="step-readme">
+                    <span class="step-icon">📝</span>
+                    <div>
+                        <div style="font-weight: 600;">Generating README</div>
+                        <div style="font-size: 0.8rem; color: #666;">Auto-creating documentation</div>
+                    </div>
+                    <span class="step-status">⏳</span>
+                </div>
+
+                <div class="progress-step" id="step-website">
+                    <span class="step-icon">🌐</span>
+                    <div>
+                        <div style="font-weight: 600;">Updating Website</div>
+                        <div style="font-size: 0.8rem; color: #666;">Refreshing counters and navigation</div>
+                    </div>
+                    <span class="step-status">⏳</span>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <p id="progress-text" style="text-align: center; margin-top: 15px; font-weight: 600;">Ready to upload...</p>
+        </div>
+    </div>
+
+    <!-- Setup Guide Modal -->
+    <div id="setup-guide-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
+        <div style="background: white; max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 15px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #667eea; margin: 0;">📚 GitHub Upload Setup Guide</h2>
+                <button onclick="closeSetupGuide()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">&times;</button>
+            </div>
+            
+            <div class="setup-steps">
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #f8f9ff; border-left: 4px solid #667eea; border-radius: 0 10px 10px 0;">
+                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🔐 Step 1: Create GitHub Personal Access Token</h3>
+                    <ol style="line-height: 1.8;">
+                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #667eea;">GitHub Personal Access Tokens</a></li>
+                        <li>Click <strong>"Generate new token"</strong> → <strong>"Generate new token (classic)"</strong></li>
+                        <li>Give it a name like <code>"SOLIDWORKS Upload"</code></li>
+                        <li>Set expiration (recommend 90 days for security)</li>
+                        <li><strong>IMPORTANT:</strong> Check the <code>repo</code> scope (gives full repository access)</li>
+                        <li>Click <strong>"Generate token"</strong></li>
+                        <li><strong>COPY THE TOKEN IMMEDIATELY</strong> - you won't see it again!</li>
+                    </ol>
+                </div>
+                
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #f0fff4; border-left: 4px solid #4CAF50; border-radius: 0 10px 10px 0;">
+                    <h3 style="color: #4CAF50; margin: 0 0 10px 0;">✅ Step 2: Verify Repository Access</h3>
+                    <p>Target repository for your uploads:</p>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border: 2px solid #4CAF50;">
+                        <strong>📁 Repository:</strong> 
+                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" target="_blank" style="color: #667eea; text-decoration: none;">
+                            <strong>Akhinoor14/SOLIDWORKS-Projects</strong>
+                        </a>
+                    </div>
+                    <p style="color: #666; font-size: 0.9rem;">✅ This repository is public and accessible. Your token needs push permissions to upload files.</p>
+                </div>
+                
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #fff8e1; border-left: 4px solid #FF9800; border-radius: 0 10px 10px 0;">
+                    <h3 style="color: #FF9800; margin: 0 0 10px 0;">⚠️ Common Issues & Solutions</h3>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>❌ "Invalid token" error:</strong>
+                        <ul style="margin: 5px 0; color: #666;">
+                            <li>Ensure token has <code>repo</code> scope selected</li>
+                            <li>Check token hasn't expired</li>
+                            <li>Verify you copied the complete token (no spaces)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>❌ "Access denied" error:</strong>
+                        <ul style="margin: 5px 0; color: #666;">
+                            <li>Token needs push permissions to repository</li>
+                            <li>Make sure you're the owner of the repository</li>
+                            <li>If collaborator, ensure you have write access</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>❌ Upload fails or hangs:</strong>
+                        <ul style="margin: 5px 0; color: #666;">
+                            <li>Check stable internet connection</li>
+                            <li>File size limit: 25MB per file</li>
+                            <li>Try refreshing page and uploading again</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #e8f5e8; border-left: 4px solid #4CAF50; border-radius: 0 10px 10px 0;">
+                    <h3 style="color: #4CAF50; margin: 0 0 10px 0;">🚀 Upload Process</h3>
+                    <p><strong>Once you have your GitHub token, here's what happens:</strong></p>
+                    <ol style="line-height: 1.8; color: #333;">
+                        <li>📝 Enter token (stored locally only)</li>
+                        <li>🎯 Select day number and project type (CW/HW)</li>
+                        <li>📤 Drag & drop your SOLIDWORKS files</li>
+                        <li>✅ System validates requirements automatically</li>
+                        <li>🚀 Files upload to GitHub with auto-generated README</li>
+                        <li>🌐 Website updates with new project instantly!</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+                <button onclick="closeSetupGuide()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 40px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">
+                    Ready to Upload! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        function showSetupGuide() {
+            document.getElementById('setup-guide-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSetupGuide() {
+            document.getElementById('setup-guide-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('setup-guide-modal');
+            if (e.target === modal) {
+                closeSetupGuide();
+            }
+        });
+    </script>
+
+    <script src="github-uploader.js"></script>
+    <script src="website-updater.js"></script>
+    <script src="upload-interface.js"></script>
+</body>
+</html>

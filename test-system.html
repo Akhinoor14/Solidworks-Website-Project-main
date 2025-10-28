@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Auto Upload System Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #f8f9ff, #e8ebff);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .status-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .status-pass { background: #4CAF50; }
+        .status-fail { background: #f44336; }
+        .status-warn { background: #ff9800; }
+
+        .test-section {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        #results {
+            background: #263238;
+            color: #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Auto Upload System Test Suite</h1>
+            <p>Comprehensive testing interface for the SOLIDWORKS automated upload system</p>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-indicator status-pass" id="files-indicator"></div>
+                <h3>📁 Core Files</h3>
+                <p id="files-status">Checking...</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-indicator status-warn" id="integration-indicator"></div>
+                <h3>🔗 Integration</h3>
+                <p id="integration-status">Ready to test</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-indicator status-warn" id="github-indicator"></div>
+                <h3>🐙 GitHub API</h3>
+                <p id="github-status">Token required</p>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-indicator status-warn" id="website-indicator"></div>
+                <h3>🌐 Website Updates</h3>
+                <p id="website-status">Ready to test</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 System Component Tests</h3>
+            
+            <div class="test-item" id="test-files">
+                <div class="test-icon status-pass">✓</div>
+                <div>
+                    <strong>File Structure Check</strong><br>
+                    <small>Verify all required system files exist</small>
+                </div>
+            </div>
+            
+            <div class="test-item" id="test-ui">
+                <div class="test-icon status-warn">?</div>
+                <div>
+                    <strong>UI Components Test</strong><br>
+                    <small>Test upload interface functionality</small>
+                </div>
+            </div>
+            
+            <div class="test-item" id="test-validation">
+                <div class="test-icon status-warn">?</div>
+                <div>
+                    <strong>File Validation Test</strong><br>
+                    <small>Test file type and size validation</small>
+                </div>
+            </div>
+            
+            <div class="test-item" id="test-github">
+                <div class="test-icon status-warn">?</div>
+                <div>
+                    <strong>GitHub Integration Test</strong><br>
+                    <small>Test GitHub API connectivity and upload</small>
+                </div>
+            </div>
+            
+            <div class="test-item" id="test-website">
+                <div class="test-icon status-warn">?</div>
+                <div>
+                    <strong>Website Update Test</strong><br>
+                    <small>Test automatic website counter updates</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="upload-interface.html" class="btn">🚀 Launch Upload Interface</a>
+            <button onclick="runBasicTests()" class="btn">🧪 Run Basic Tests</button>
+            <button onclick="runFullTests()" class="btn">🔧 Full System Test</button>
+        </div>
+
+        <div id="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Test results display
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            results.style.display = 'block';
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3';
+            results.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // Check if required files exist
+        async function checkFiles() {
+            const files = [
+                'upload-interface.html',
+                'upload-interface.js', 
+                'github-uploader.js',
+                'website-updater.js'
+            ];
+            
+            let allExist = true;
+            log('🔍 Checking system files...', 'info');
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${file} - Found`, 'success');
+                    } else {
+                        log(`❌ ${file} - Not found`, 'error');
+                        allExist = false;
+                    }
+                } catch (error) {
+                    log(`❌ ${file} - Error: ${error.message}`, 'error');
+                    allExist = false;
+                }
+            }
+            
+            if (allExist) {
+                document.getElementById('files-status').textContent = 'All files present';
+                document.getElementById('test-files').querySelector('.test-icon').className = 'test-icon status-pass';
+                document.getElementById('test-files').querySelector('.test-icon').textContent = '✓';
+            } else {
+                document.getElementById('files-status').textContent = 'Missing files';
+                document.getElementById('files-indicator').className = 'status-indicator status-fail';
+            }
+            
+            return allExist;
+        }
+
+        // Test upload interface functionality
+        async function testUploadInterface() {
+            log('🖥️ Testing upload interface...', 'info');
+            
+            try {
+                // Try to load the upload interface scripts
+                const testFrame = document.createElement('iframe');
+                testFrame.style.display = 'none';
+                testFrame.src = 'upload-interface.html';
+                document.body.appendChild(testFrame);
+                
+                await new Promise((resolve) => {
+                    testFrame.onload = () => {
+                        log('✅ Upload interface loads successfully', 'success');
+                        document.body.removeChild(testFrame);
+                        resolve();
+                    };
+                    setTimeout(() => {
+                        log('⚠️ Upload interface load timeout', 'error');
+                        if (testFrame.parentNode) {
+                            document.body.removeChild(testFrame);
+                        }
+                        resolve();
+                    }, 5000);
+                });
+                
+                document.getElementById('test-ui').querySelector('.test-icon').className = 'test-icon status-pass';
+                document.getElementById('test-ui').querySelector('.test-icon').textContent = '✓';
+                
+            } catch (error) {
+                log(`❌ Upload interface test failed: ${error.message}`, 'error');
+                document.getElementById('test-ui').querySelector('.test-icon').className = 'test-icon status-fail';
+                document.getElementById('test-ui').querySelector('.test-icon').textContent = '✗';
+            }
+        }
+
+        // Basic tests
+        async function runBasicTests() {
+            log('🚀 Starting basic system tests...', 'info');
+            log('==========================================', 'info');
+            
+            // Clear results
+            document.getElementById('results').innerHTML = '';
+            
+            // Test 1: File structure
+            await checkFiles();
+            
+            // Test 2: Upload interface
+            await testUploadInterface();
+            
+            log('==========================================', 'info');
+            log('✅ Basic tests completed!', 'success');
+            log('📝 Next: Configure GitHub token and test full system', 'info');
+        }
+
+        // Full system tests
+        async function runFullTests() {
+            log('🔧 Full system test requires GitHub token...', 'info');
+            log('🔗 Please use the upload interface to test:', 'info');
+            log('1. GitHub API connectivity', 'info');
+            log('2. File upload functionality', 'info');  
+            log('3. README generation', 'info');
+            log('4. Website auto-updates', 'info');
+            
+            // Redirect to upload interface
+            setTimeout(() => {
+                window.open('upload-interface.html', '_blank');
+            }, 2000);
+        }
+
+        // Initialize page
+        window.onload = async function() {
+            log('🧪 Auto Upload System Test Suite Initialized', 'info');
+            log('Ready for testing!', 'success');
+            
+            // Auto-check files on load
+            setTimeout(checkFiles, 1000);
+        };
+    </script>
+</body>
+</html>

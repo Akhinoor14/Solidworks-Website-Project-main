@@ -385,6 +385,60 @@
                 <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
             </div>
 
+            <!-- Auto Upload Section -->
+            <div class="github-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 15px; margin: 30px 0;">
+                <h3 style="color: #667eea;">🚀 Auto Upload System</h3>
+                <p>Upload your SOLIDWORKS projects automatically to GitHub and update this website in real-time!</p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                    <a href="upload-interface.html" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        📤 Upload Projects
+                    </a>
+                    <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary">
+                        ❓ How it Works
+                    </button>
+                </div>
+                
+                <!-- Help Modal -->
+                <div id="upload-help" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
+                    <div style="background: white; max-width: 600px; margin: 50px auto; padding: 30px; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🚀 How Auto Upload Works</h3>
+                        
+                        <div style="text-align: left; line-height: 1.6;">
+                            <h4>📋 Step 1: Prepare Your Files</h4>
+                            <ul>
+                                <li>Assembly file (.SLDASM) - Required</li>
+                                <li>Part files (.SLDPRT) - One or more</li>
+                                <li>Screenshot (.PNG/.JPG) - Required</li>
+                                <li>Guide (.PDF) - Optional</li>
+                            </ul>
+                            
+                            <h4>📤 Step 2: Upload Process</h4>
+                            <ul>
+                                <li>Select day number and project type (CW/HW)</li>
+                                <li>Drag & drop your files</li>
+                                <li>System automatically uploads to GitHub</li>
+                                <li>README files generated in your existing style</li>
+                            </ul>
+                            
+                            <h4>🌐 Step 3: Automatic Updates</h4>
+                            <ul>
+                                <li>Website counters updated instantly</li>
+                                <li>New day buttons added to navigation</li>
+                                <li>Project cards created automatically</li>
+                                <li>Everything synced in real-time!</li>
+                            </ul>
+                            
+                            <h4>🔐 Requirements</h4>
+                            <p>You'll need a GitHub Personal Access Token with repository access. The system will guide you through creating one.</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 25px;">
+                            <button onclick="document.getElementById('upload-help').style.display='none'" class="btn btn-primary">Got it!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="github-section">
                 <h3>Want to see more?</h3>
                 <p>Check out my GitHub profile for all my repositories and SOLIDWORKS projects</p>
