@@ -90,6 +90,18 @@ function openGitHubBrowser(repoUrl, projectTitle) {
     
     // Load repository contents
     loadRepoContents(owner, repo);
+    
+    // Add ESC key listener
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeGitHubBrowser();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
 }
 
 // Close GitHub browser modal
@@ -99,6 +111,8 @@ function closeGitHubBrowser() {
         modal.classList.remove('show');
         setTimeout(() => {
             modal.remove();
+            // Restore body scroll
+            document.body.style.overflow = '';
         }, 300);
     }
 }
@@ -109,9 +123,8 @@ function createGitHubBrowserModal(owner, repo, projectTitle) {
     modal.id = 'githubBrowserModal';
     modal.className = 'project-modal';
     modal.innerHTML = `
-        <div class="modal-overlay" onclick="closeGitHubBrowser()"></div>
         <div class="modal-content github-browser-content">
-            <button class="close-modal" onclick="closeGitHubBrowser()">
+            <button class="close-modal" onclick="closeGitHubBrowser()" title="Close (ESC)">
                 <i class="fas fa-times"></i>
             </button>
             
