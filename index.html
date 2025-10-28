@@ -124,22 +124,15 @@
                                 <span class="btn-icon">💬</span>
                                 <div class="btn-ripple"></div>
                             </a>
-                            <button class="btn btn-outline btn-download" onclick="downloadResume()">
+                                                        <button class="btn btn-outline btn-download" onclick="downloadResume()">
                                 <span class="btn-text">Download CV</span>
                                 <span class="btn-icon">📄</span>
                             </button>
-                            <button class="btn btn-sync" title="Sync with GitHub">
-                                <span class="btn-text">Sync Projects</span>
-                                <span class="btn-icon">🔄</span>
-                            </button>
-                            <button class="btn btn-status" onclick="showSyncStatus()" title="View Sync Status">
-                                <span class="btn-text">Status</span>
-                                <span class="btn-icon">📊</span>
-                            </button>
-                            <button class="btn btn-detect" title="Detect All GitHub Projects">
-                                <span class="btn-text">Detect All</span>
-                                <span class="btn-icon">🔍</span>
-                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Profile Section -->
                         </div>
                         <!-- Debug Counter Controls -->
                         <div class="debug-controls" style="margin-top: 10px; opacity: 0.7;">
@@ -635,153 +628,8 @@
             } catch (error) {
                 console.log('📊 GitHub API error:', error.message);
             }
-            
-            // Test 4: Check button
-            const btn = document.querySelector('.btn-sync');
-            console.log('📊 Sync button found:', !!btn);
-            
-            showNotification('🧪 Check console for test results', 'info');
         };
 
-        // Status dashboard function
-        window.showSyncStatus = () => {
-            const statusInfo = `
-📊 SYNC SYSTEM STATUS
-
-🔄 Real-Time Sync: ${window.realTimeSync ? '✅ Active' : '❌ Inactive'}
-🔄 Auto-Refresh: ${window.autoRefresh ? '✅ Active' : '❌ Inactive'}  
-🔄 Manual Sync: ${githubSync ? '✅ Ready' : '❌ Not Ready'}
-
-📡 GitHub API: Testing connection...
-🌐 Cross-Tab Comm: ${typeof BroadcastChannel !== 'undefined' ? '✅ Supported' : '❌ Not Supported'}
-
-⏰ Last Check: ${localStorage.getItem('lastSyncTime') ? new Date(parseInt(localStorage.getItem('lastSyncTime'))).toLocaleTimeString() : 'Never'}
-📦 Last Upload Signal: ${localStorage.getItem('triggerRefresh') ? new Date(parseInt(localStorage.getItem('triggerRefresh'))).toLocaleTimeString() : 'None'}
-
-💡 Systems running to auto-update website when you upload to GitHub!
-            `;
-            
-            showNotification(statusInfo, 'info');
-            
-            // Test GitHub connection
-            fetch('https://api.github.com/repos/Akhinoor14/SOLIDWORKS-Projects')
-                .then(response => {
-                    const connectionStatus = response.ok ? '🟢 Connected' : '🔴 Failed';
-                    showNotification(`GitHub API Status: ${connectionStatus} (${response.status})`, response.ok ? 'success' : 'error');
-                })
-                .catch(error => {
-                    showNotification(`GitHub API Status: 🔴 Error (${error.message})`, 'error');
-                });
-        };
-        
-        // Enhanced manual sync function with UI feedback
-        window.syncWithGitHub = async (event) => {
-            // Get the button element properly
-            const btn = event ? event.target.closest('.btn-sync') : document.querySelector('.btn-sync');
-            if (!btn) {
-                showNotification('❌ Sync button not found', 'error');
-                return;
-            }
-            
-            const originalText = btn.querySelector('.btn-text').textContent;
-            
-            // Use real-time sync if available, fallback to old system
-            if (typeof window.realTimeSync !== 'undefined') {
-                console.log('🔄 Using Real-Time Sync system...');
-                
-                // Show loading state
-                btn.querySelector('.btn-text').textContent = 'Syncing...';
-                btn.disabled = true;
-                
-                try {
-                    showNotification('🔄 Force syncing with GitHub...', 'info');
-                    await window.realTimeSync.forceSync();
-                    showNotification('✅ Website successfully synced with GitHub!', 'success');
-                    
-                    // Optional reload
-                    setTimeout(() => {
-                        showNotification('🔄 Refreshing to show all changes...', 'info');
-                        location.reload();
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('❌ Real-time sync failed:', error);
-                    showNotification(`❌ Sync failed: ${error.message}`, 'error');
-                } finally {
-                    btn.querySelector('.btn-text').textContent = originalText;
-                    btn.disabled = false;
-                }
-                return;
-            }
-            
-            // Fallback to old system
-            if (!githubSync) {
-                if (typeof GitHubAutoSync === 'undefined') {
-                    showNotification('❌ GitHub sync system not loaded', 'error');
-                    return;
-                }
-                githubSync = new GitHubAutoSync('Akhinoor14', 'SOLIDWORKS-Projects');
-            }
-            
-            // Show loading state
-            btn.querySelector('.btn-text').textContent = 'Syncing...';
-            btn.disabled = true;
-            
-            try {
-                console.log('🔄 Manual sync requested...');
-                showNotification('🔄 Syncing with GitHub...', 'info');
-                
-                // Test GitHub connection first
-                const testResponse = await fetch('https://api.github.com/repos/Akhinoor14/SOLIDWORKS-Projects');
-                if (!testResponse.ok) {
-                    throw new Error(`GitHub repository not accessible: ${testResponse.status}`);
-                }
-                
-                const result = await githubSync.updateWebsite();
-                
-                if (result && result.success) {
-                    showNotification(`✅ Synced successfully! ${result.stats.totalProjects} projects, ${result.stats.totalDays} days`, 'success');
-                    
-                    // Update counters immediately without reload
-                    if (result.stats) {
-                        const projectCounters = document.querySelectorAll('[data-target="23"]');
-                        const dayCounters = document.querySelectorAll('[data-target="7"]');
-                        
-                        projectCounters.forEach(counter => {
-                            counter.textContent = result.stats.totalProjects;
-                            counter.setAttribute('data-target', result.stats.totalProjects);
-                        });
-                        
-                        dayCounters.forEach(counter => {
-                            counter.textContent = result.stats.totalDays;
-                            counter.setAttribute('data-target', result.stats.totalDays);
-                        });
-                    }
-                    
-                    // Optional: Reload page to show changes
-                    setTimeout(() => {
-                        showNotification('🔄 Refreshing page to apply all changes...', 'info');
-                        location.reload();
-                    }, 3000);
-                } else {
-                    throw new Error(result ? result.error || 'Unknown sync error' : 'No response from sync system');
-                }
-            } catch (error) {
-                console.error('❌ Sync failed:', error);
-                const errorMsg = error.message || 'Unknown error occurred';
-                showNotification(`❌ Sync failed: ${errorMsg}`, 'error');
-                
-                // Show fallback message
-                setTimeout(() => {
-                    showNotification('📱 Using cached data. Website will work with existing information.', 'info');
-                }, 2000);
-            } finally {
-                // Restore button state
-                btn.querySelector('.btn-text').textContent = originalText;
-                btn.disabled = false;
-            }
-        };
-        
         // Cross-tab communication for upload notifications
         function setupCrossTabCommunication() {
             try {
@@ -791,16 +639,10 @@
                     console.log('📡 Received cross-tab message:', event.data);
                     
                     if (event.data.type === 'UPLOAD_COMPLETED') {
-                        showNotification('🆕 New upload detected from upload interface! Refreshing...', 'info');
+                        showNotification('🆕 New upload detected! Refreshing...', 'info');
                         
                         // Force refresh after 2 seconds
-                        setTimeout(() => {
-                            if (window.realTimeSync) {
-                                window.realTimeSync.forceSync();
-                            } else {
-                                location.reload();
-                            }
-                        }, 2000);
+                        setTimeout(() => location.reload(), 2000);
                     }
                 });
                 
@@ -843,75 +685,7 @@
             // Check for upload signals
             checkForRefreshSignals();
             
-            // Initialize GitHub sync system
-            if (typeof GitHubAutoSync !== 'undefined') {
-                githubSync = new GitHubAutoSync('Akhinoor14', 'SOLIDWORKS-Projects');
-                
-                // Store global instance for periodic sync
-                window.githubSyncInstance = githubSync;
-                
-                // Attach event listener to sync button
-                const syncButton = document.querySelector('.btn-sync');
-                if (syncButton) {
-                    syncButton.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        console.log('🔄 Sync button clicked!');
-                        try {
-                            await syncWithGitHub(e);
-                        } catch (error) {
-                            console.error('❌ Error in sync button handler:', error);
-                            showNotification(`❌ Button handler error: ${error.message}`, 'error');
-                        }
-                    });
-                    console.log('✅ Sync button event listener attached');
-                } else {
-                    console.warn('⚠️ Sync button not found!');
-                }
-
-                // Attach event listener to detect button
-                const detectButton = document.querySelector('.btn-detect');
-                if (detectButton) {
-                    detectButton.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        console.log('🔍 Detect All button clicked!');
-                        
-                        const btn = e.target.closest('.btn-detect');
-                        const originalText = btn.querySelector('.btn-text').textContent;
-                        
-                        try {
-                            // Show loading state
-                            btn.querySelector('.btn-text').textContent = 'Detecting...';
-                            btn.disabled = true;
-                            
-                            if (typeof detectAllGitHubProjects === 'function') {
-                                await detectAllGitHubProjects();
-                            } else {
-                                throw new Error('Detection system not loaded');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error in detect button handler:', error);
-                            showNotification(`❌ Detection failed: ${error.message}`, 'error');
-                        } finally {
-                            // Restore button state
-                            btn.querySelector('.btn-text').textContent = originalText;
-                            btn.disabled = false;
-                        }
-                    });
-                    console.log('✅ Detect button event listener attached');
-                } else {
-                    console.warn('⚠️ Detect button not found!');
-                }
-                
-                // Show loading notification initially
-                setTimeout(() => {
-                    showNotification('🔄 Auto-syncing with GitHub...', 'info');
-                }, 2000);
-            } else {
-                console.warn('⚠️ GitHubAutoSync class not found');
-                setTimeout(() => {
-                    showNotification('⚠️ GitHub sync system not available', 'warning');
-                }, 2000);
-            }
+            console.log('✅ Page initialization complete');
         });
     </script>
     <script>
@@ -949,62 +723,8 @@
         letter-spacing: 0.05em;
     }
     
-    /* GitHub Sync Button Styles */
-    .btn-sync {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        border: none;
-        color: white;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-sync:hover {
-        background: linear-gradient(135deg, #218838, #17a2b8);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
-    }
-    
-    .btn-sync:active {
-        transform: translateY(0);
-    }
-    
-    .btn-sync .btn-icon {
-        animation: none;
-        transition: transform 0.3s ease;
-    }
-    
-    .btn-sync:hover .btn-icon {
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    
-    /* Sync notification styles */
-    .sync-notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #28a745, #20c997);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        z-index: 10000;
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.5s ease;
-    }
-    
-    .sync-notification.show {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
-    .sync-notification.error {
+    /* Notification styles */
+    .notification {    .sync-notification.error {
         background: linear-gradient(135deg, #dc3545, #e74c3c);
     }
     
