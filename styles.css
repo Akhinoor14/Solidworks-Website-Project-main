@@ -3105,16 +3105,28 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     border-color: rgba(0, 150, 255, 0.6);
 }
 
-.btn-details {
-    background: transparent;
-    color: #999;
+/* Details button removed per new design */
+
+.btn-readme {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ddd;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-.btn-details:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+.btn-readme:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
     border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-zip {
+    background: rgba(16, 185, 129, 0.15);
+    color: #86efac;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.btn-zip:hover {
+    background: rgba(16, 185, 129, 0.3);
+    color: #bbf7d0;
+    border-color: rgba(16, 185, 129, 0.6);
 }
 
 /* Special Project Content Styles */
@@ -4663,10 +4675,10 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: rgba(255, 255, 255, 0.05);
     padding: 2rem;
     border-radius: 10px;
-    color: #e0e0e0;
+    color: #e8e8e8;
     line-height: 1.8;
     max-width: 900px;
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -4719,6 +4731,33 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     padding: 0;
 }
 
+.markdown-viewer blockquote {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid rgba(255,0,0,0.4);
+    background: rgba(255,0,0,0.06);
+    color: #ddd;
+    border-radius: 4px;
+}
+
+.markdown-viewer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+.markdown-viewer th, .markdown-viewer td {
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.6rem 0.8rem;
+}
+.markdown-viewer th {
+    background: rgba(255,0,0,0.15);
+    color: #fff;
+}
+.markdown-viewer tr:nth-child(even) {
+    background: rgba(255,255,255,0.04);
+}
+
 .markdown-viewer ul {
     margin: 1rem 0;
     padding-left: 2rem;
@@ -4747,21 +4786,117 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Image Viewer */
+/* Image Viewer with Controls */
 .image-viewer {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    padding: 2rem;
+    padding: 1rem;
     background: rgba(0, 0, 0, 0.3);
 }
 
-.image-viewer img {
+.image-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.img-ctrl-btn {
+    background: linear-gradient(135deg, rgba(255,0,0,0.3), rgba(204,0,0,0.2));
+    border: 1px solid rgba(255,0,0,0.4);
+    color: #fff;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.img-ctrl-btn:hover {
+    background: linear-gradient(135deg, rgba(255,51,51,0.5), rgba(255,0,0,0.3));
+    border-color: rgba(255,0,0,0.6);
+    transform: translateY(-2px);
+}
+
+.image-container {
     max-width: 100%;
-    max-height: 70vh;
+    max-height: calc(100vh - 300px);
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.image-container img {
+    max-width: 100%;
     border-radius: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+    transform-origin: center;
 }
+
+/* Image Fullscreen Overlay */
+.image-fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.fullscreen-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100000;
+}
+
+.fs-close-btn {
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    border: none;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255,0,0,0.4);
+}
+
+.fs-close-btn:hover {
+    background: linear-gradient(135deg, #ff3333, #ff0000);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255,0,0,0.6);
+}
+
+.image-fullscreen-overlay img {
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+/* PDF Control Buttons */
+.pdf-ctrl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
 
 /* CAD Viewer */
 .cad-viewer,

@@ -367,22 +367,68 @@ async function viewFile(owner, repo, path, name, downloadUrl) {
     }
 }
 
-// View PDF files (use PDF.js viewer to avoid download prompts)
+// View PDF files (use PDF.js viewer to avoid download prompts) with native fallback and fullscreen
 async function viewPDF(url, container) {
-    // Use Mozilla PDF.js hosted viewer for reliable inline rendering
+    const containerId = `pdfc_${Math.random().toString(36).slice(2)}`;
+    container.id = containerId;
     const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
     container.innerHTML = `
         <div class="pdf-viewer">
-            <iframe src="${viewerUrl}" frameborder="0" allow="fullscreen"></iframe>
+            <div style="display:flex; justify-content:space-between; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                <div style="display:flex; gap:8px;">
+                    <button class="github-action-btn pdf-ctrl-btn" onclick="window.fullscreenPdf('${containerId}')" style="padding:0.4rem 0.8rem; border-radius:8px;">
+                        <i class="fas fa-expand"></i> Fullscreen
+                    </button>
+                    <a href="${url}" target="_blank" rel="noopener" class="github-action-btn pdf-ctrl-btn" style="padding:0.4rem 0.8rem; border-radius:8px;">
+                        <i class="fas fa-external-link-alt"></i> Open Direct
+                    </a>
+                </div>
+                <button class="github-action-btn pdf-ctrl-btn" style="padding:0.4rem 0.8rem; border-radius:8px; background: linear-gradient(135deg,#6b7280,#374151);" onclick="window.useNativePdf('${encodeURIComponent(url)}','${containerId}')">Use Native Viewer</button>
+            </div>
+            <iframe id="${containerId}_iframe" src="${viewerUrl}" frameborder="0" allow="fullscreen"></iframe>
             <p class="pdf-fallback">
-                If the PDF doesn't load,
-                <a href="${url}" target="_blank" rel="noopener">open it directly</a>
+                If the PDF doesn't load, <a href="${url}" target="_blank" rel="noopener">open it directly</a>
             </p>
         </div>
     `;
 }
 
-// View Markdown files with proper rendering + relative asset fixups
+// PDF fullscreen handler
+window.fullscreenPdf = function(containerId) {
+    const iframe = document.getElementById(containerId + '_iframe');
+    if (!iframe) return;
+    
+    if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+    } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen();
+    } else if (iframe.msRequestFullscreen) {
+        iframe.msRequestFullscreen();
+    }
+};
+
+// Global helper to swap to native PDF embed
+window.useNativePdf = function(encodedUrl, containerId){
+    try {
+        const url = decodeURIComponent(encodedUrl);
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        el.innerHTML = `
+            <div class="pdf-viewer">
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <a href="${url}" target="_blank" rel="noopener" class="github-action-btn" style="padding:0.4rem 0.8rem; border-radius:8px;">
+                        <i class="fas fa-external-link-alt"></i> Open Direct
+                    </a>
+                </div>
+                <object data="${url}" type="application/pdf" width="100%" height="100%" style="min-height:600px; border-radius:10px; background:white;">
+                    <p class="pdf-fallback">Your browser can't display this PDF. <a href="${url}" target="_blank" rel="noopener">Open it</a></p>
+                </object>
+            </div>
+        `;
+    } catch {}
+};
+
+// View Markdown files with proper rendering + relative asset fixups (uses marked.js if available)
 async function viewMarkdown(owner, repo, path, container) {
     try {
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
@@ -391,19 +437,57 @@ async function viewMarkdown(owner, repo, path, container) {
         const data = await response.json();
         const content = atob(data.content || ''); // Decode base64
 
-        // Determine base directory of the markdown file for resolving relative links
-        const pathParts = path.split('/');
-        pathParts.pop();
-        const baseDir = pathParts.join('/');
+        const baseDir = path.split('/').slice(0, -1).join('/');
 
-        // Convert markdown to HTML and rewrite relative URLs for images/links
-        const html = markdownToHTML(content, { owner, repo, baseDir });
+        let html = '';
+        if (window.marked) {
+            // Configure marked renderer for relative URLs and syntax highlighting
+            const renderer = new marked.Renderer();
+            const isAbs = (u) => /^(https?:)?\/\//i.test(u) || u.startsWith('data:') || u.startsWith('#');
+            const resolve = (u, type='link') => {
+                if (!u || isAbs(u)) return u;
+                const resolved = u.startsWith('/') ? u.replace(/^\/+/, '') : [baseDir, u].filter(Boolean).join('/');
+                if (type === 'image') return `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${resolved}`;
+                return `https://github.com/${owner}/${repo}/blob/HEAD/${resolved}`;
+            };
+            renderer.link = (href, title, text) => {
+                const fixed = resolve(href || '', 'link');
+                const t = title ? ` title="${title}"` : '';
+                return `<a href="${fixed}" target="_blank" rel="noopener"${t}>${text}</a>`;
+            };
+            renderer.image = (href, title, text) => {
+                const fixed = resolve(href || '', 'image');
+                const t = title ? ` title="${title}"` : '';
+                return `<img src="${fixed}" alt="${text || ''}"${t}/>`;
+            };
+            if (window.hljs) {
+                marked.setOptions({
+                    highlight: (code, lang) => {
+                        try {
+                            if (lang && hljs.getLanguage(lang)) {
+                                return hljs.highlight(code, { language: lang }).value;
+                            }
+                        } catch {}
+                        return hljs.highlightAuto(code).value;
+                    }
+                });
+            }
+            html = marked.parse(content, { renderer });
+        } else {
+            // Fallback minimal converter
+            html = markdownToHTML(content, { owner, repo, baseDir });
+        }
 
         container.innerHTML = `
             <div class="markdown-viewer">
                 ${html}
             </div>
         `;
+
+        // Run highlight.js if present
+        if (window.hljs) {
+            try { hljs.highlightAll(); } catch {}
+        }
     } catch (error) {
         throw new Error('Failed to load README');
     }
@@ -475,14 +559,77 @@ function markdownToHTML(markdown, opts = {}) {
     return html;
 }
 
-// View image files
+// View image files with zoom and fullscreen
 function viewImage(url, container) {
+    const imgId = `img_${Math.random().toString(36).slice(2)}`;
     container.innerHTML = `
         <div class="image-viewer">
-            <img src="${url}" alt="Preview" />
+            <div class="image-controls">
+                <button class="img-ctrl-btn" onclick="window.zoomImage('${imgId}', 1.2)" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="img-ctrl-btn" onclick="window.zoomImage('${imgId}', 0.8)" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="img-ctrl-btn" onclick="window.resetZoomImage('${imgId}')" title="Reset Zoom">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="img-ctrl-btn" onclick="window.fullscreenImage('${imgId}')" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <a href="${url}" download class="img-ctrl-btn" title="Download">
+                    <i class="fas fa-download"></i>
+                </a>
+            </div>
+            <div class="image-container" id="${imgId}_container">
+                <img id="${imgId}" src="${url}" alt="Preview" style="cursor: zoom-in;" onclick="window.fullscreenImage('${imgId}')" />
+            </div>
         </div>
     `;
 }
+
+// Image zoom and fullscreen controls
+window.zoomImage = function(imgId, factor) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    const current = img.dataset.scale ? parseFloat(img.dataset.scale) : 1;
+    const newScale = Math.max(0.5, Math.min(5, current * factor));
+    img.dataset.scale = newScale;
+    img.style.transform = `scale(${newScale})`;
+    img.style.cursor = newScale > 1 ? 'zoom-out' : 'zoom-in';
+};
+
+window.resetZoomImage = function(imgId) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    img.dataset.scale = 1;
+    img.style.transform = 'scale(1)';
+    img.style.cursor = 'zoom-in';
+};
+
+window.fullscreenImage = function(imgId) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    
+    // Create fullscreen overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'image-fullscreen-overlay';
+    overlay.innerHTML = `
+        <div class="fullscreen-controls">
+            <button onclick="this.parentElement.parentElement.remove()" class="fs-close-btn">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <img src="${img.src}" alt="Fullscreen Preview" style="max-width: 95vw; max-height: 95vh; cursor: zoom-in;" 
+             onclick="if(this.style.maxWidth==='none'){this.style.maxWidth='95vw';this.style.maxHeight='95vh';this.style.cursor='zoom-in';}else{this.style.maxWidth='none';this.style.maxHeight='none';this.style.cursor='zoom-out';}" />
+    `;
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+    
+    document.body.appendChild(overlay);
+};
 
 // View CAD files
 function viewCADFile(name, url, container) {
@@ -1581,7 +1728,42 @@ function createProjectCard(project) {
         : project.category === 'web' && project.title.includes('Portfolio')
         ? 'https://via.placeholder.com/600x300/7C3AED/ffffff?text=Portfolio+Website'
         : 'https://via.placeholder.com/600x300/6366F1/ffffff?text=Engineering+Project';
-    
+    // Compute repo info for quick links
+    const repoMatch = (project.github || '').match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    const owner = repoMatch ? repoMatch[1] : '';
+    const repo = repoMatch ? repoMatch[2] : '';
+    const readmeUrl = owner && repo ? `https://github.com/${owner}/${repo}` : project.github;
+    const readmeRaw = owner && repo ? `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/README.md` : project.github;
+    const zipUrlMain = owner && repo ? `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip` : '#';
+    const zipUrlMaster = owner && repo ? `https://github.com/${owner}/${repo}/archive/refs/heads/master.zip` : '#';
+    const zipUrl = zipUrlMain; // default to main
+
+    // Helper to build action buttons (no Details button as requested)
+    const buildActions = () => {
+        const hasDemo = !!project.demo;
+        // Prioritize: GitHub, README, Browse, Demo|ZIP
+        const lastBtn = hasDemo 
+            ? `<a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i><span>Live Demo</span></a>`
+            : `<a href="${zipUrl}" class="action-btn btn-zip" target="_blank" rel="noopener" title="If main is unavailable, try master from GitHub"><i class="fas fa-file-archive"></i><span>Download ZIP</span></a>`;
+        return `
+            <div class="project-actions-grid">
+                <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="${readmeUrl}#readme" class="action-btn btn-readme" target="_blank" rel="noopener">
+                    <i class="fas fa-book"></i>
+                    <span>README</span>
+                </a>
+                <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Browse</span>
+                </button>
+                ${lastBtn}
+            </div>
+        `;
+    };
+
     // Check for special project types and render custom content
     if (project.specialType === 'arduino' && project.arduinoCategories) {
         card.innerHTML = `
@@ -1628,25 +1810,7 @@ function createProjectCard(project) {
                     ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
                 </div>
                 
-                <div class="project-actions-grid">
-                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
-                        <i class="fab fa-github"></i>
-                        <span>GitHub Repository</span>
-                    </a>
-                    ${project.demo ? `
-                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>Live Demo</span>
-                    </a>` : ''}
-                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
-                        <i class="fas fa-folder-open"></i>
-                        <span>Browse Files</span>
-                    </button>
-                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Full Details</span>
-                    </button>
-                </div>
+                ${buildActions()}
             </div>
         `;
         return card;
@@ -1678,8 +1842,8 @@ function createProjectCard(project) {
                     ${project.componentCategories.map(cat => `
                         <details class="category-section">
                             <summary class="category-header">
-                                <span class="category-icon">⚡</span>
-                                <span class="category-name">${cat.type}</span>
+                                <span class="category-icon">${cat.icon}</span>
+                                <span class="category-name">${cat.name}</span>
                             </summary>
                             <div class="category-body">
                                 <ul class="component-list">
@@ -1695,25 +1859,7 @@ function createProjectCard(project) {
                     ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
                 </div>
                 
-                <div class="project-actions-grid">
-                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
-                        <i class="fab fa-github"></i>
-                        <span>GitHub Repository</span>
-                    </a>
-                    ${project.demo ? `
-                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>Live Demo</span>
-                    </a>` : ''}
-                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
-                        <i class="fas fa-folder-open"></i>
-                        <span>Browse Files</span>
-                    </button>
-                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Full Details</span>
-                    </button>
-                </div>
+                ${buildActions()}
             </div>
         `;
         return card;
@@ -1760,25 +1906,7 @@ function createProjectCard(project) {
                     ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
                 </div>
                 
-                <div class="project-actions-grid">
-                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
-                        <i class="fab fa-github"></i>
-                        <span>GitHub Repository</span>
-                    </a>
-                    ${project.demo ? `
-                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>Live Demo</span>
-                    </a>` : ''}
-                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
-                        <i class="fas fa-folder-open"></i>
-                        <span>Browse Files</span>
-                    </button>
-                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Full Details</span>
-                    </button>
-                </div>
+                ${buildActions()}
             </div>
         `;
         return card;
@@ -1825,25 +1953,7 @@ function createProjectCard(project) {
                 ${project.tech.slice(0, 4).map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
                 ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
             </div>
-            <div class="project-actions-grid">
-                <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
-                    <i class="fab fa-github"></i>
-                    <span>GitHub</span>
-                </a>
-                ${project.demo ? `
-                <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>Live Demo</span>
-                </a>` : ''}
-                <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
-                    <i class="fas fa-folder-open"></i>
-                    <span>Browse</span>
-                </button>
-                <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Details</span>
-                </button>
-            </div>
+            ${buildActions()}
         </div>
     `;
     
