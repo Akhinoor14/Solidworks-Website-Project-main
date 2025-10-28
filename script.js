@@ -1098,52 +1098,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('✅ Counters initialized from dayProjects');
         }, 500);
     } else {
-        console.log('✅ Page loaded - counters ready');
+        console.log('✅ Page loaded - ready');
     }
 });
-
-// Counter animation for stats - SIMPLE VERSION (no reset to 0)
-function animateCounters() {
-    const counters = document.querySelectorAll('.stat-number[data-target]');
-    
-    counters.forEach(counter => {
-        const targetAttr = counter.getAttribute('data-target');
-        if (!targetAttr) return;
-        
-        const target = parseInt(targetAttr);
-        const currentText = counter.textContent.replace('+', '');
-        const current = parseInt(currentText) || 0;
-        
-        // If already at target, skip animation
-        if (current === target) return;
-        
-        let value = current;
-        const increment = Math.ceil((target - current) / 50);
-        
-        const updateCounter = () => {
-            if (value < target) {
-                value += increment;
-                if (value > target) value = target;
-                counter.textContent = value;
-                requestAnimationFrame(updateCounter);
-            } else {
-                counter.textContent = target;
-            }
-        };
-        
-        // Start animation when element is in view
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && value !== target) {
-                    updateCounter();
-                    observer.unobserve(entry.target);
-                }
-            });
-        });
-        
-        observer.observe(counter);
-    });
-}
 
 // Add loading states for better UX
 function showLoading(element) {
@@ -2044,103 +2001,206 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /**
- * 🌍 GLOBAL COUNTER UPDATE UTILITY - SIMPLE VERSION
- * Direct counter update without animation complexity
+ * 🎨 TECH STACK INTERACTIVE SHOWCASE
+ * Dynamic interactive technology badges with animations
  */
-window.updateAllCountersGlobally = function(totalCW = 0, totalHW = 0, totalDays = 0) {
-    console.log('🌍 Updating counters:', { totalCW, totalHW, totalDays });
+window.initTechBadges = function() {
+    const techBadges = document.querySelectorAll('.tech-badge');
     
-    const totalProjects = totalCW + totalHW;
-    
-    try {
-        // 1. Update Hero animated counters - DIRECTLY set value, no animation reset
-        const heroCounters = document.querySelectorAll('[data-target="23"]');
-        heroCounters.forEach(counter => {
-            counter.setAttribute('data-target', totalProjects);
-            counter.textContent = totalProjects; // Direct value, no 0 reset
+    if (techBadges.length === 0) {
+        console.log('⏭️ No tech badges found');
+        return;
+    }
+
+    // Add click interaction for each badge
+    techBadges.forEach((badge, index) => {
+        const techName = badge.dataset.tech;
+        const icon = badge.querySelector('.tech-icon i');
+        
+        // Staggered entrance animation
+        setTimeout(() => {
+            badge.style.opacity = '0';
+            badge.style.transform = 'translateY(20px)';
+            badge.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            setTimeout(() => {
+                badge.style.opacity = '1';
+                badge.style.transform = 'translateY(0)';
+            }, 50);
+        }, index * 100);
+
+        // Click to show tech info
+        badge.addEventListener('click', () => {
+            const techInfo = {
+                solidworks: { title: 'SOLIDWORKS', desc: 'Professional 3D CAD Design Software' },
+                cad: { title: '3D CAD Modeling', desc: 'Advanced 3D Design & Engineering' },
+                simulation: { title: 'FEA Simulation', desc: 'Structural & Thermal Analysis' },
+                rendering: { title: 'PhotoView 360', desc: 'Professional Rendering & Visualization' },
+                assembly: { title: 'Assembly Design', desc: 'Complex Multi-Part Systems' }
+            };
+
+            const info = techInfo[techName];
+            if (info) {
+                // Create toast notification
+                showTechToast(info.title, info.desc);
+            }
+
+            // Add ripple effect
+            createRipple(badge, event);
         });
 
-        // 2. Update Days counters
-        const daysCounters = document.querySelectorAll('[data-target="7"]');
-        daysCounters.forEach(counter => {
-            counter.setAttribute('data-target', totalDays);
-            counter.textContent = totalDays; // Direct value
-        });
-
-        // 3. Update HW counters
-        const hwCounters = document.querySelectorAll('[data-target="8"]');
-        hwCounters.forEach(counter => {
-            counter.setAttribute('data-target', totalHW);
-            counter.textContent = totalHW; // Direct value
-        });
-
-        // 4. Update Hero Static counters only (not About section)
-        const heroStaticCounters = document.querySelectorAll('.hero-stats .stat-number');
-        heroStaticCounters.forEach(counter => {
-            const target = counter.getAttribute('data-target');
-            if (target) {
-                counter.textContent = counter.getAttribute('data-target');
+        // Continuous pulse animation on hover
+        badge.addEventListener('mouseenter', () => {
+            if (icon) {
+                icon.style.animation = 'techIconPulse 0.6s ease-in-out';
             }
         });
 
-        // 5. Update SOLIDWORKS Meta Counters (CW, HW, Total)
-        const metaCounters = document.querySelectorAll('.sw-meta-num');
-        if (metaCounters.length >= 3) {
-            metaCounters[0].textContent = totalCW;      // CW
-            metaCounters[1].textContent = totalHW;      // HW  
-            metaCounters[2].textContent = totalProjects; // Total
-        }
-
-        // 6. Update About Section Stats
-        const aboutProjectsStat = document.querySelector('[data-about-stat="projects"]');
-        if (aboutProjectsStat) {
-            aboutProjectsStat.textContent = `${totalProjects}+`;
-        }
-        
-        const aboutDaysStat = document.querySelector('[data-about-stat="days"]');
-        if (aboutDaysStat) {
-            aboutDaysStat.textContent = `${totalDays}+`;
-        }
-
-        // 7. Update SW Intro text
-        const swIntro = document.getElementById('sw-intro');
-        if (swIntro) {
-            swIntro.textContent = `${totalProjects} SOLIDWORKS projects across ${totalDays} days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.`;
-        }
-
-        console.log(`✅ Counters updated: ${totalCW} CW + ${totalHW} HW = ${totalProjects} Total (${totalDays} days)`);
-
-    } catch (error) {
-        console.error('❌ Counter update failed:', error);
-    }
-};
-
-/**
- * 🔢 CALCULATE COUNTS FROM dayProjects
- * Helper to extract counts from current dayProjects data
- */
-window.calculateProjectCounts = function() {
-    if (!window.dayProjects) return { totalCW: 0, totalHW: 0, totalDays: 0 };
-    
-    let totalCW = 0, totalHW = 0;
-    const totalDays = Object.keys(window.dayProjects).length;
-    
-    Object.values(window.dayProjects).forEach(day => {
-        if (day.cw) totalCW += day.cw.length;
-        if (day.hw) totalHW += day.hw.length;
+        badge.addEventListener('mouseleave', () => {
+            if (icon) {
+                icon.style.animation = '';
+            }
+        });
     });
-    
-    return { totalCW, totalHW, totalDays };
+
+    console.log(`✅ ${techBadges.length} tech badges initialized`);
 };
 
-/**
- * 🎯 AUTO-UPDATE COUNTERS FROM CURRENT DATA
- * Updates all counters based on current dayProjects
- */
-window.refreshAllCounters = function() {
-    const counts = window.calculateProjectCounts();
-    window.updateAllCountersGlobally(counts.totalCW, counts.totalHW, counts.totalDays);
-};
+// Create ripple effect on click
+function createRipple(element, event) {
+    const ripple = document.createElement('span');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
 
-console.log('✅ Counter system loaded');
+    ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background: rgba(255, 0, 0, 0.4);
+        top: ${y}px;
+        left: ${x}px;
+        pointer-events: none;
+        animation: rippleEffect 0.6s ease-out;
+    `;
+
+    element.style.position = 'relative';
+    element.appendChild(ripple);
+
+    setTimeout(() => ripple.remove(), 600);
+}
+
+// Show tech information toast
+function showTechToast(title, description) {
+    // Remove existing toast
+    const existingToast = document.querySelector('.tech-toast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'tech-toast';
+    toast.innerHTML = `
+        <div class="toast-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-desc">${description}</div>
+        </div>
+    `;
+
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.95), rgba(20, 0, 0, 0.9));
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 0, 0, 0.4);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3), 0 0 60px rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        animation: slideInToast 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 300px;
+    `;
+
+    document.body.appendChild(toast);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOutToast 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
+// Add required CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes techIconPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+
+    @keyframes rippleEffect {
+        0% { transform: scale(0); opacity: 1; }
+        100% { transform: scale(2); opacity: 0; }
+    }
+
+    @keyframes slideInToast {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOutToast {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+    }
+
+    .toast-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(150, 0, 0, 0.2));
+        border-radius: 50%;
+        color: #ff3333;
+        font-size: 1.3rem;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .toast-desc {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize tech badges on page load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        window.initTechBadges();
+    }, 500);
+});
+
+console.log('✅ Tech badge system loaded');
+
 
