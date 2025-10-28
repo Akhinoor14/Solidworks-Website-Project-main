@@ -47,6 +47,420 @@ function changeMainImage(imgSrc, thumbnail) {
     }
 }
 
+// ============================================
+// GitHub Repository Browser System
+// ============================================
+
+// Open GitHub repository browser modal
+function openGitHubBrowser(repoUrl, projectTitle) {
+    console.log('📂 Opening GitHub browser for:', repoUrl);
+    
+    // Extract owner and repo from URL
+    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (!match) {
+        console.error('Invalid GitHub URL');
+        return;
+    }
+    
+    const [, owner, repo] = match;
+    const modal = createGitHubBrowserModal(owner, repo, projectTitle);
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+    
+    // Load repository contents
+    loadRepoContents(owner, repo);
+}
+
+// Close GitHub browser modal
+function closeGitHubBrowser() {
+    const modal = document.getElementById('githubBrowserModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+
+// Create GitHub browser modal
+function createGitHubBrowserModal(owner, repo, projectTitle) {
+    const modal = document.createElement('div');
+    modal.id = 'githubBrowserModal';
+    modal.className = 'project-modal';
+    modal.innerHTML = `
+        <div class="modal-overlay" onclick="closeGitHubBrowser()"></div>
+        <div class="modal-content github-browser-content">
+            <button class="close-modal" onclick="closeGitHubBrowser()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="github-browser-header">
+                <div class="repo-info">
+                    <i class="fab fa-github"></i>
+                    <h2>${projectTitle}</h2>
+                    <span class="repo-path">${owner}/${repo}</span>
+                </div>
+                <div class="browser-actions">
+                    <button class="github-action-btn" onclick="window.open('https://github.com/${owner}/${repo}', '_blank')">
+                        <i class="fas fa-external-link-alt"></i> Open in GitHub
+                    </button>
+                </div>
+            </div>
+            
+            <div class="github-browser-body">
+                <div class="file-explorer">
+                    <div class="explorer-header">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Repository Files</span>
+                    </div>
+                    <div id="fileTree" class="file-tree">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Loading repository...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="file-viewer">
+                    <div class="viewer-header" id="viewerHeader">
+                        <i class="fas fa-file"></i>
+                        <span>Select a file to preview</span>
+                    </div>
+                    <div id="fileContent" class="file-content">
+                        <div class="empty-state">
+                            <i class="fas fa-arrow-left"></i>
+                            <p>Select a file from the left panel</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+// Load repository contents from GitHub API
+async function loadRepoContents(owner, repo, path = '') {
+    const fileTree = document.getElementById('fileTree');
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to load repository');
+        }
+        
+        const contents = await response.json();
+        displayFileTree(contents, owner, repo, path);
+        
+    } catch (error) {
+        console.error('Error loading repo:', error);
+        fileTree.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load repository</p>
+                <small>${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+// Display file tree
+function displayFileTree(contents, owner, repo, currentPath) {
+    const fileTree = document.getElementById('fileTree');
+    
+    // Sort: folders first, then files
+    const sorted = contents.sort((a, b) => {
+        if (a.type === b.type) return a.name.localeCompare(b.name);
+        return a.type === 'dir' ? -1 : 1;
+    });
+    
+    let html = '';
+    
+    // Add back button if in subfolder
+    if (currentPath) {
+        const parentPath = currentPath.split('/').slice(0, -1).join('/');
+        html += `
+            <div class="file-item folder-item" onclick="loadRepoContents('${owner}', '${repo}', '${parentPath}')">
+                <i class="fas fa-arrow-left"></i>
+                <span>.. (Back)</span>
+            </div>
+        `;
+    }
+    
+    sorted.forEach(item => {
+        const icon = getFileIcon(item);
+        const itemClass = item.type === 'dir' ? 'folder-item' : 'file-item';
+        
+        if (item.type === 'dir') {
+            html += `
+                <div class="${itemClass}" onclick="loadRepoContents('${owner}', '${repo}', '${item.path}')">
+                    <i class="${icon}"></i>
+                    <span>${item.name}</span>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="${itemClass}" onclick="viewFile('${owner}', '${repo}', '${item.path}', '${item.name}', '${item.download_url}')">
+                    <i class="${icon}"></i>
+                    <span>${item.name}</span>
+                </div>
+            `;
+        }
+    });
+    
+    fileTree.innerHTML = html;
+}
+
+// Get appropriate icon for file type
+function getFileIcon(item) {
+    if (item.type === 'dir') return 'fas fa-folder';
+    
+    const ext = item.name.split('.').pop().toLowerCase();
+    const iconMap = {
+        'pdf': 'fas fa-file-pdf',
+        'md': 'fab fa-markdown',
+        'png': 'fas fa-file-image',
+        'jpg': 'fas fa-file-image',
+        'jpeg': 'fas fa-file-image',
+        'gif': 'fas fa-file-image',
+        'svg': 'fas fa-file-image',
+        'sldprt': 'fas fa-cube',
+        'sldasm': 'fas fa-cubes',
+        'slddrw': 'fas fa-file-alt',
+        'step': 'fas fa-cube',
+        'stl': 'fas fa-cube',
+        'glb': 'fas fa-cube',
+        'js': 'fab fa-js-square',
+        'html': 'fab fa-html5',
+        'css': 'fab fa-css3-alt',
+        'json': 'fas fa-brackets-curly',
+        'txt': 'fas fa-file-alt'
+    };
+    
+    return iconMap[ext] || 'fas fa-file';
+}
+
+// View file content
+async function viewFile(owner, repo, path, name, downloadUrl) {
+    const viewerHeader = document.getElementById('viewerHeader');
+    const fileContent = document.getElementById('fileContent');
+    
+    // Update header
+    const ext = name.split('.').pop().toLowerCase();
+    const icon = getFileIcon({ name, type: 'file' });
+    viewerHeader.innerHTML = `
+        <i class="${icon}"></i>
+        <span>${name}</span>
+        <a href="${downloadUrl}" download class="download-btn" title="Download">
+            <i class="fas fa-download"></i>
+        </a>
+    `;
+    
+    // Show loading
+    fileContent.innerHTML = `
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Loading file...
+        </div>
+    `;
+    
+    try {
+        // Handle different file types
+        if (ext === 'pdf') {
+            await viewPDF(downloadUrl, fileContent);
+        } else if (ext === 'md') {
+            await viewMarkdown(owner, repo, path, fileContent);
+        } else if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(ext)) {
+            viewImage(downloadUrl, fileContent);
+        } else if (['sldprt', 'sldasm', 'slddrw', 'step', 'stl'].includes(ext)) {
+            viewCADFile(name, downloadUrl, fileContent);
+        } else if (['glb', 'gltf'].includes(ext)) {
+            await view3DModel(downloadUrl, fileContent);
+        } else if (['js', 'html', 'css', 'json', 'txt', 'py', 'java', 'cpp'].includes(ext)) {
+            await viewCode(downloadUrl, ext, fileContent);
+        } else {
+            viewGenericFile(name, downloadUrl, fileContent);
+        }
+    } catch (error) {
+        console.error('Error viewing file:', error);
+        fileContent.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load file</p>
+                <small>${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+// View PDF files
+async function viewPDF(url, container) {
+    container.innerHTML = `
+        <div class="pdf-viewer">
+            <iframe src="${url}" frameborder="0"></iframe>
+            <p class="pdf-fallback">
+                If the PDF doesn't load, 
+                <a href="${url}" target="_blank">click here to open it</a>
+            </p>
+        </div>
+    `;
+}
+
+// View Markdown files with proper rendering
+async function viewMarkdown(owner, repo, path, container) {
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+        const data = await response.json();
+        const content = atob(data.content); // Decode base64
+        
+        // Convert markdown to HTML (basic conversion)
+        const html = markdownToHTML(content);
+        
+        container.innerHTML = `
+            <div class="markdown-viewer">
+                ${html}
+            </div>
+        `;
+    } catch (error) {
+        throw new Error('Failed to load README');
+    }
+}
+
+// Basic Markdown to HTML converter
+function markdownToHTML(markdown) {
+    let html = markdown;
+    
+    // Headers
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+    
+    // Bold
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Italic
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Code blocks
+    html = html.replace(/```(.*?)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+    
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // Images
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
+    
+    // Lists
+    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+    
+    // Line breaks
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = '<p>' + html + '</p>';
+    
+    return html;
+}
+
+// View image files
+function viewImage(url, container) {
+    container.innerHTML = `
+        <div class="image-viewer">
+            <img src="${url}" alt="Preview" />
+        </div>
+    `;
+}
+
+// View CAD files
+function viewCADFile(name, url, container) {
+    container.innerHTML = `
+        <div class="cad-viewer">
+            <div class="cad-icon">
+                <i class="fas fa-cube fa-5x"></i>
+            </div>
+            <h3>${name}</h3>
+            <p>SOLIDWORKS/CAD file preview not available</p>
+            <a href="${url}" download class="btn-download-large">
+                <i class="fas fa-download"></i> Download ${name}
+            </a>
+            <p class="file-info">
+                <i class="fas fa-info-circle"></i>
+                Open this file in SOLIDWORKS to view the 3D model
+            </p>
+        </div>
+    `;
+}
+
+// View 3D models (GLB/GLTF)
+async function view3DModel(url, container) {
+    container.innerHTML = `
+        <div class="model-3d-viewer">
+            <div class="model-canvas" id="model3DCanvas"></div>
+            <div class="model-controls">
+                <p><i class="fas fa-mouse"></i> Drag to rotate • Scroll to zoom</p>
+            </div>
+        </div>
+    `;
+    
+    // Note: Full 3D viewer would require Three.js library
+    // For now, show placeholder
+    container.innerHTML = `
+        <div class="cad-viewer">
+            <div class="cad-icon">
+                <i class="fas fa-cube fa-5x"></i>
+            </div>
+            <h3>3D Model</h3>
+            <p>Interactive 3D viewer requires additional libraries</p>
+            <a href="${url}" download class="btn-download-large">
+                <i class="fas fa-download"></i> Download 3D Model
+            </a>
+        </div>
+    `;
+}
+
+// View code files
+async function viewCode(url, language, container) {
+    try {
+        const response = await fetch(url);
+        const code = await response.text();
+        
+        container.innerHTML = `
+            <div class="code-viewer">
+                <pre><code class="language-${language}">${escapeHtml(code)}</code></pre>
+            </div>
+        `;
+    } catch (error) {
+        throw new Error('Failed to load code');
+    }
+}
+
+// View generic files
+function viewGenericFile(name, url, container) {
+    container.innerHTML = `
+        <div class="generic-file-viewer">
+            <div class="file-icon">
+                <i class="fas fa-file fa-5x"></i>
+            </div>
+            <h3>${name}</h3>
+            <p>Preview not available for this file type</p>
+            <a href="${url}" download class="btn-download-large">
+                <i class="fas fa-download"></i> Download File
+            </a>
+        </div>
+    `;
+}
+
+// Utility: Escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Modal interactivity for project details
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Content Loaded');
@@ -1009,6 +1423,10 @@ function createProjectCard(project) {
                 ${project.demo ? `<a href="${project.demo}" class="project-link secondary" target="_blank" rel="noopener">
                     <i class="fas fa-external-link-alt"></i> Live Demo
                 </a>` : ''}
+                <button class="project-link secondary" onclick="openGitHubBrowser('${project.github}', '${project.title}')" 
+                        title="Browse repository files, PDFs, and README">
+                    <i class="fas fa-folder-open"></i> Browse Files
+                </button>
                 <button class="project-link details" onclick="openProjectModal('${project.title}')" 
                         style="background: none; border: 2px solid var(--primary-color); color: var(--primary-color);">
                     <i class="fas fa-info-circle"></i> Details
