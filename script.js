@@ -1643,8 +1643,8 @@ window.addEventListener('scroll', function() {
 });
 
 // Add CSS for ripple animation
-const style = document.createElement('style');
-style.textContent = `
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
     @keyframes ripple {
         to {
             transform: scale(4);
@@ -1652,7 +1652,7 @@ style.textContent = `
         }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(rippleStyle);
 
 // Project search functionality
 function addProjectSearch() {
@@ -2281,8 +2281,8 @@ function showTechToast(title, description) {
 }
 
 // Add required CSS animations
-const style = document.createElement('style');
-style.textContent = `
+const techStackStyle = document.createElement('style');
+techStackStyle.textContent = `
     @keyframes techIconPulse {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.2); }
@@ -2335,7 +2335,7 @@ style.textContent = `
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(techStackStyle);
 
 // Initialize tech badges on page load
 document.addEventListener('DOMContentLoaded', () => {

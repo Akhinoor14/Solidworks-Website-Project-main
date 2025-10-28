@@ -555,7 +555,7 @@
     <script src="github-projects-detector.js"></script>
     <script src="auto-refresh.js"></script>
     <script src="realtime-github-sync.js"></script>
-    <script src="github-sync.js"></script>
+    <!-- <script src="github-sync.js"></script> Temporarily disabled to fix duplicate variable error -->
     <script src="script.js?v=20251020133251"></script>
     
     <!-- Sync Notification System -->
@@ -694,10 +694,14 @@
             document.getElementById('model-viewer-modal').style.display = 'flex';
         });
     });
-    document.getElementById('close-model-viewer').onclick = function() {
-        document.getElementById('model-viewer-modal').style.display = 'none';
-        document.getElementById('inline-model-viewer').removeAttribute('src');
-    };
+    
+    const closeModelBtn = document.getElementById('close-model-viewer');
+    if (closeModelBtn) {
+        closeModelBtn.onclick = function() {
+            document.getElementById('model-viewer-modal').style.display = 'none';
+            document.getElementById('inline-model-viewer').removeAttribute('src');
+        };
+    }
     </script>
     <style>
     .day-highlight {
