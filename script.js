@@ -817,6 +817,32 @@ function closeSolidworksWindow(type) {
     }
 }
 
+// Helper: Recursively fetch all files under a directory (GitHub Contents API)
+async function fetchAllFilesRecursive(dirUrl, headers, accumulator = []) {
+    const res = await fetch(dirUrl, { headers });
+    if (!res.ok) throw new Error(`Failed to load ${dirUrl}: ${res.status}`);
+    const entries = await res.json();
+    for (const entry of entries) {
+        if (entry.type === 'file') {
+            accumulator.push(entry);
+        } else if (entry.type === 'dir') {
+            // Recurse into subdirectory
+            await fetchAllFilesRecursive(entry.url, headers, accumulator);
+        }
+    }
+    return accumulator;
+}
+
+function fileExt(name) {
+    const parts = name.split('.');
+    return parts.length > 1 ? parts.pop().toLowerCase() : '';
+}
+
+function isInterestingSwFile(name) {
+    const ext = fileExt(name);
+    return ['sldprt','sldasm','slddrw','pdf','png','jpg','jpeg','stl','step'].includes(ext);
+}
+
 // Load SOLIDWORKS content from GitHub
 async function loadSolidworksContent(type) {
     const owner = 'Akhinoor14';
@@ -834,19 +860,13 @@ async function loadSolidworksContent(type) {
         
         const items = await response.json();
         
-        // Group files by day
+        // Group files by day (recursively scan inside Day folders)
         const dayGroups = {};
-        
         for (const item of items) {
-            if (item.type === 'dir' && item.name.startsWith('Day')) {
-                const dayNum = item.name.replace('Day', '').trim();
-                const dayResponse = await fetch(item.url, { headers });
-                const dayFiles = await dayResponse.json();
-                
-                dayGroups[dayNum] = dayFiles.filter(f => 
-                    f.type === 'file' && 
-                    (f.name.endsWith('.SLDPRT') || f.name.endsWith('.SLDASM') || f.name.endsWith('.SLDDRW'))
-                );
+            if (item.type === 'dir' && /^Day\s*\d+/i.test(item.name)) {
+                const dayNum = item.name.replace(/Day\s*/i, '').trim();
+                const allFiles = await fetchAllFilesRecursive(item.url, headers);
+                dayGroups[dayNum] = allFiles.filter(f => isInterestingSwFile(f.name));
             }
         }
         
@@ -873,11 +893,13 @@ async function loadSolidworksContent(type) {
             
             files.forEach(file => {
                 const downloadUrl = file.download_url;
+                const ghUrl = file.html_url;
                 html += `
                     <li>
                         <a href="${downloadUrl}" download="${file.name}">
                             ${file.name}
                         </a>
+                        <a href="${ghUrl}" target="_blank" style="margin-left:8px; font-size:.8rem; color:#ff6666;">(GitHub)</a>
                     </li>
                 `;
             });
@@ -2024,7 +2046,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Load files from a folder (CW or HW)
+        // Load files from a folder (CW or HW) - recursively include nested files
         async function loadFolderFiles(owner, repo, folder, headers) {
             const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}`, { headers });
             
@@ -2035,14 +2057,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const items = await response.json();
             const dayGroups = {};
             
-            // Load each day folder
+            // Load each day folder recursively
             for (const item of items) {
-                if (item.type === 'dir' && item.name.startsWith('Day')) {
-                    const dayNum = item.name.replace('Day', '').trim();
-                    const dayResponse = await fetch(item.url, { headers });
-                    const dayFiles = await dayResponse.json();
-                    
-                    dayGroups[item.name] = dayFiles.filter(f => f.type === 'file');
+                if (item.type === 'dir' && /^Day\s*\d+/i.test(item.name)) {
+                    const allFiles = await fetchAllFilesRecursive(item.url, headers);
+                    dayGroups[item.name] = allFiles.filter(f => isInterestingSwFile(f.name));
                 }
             }
             
