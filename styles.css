@@ -2766,18 +2766,25 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card {
-    background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(15, 0, 0, 0.4));
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
+    background: 
+        linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(10, 0, 0, 0.85)),
+        repeating-linear-gradient(45deg, rgba(255, 0, 0, 0.03) 0px, rgba(255, 0, 0, 0.03) 2px, transparent 2px, transparent 4px);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 0, 0, 0.2);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 0, 0, 0.2),
+        inset 0 0 40px rgba(255, 0, 0, 0.05);
+    border: 2px solid rgba(255, 0, 0, 0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: block !important;
-    /* Animation will be handled by .visible class */
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
+/* Animated corner accents */
 .project-card::before {
     content: '';
     position: absolute;
@@ -2785,14 +2792,44 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 2px solid rgba(255, 0, 0, 0.4);
-    border-radius: 15px;
+    border: 3px solid transparent;
+    border-image: linear-gradient(135deg, #ff0000, transparent, transparent, #ff0000) 1;
+    border-radius: 20px;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+/* Glow effect on hover */
+.project-card::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ff0000, #cc0000, #ff3333, #ff0000);
+    background-size: 400% 400%;
+    border-radius: 20px;
+    opacity: 0;
+    z-index: -1;
+    filter: blur(20px);
+    animation: glowPulse 3s ease-in-out infinite;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes glowPulse {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .project-card:hover::before {
     opacity: 1;
+    border-width: 4px;
+}
+
+.project-card:hover::after {
+    opacity: 0.6;
 }
 
 .project-card.visible {
@@ -2805,20 +2842,35 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     opacity: 0 !important;
     transform: translateY(20px) !important;
     pointer-events: none;
-    /* Removed display:none to allow transitions */
 }
 
 .project-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-15px) scale(1.02);
     box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.6),
-        0 0 40px rgba(255, 0, 0, 0.2);
-    border-color: rgba(255, 0, 0, 0.5);
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(255, 0, 0, 0.3),
+        inset 0 0 60px rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.6);
 }
 
 .project-image {
     position: relative;
     overflow: hidden;
+    height: 280px;
+    background: linear-gradient(135deg, rgba(20, 0, 0, 0.5), rgba(10, 0, 0, 0.3));
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: brightness(0.8) contrast(1.1);
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.15) rotate(2deg);
+    filter: brightness(0.6) contrast(1.2);
 }
 
 .project-overlay {
@@ -2827,75 +2879,195 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(20, 0, 0, 0.75));
-    backdrop-filter: blur(5px);
+    background: 
+        linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 0, 0, 0.85)),
+        repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0px, transparent 2px, transparent 4px);
+    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: 1.8rem;
     opacity: 0;
-    transition: all 0.4s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
 }
 
 .project-card:hover .project-overlay {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .project-status {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .featured-badge {
     background: linear-gradient(135deg, #ff0000, #cc0000);
     color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    box-shadow: 
+        0 4px 15px rgba(255, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: featuredPulse 2s ease-in-out infinite;
+    letter-spacing: 0.5px;
+}
+
+@keyframes featuredPulse {
+    0%, 100% { 
+        box-shadow: 
+            0 4px 15px rgba(255, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% { 
+        box-shadow: 
+            0 6px 25px rgba(255, 0, 0, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
 }
 
 .category-badge {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(150, 0, 0, 0.2));
+    background: 
+        linear-gradient(135deg, rgba(255, 0, 0, 0.25), rgba(150, 0, 0, 0.15)),
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 0, 0, 0.1) 2px, rgba(255, 0, 0, 0.1) 4px);
     color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid rgba(255, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 2px solid rgba(255, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .project-content {
-    padding: 1.5rem;
+    padding: 2rem;
+    background: 
+        linear-gradient(180deg, rgba(15, 0, 0, 0.4), rgba(10, 0, 0, 0.6)),
+        repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.02) 0px, transparent 1px, transparent 3px);
+    position: relative;
+}
+
+/* Top accent line */
+.project-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff0000, transparent);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .project-title {
-    font-size: 1.35rem;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
     color: #ffffff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(255, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #ffffff, #ffcccc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+/* Underline effect */
+.project-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff0000, transparent);
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
 }
 
 .project-description {
-    color: rgba(255, 255, 255, 0.75);
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .project-features {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .feature-tag {
-    display: block;
-    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.9rem;
-    margin-bottom: 0.3rem;
+    padding: 0.4rem 0;
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.feature-tag::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
+.project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+}
+
+.tech-tag {
+    background: 
+        linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(150, 0, 0, 0.15)),
+        repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(255, 0, 0, 0.05) 1px, rgba(255, 0, 0, 0.05) 2px);
+    color: #ff6666;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tech-tag:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.4), rgba(150, 0, 0, 0.3));
+    color: #ffffff;
+    border-color: rgba(255, 0, 0, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+}
+
+.tech-more {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 0.5rem 1rem;
 }
 
 .project-tech {
@@ -2923,27 +3095,32 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .project-links {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
-    margin-top: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 0, 0, 0.2);
 }
 
 .project-link {
-    padding: 9px 18px;
-    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
     text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 0.5rem;
     cursor: pointer;
     border: none;
     position: relative;
     overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.3px;
 }
 
+/* Shine animation on hover */
 .project-link::before {
     content: '';
     position: absolute;
@@ -2951,78 +3128,156 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
 }
 
 .project-link:hover::before {
     left: 100%;
 }
 
+/* Glow effect */
+.project-link::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+.project-link:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
 .project-link.primary {
     background: linear-gradient(135deg, #ff0000, #cc0000);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 4px 15px rgba(255, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .project-link.primary:hover {
     background: linear-gradient(135deg, #ff3333, #ff0000);
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+    box-shadow: 
+        0 8px 30px rgba(255, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px) scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 .project-link.secondary {
-    background: linear-gradient(135deg, #ff3333, #ff0000);
+    background: linear-gradient(135deg, rgba(255, 51, 51, 0.3), rgba(255, 0, 0, 0.2));
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 51, 51, 0.5);
+    backdrop-filter: blur(10px);
 }
 
 .project-link.secondary:hover {
-    background: linear-gradient(135deg, #ff5555, #ff3333);
-    box-shadow: 0 6px 20px rgba(255, 51, 51, 0.4);
+    background: linear-gradient(135deg, rgba(255, 51, 51, 0.5), rgba(255, 0, 0, 0.4));
+    box-shadow: 0 8px 25px rgba(255, 51, 51, 0.4);
+    border-color: rgba(255, 51, 51, 0.8);
+    transform: translateY(-3px) scale(1.05);
 }
 
 .project-link.details {
     background: transparent;
-    border: 2px solid rgba(255, 0, 0, 0.4);
-    color: #ff3333;
+    border: 2px solid rgba(255, 0, 0, 0.5);
+    color: #ff6666;
 }
 
 .project-link.details:hover {
-    background: rgba(255, 0, 0, 0.1);
+    background: rgba(255, 0, 0, 0.15);
     border-color: #ff0000;
-    color: #ff0000;
+    color: #ffffff;
+    box-shadow: 
+        0 4px 20px rgba(255, 0, 0, 0.3),
+        inset 0 0 20px rgba(255, 0, 0, 0.1);
+    transform: translateY(-3px) scale(1.05);
 }
 
-.project-link:hover {
-    transform: translateY(-2px);
+.project-link i {
+    transition: transform 0.3s ease;
+}
+
+.project-link:hover i {
+    transform: scale(1.2);
 }
 
 .project-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 
 .view-details-btn {
-    background: linear-gradient(135deg, #ff0000, #cc0000);
+    background: 
+        linear-gradient(135deg, #ff0000, #cc0000),
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.05) 2px, rgba(255, 255, 255, 0.05) 4px);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 10px 20px;
-    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    padding: 0.85rem 1.8rem;
+    border-radius: 30px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    gap: 0.6rem;
+    box-shadow: 
+        0 6px 20px rgba(255, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.view-details-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.view-details-btn:hover::before {
+    width: 400px;
+    height: 400px;
 }
 
 .view-details-btn:hover {
-    background: linear-gradient(135deg, #ff3333, #ff0000);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(255, 0, 0, 0.5);
+    background: 
+        linear-gradient(135deg, #ff3333, #ff0000),
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.08) 2px, rgba(255, 255, 255, 0.08) 4px);
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 
+        0 10px 35px rgba(255, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.view-details-btn i {
+    transition: transform 0.3s ease;
+}
+
+.view-details-btn:hover i {
+    transform: rotate(15deg) scale(1.2);
 }
 
 .github-section {
