@@ -146,7 +146,18 @@ async function loadRepoContents(owner, repo, path = '') {
     const fileTree = document.getElementById('fileTree');
     
     try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+        // Show loading immediately
+        fileTree.innerHTML = `
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+        `;
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
         
         if (!response.ok) {
             throw new Error('Failed to load repository');
@@ -161,7 +172,7 @@ async function loadRepoContents(owner, repo, path = '') {
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>Failed to load repository</p>
-                <small>${error.message}</small>
+                <small>API rate limit or network error</small>
             </div>
         `;
     }
@@ -1390,63 +1401,50 @@ function createProjectCard(project) {
         <div class="project-image">
             <img src="${project.image}" 
                  alt="${project.title}" 
-                 style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;" 
                  loading="lazy"
-                 onerror="this.onerror=null; this.src='${fallbackImage}'; console.log('Image failed for ${project.title}, using fallback');">
+                 onerror="this.onerror=null; this.src='${fallbackImage}';">
             <div class="project-overlay">
                 <div class="project-status">
-                    ${project.featured ? '<span class="featured-badge">★ Featured</span>' : ''}
+                    ${project.featured ? '<span class="featured-badge">⭐ Featured</span>' : ''}
                     <span class="category-badge">${project.category.toUpperCase()}</span>
                 </div>
-                <div class="project-actions">
-                    <button class="view-details-btn" onclick="openProjectModal('${project.title}')" 
-                            style="background: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; margin: 5px;">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                </div>
             </div>
+            <div class="blueprint-grid"></div>
         </div>
         <div class="project-content">
-            <h3 class="project-title">${project.title}</h3>
+            <div class="content-header">
+                <h3 class="project-title">${project.title}</h3>
+                <div class="title-accent"></div>
+            </div>
             <p class="project-description">${project.shortDescription}</p>
             <div class="project-features">
-                ${project.features.slice(0, 2).map(feature => `<span class="feature-tag">• ${feature}</span>`).join('')}
+                ${project.features.slice(0, 3).map(feature => `<span class="feature-tag"><i class="fas fa-check-circle"></i> ${feature}</span>`).join('')}
             </div>
             <div class="project-tech">
-                ${project.tech.slice(0, 3).map(tech => `<span class="tech-tag" style="background: var(--primary-light); color: var(--primary-color);">${tech}</span>`).join('')}
-                ${project.tech.length > 3 ? `<span class="tech-more">+${project.tech.length - 3} more</span>` : ''}
+                ${project.tech.slice(0, 4).map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
             </div>
-            <div class="project-links">
-                <a href="${project.github}" class="project-link primary" target="_blank" rel="noopener">
-                    <i class="fab fa-github"></i> View Code
+            <div class="project-actions-grid">
+                <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
                 </a>
-                ${project.demo ? `<a href="${project.demo}" class="project-link secondary" target="_blank" rel="noopener">
-                    <i class="fas fa-external-link-alt"></i> Live Demo
+                ${project.demo ? `
+                <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Live Demo</span>
                 </a>` : ''}
-                <button class="project-link secondary" onclick="openGitHubBrowser('${project.github}', '${project.title}')" 
-                        title="Browse repository files, PDFs, and README">
-                    <i class="fas fa-folder-open"></i> Browse Files
+                <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Browse</span>
                 </button>
-                <button class="project-link details" onclick="openProjectModal('${project.title}')" 
-                        style="background: none; border: 2px solid var(--primary-color); color: var(--primary-color);">
-                    <i class="fas fa-info-circle"></i> Details
+                <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Details</span>
                 </button>
             </div>
-            ${foldersHtml}
         </div>
     `;
-    
-    // Add enhanced hover effects
-    card.addEventListener('mouseenter', () => {
-        card.style.transform = 'translateY(-15px) scale(1.02)';
-        card.style.boxShadow = '0 25px 50px rgba(0,0,0,0.15)';
-        card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.style.transform = 'translateY(0) scale(1)';
-        card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
-    });
     
     return card;
 }
