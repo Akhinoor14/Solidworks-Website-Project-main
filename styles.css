@@ -5980,6 +5980,121 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     color: #ff6600;
 }
 
+/* Toast Notification Styles */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.95);
+    border-radius: 12px;
+    padding: 0;
+    min-width: 320px;
+    max-width: 450px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 10001;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+    color: #55efc4;
+}
+
+.toast-error .toast-icon {
+    color: #ff6b6b;
+}
+
+.toast-warning .toast-icon {
+    color: #ffc371;
+}
+
+.toast-info .toast-icon {
+    color: #4ecdc4;
+}
+
+.toast-body {
+    flex: 1;
+}
+
+.toast-body strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.toast-success .toast-body strong {
+    color: #55efc4;
+}
+
+.toast-error .toast-body strong {
+    color: #ff6b6b;
+}
+
+.toast-warning .toast-body strong {
+    color: #ffc371;
+}
+
+.toast-info .toast-body strong {
+    color: #4ecdc4;
+}
+
+.toast-body p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Toast responsive */
+@media (max-width: 600px) {
+    .toast-notification {
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: none;
+    }
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .upload-dialog {

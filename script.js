@@ -1959,6 +1959,47 @@ function showUploadProgress(message) {
     document.body.appendChild(dialog);
 }
 
+// Show toast notification
+function showToast(title, message, type = 'success') {
+    // Remove existing toasts
+    const existingToasts = document.querySelectorAll('.toast-notification');
+    existingToasts.forEach(toast => toast.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-icon">
+                ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                  type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                  type === 'warning' ? '<i class="fas fa-exclamation-triangle"></i>' : 
+                  '<i class="fas fa-info-circle"></i>'}
+            </div>
+            <div class="toast-body">
+                <strong>${title}</strong>
+                <p>${message}</p>
+            </div>
+            <button class="toast-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Show with animation
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Make toast globally accessible
+window.showToast = showToast;
+
 // Read file as base64
 function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
