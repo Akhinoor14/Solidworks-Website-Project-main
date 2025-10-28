@@ -937,8 +937,16 @@ document.addEventListener('DOMContentLoaded', updateActiveNavLink);
 // Projects functionality with enhanced interactivity
 function createProjectCard(project) {
     console.log('🎴 Creating card for:', project.title);
+    
+    if (!project || !project.title) {
+        console.error('❌ Invalid project data:', project);
+        return document.createElement('div');
+    }
+    
     const card = document.createElement('div');
     card.className = `project-card ${project.category} ${project.featured ? 'featured' : ''}`;
+    
+    console.log(`✅ Card created with classes: ${card.className}`);
     
     // Create fallback image based on project type
     const fallbackImage = project.category === 'web' && project.title.includes('Arduino') 
@@ -1026,70 +1034,92 @@ function createProjectCard(project) {
 }
 
 function renderProjects(projectsToShow = sampleProjects) {
-    console.log('Rendering projects:', projectsToShow.length, 'projects');
+    console.log('🎨 Rendering projects:', projectsToShow.length, 'projects');
+    
+    if (!projectsGrid) {
+        console.error('❌ Projects grid not found!');
+        return;
+    }
     
     // Preserve embedded SOLIDWORKS card if exists
     const embedded = document.getElementById('solidworks-beginner-card');
-    const keepEmbedded = !!embedded;
     
-    // Remove all dynamically generated cards only
+    // Remove all dynamically generated cards only (keep embedded card)
     Array.from(projectsGrid.children).forEach(child => {
-        if(!keepEmbedded || child !== embedded) {
-            if(!child.id || child.id !== 'solidworks-beginner-card') {
-                child.remove();
-            }
+        if(child.id !== 'solidworks-beginner-card') {
+            child.remove();
         }
     });
     
-    // Ensure embedded card is visible
+    // Ensure embedded card is visible if it exists
     if(embedded) {
+        embedded.classList.remove('hidden');
         embedded.classList.add('visible');
         embedded.style.display = '';
+        console.log('✅ Embedded SOLIDWORKS card preserved');
     }
     
-    // Append dynamic cards after embedded card (or at start if none)
+    // Create and append dynamic cards
     projectsToShow.forEach((project, index) => {
-        // Skip if project is the embedded concept to avoid duplicate
-        if(project.title === 'SOLIDWORKS Beginner Projects') return;
+        // Skip SOLIDWORKS project since it's already embedded in HTML
+        if(project.title === 'SOLIDWORKS Beginner Projects') {
+            console.log('⏭️ Skipping SOLIDWORKS (already embedded)');
+            return;
+        }
         
-        console.log('Creating card for:', project.title);
+        console.log('🎴 Creating dynamic card for:', project.title);
         const card = createProjectCard(project);
         projectsGrid.appendChild(card);
+        
+        // Make card visible with stagger animation
         setTimeout(() => { 
+            card.classList.remove('hidden');
             card.classList.add('visible'); 
-            console.log('Card made visible:', project.title);
+            console.log('✅ Card made visible:', project.title);
         }, index * 100);
     });
     
-    console.log('Total cards in grid:', projectsGrid.children.length);
+    console.log('📊 Total cards in grid:', projectsGrid.children.length);
+    console.log('📋 Card titles:', Array.from(projectsGrid.children).map(c => c.querySelector('.project-title')?.textContent || 'Unknown'));
 }
 
 // Filter projects
 function filterProjects(category) {
-    let filteredProjects = category === 'all' 
-        ? sampleProjects 
-        : sampleProjects.filter(project => project.category === category);
-    // Ensure SOLIDWORKS project still available logically but we skip duplicate rendering
-    if(!filteredProjects.find(p=>p.title==='SOLIDWORKS Beginner Projects') && category!=='desktop' && category!=='all') {
-        // nothing to do; embedded remains but may not match filter; choose to hide if not matching
-        const embedded = document.getElementById('solidworks-beginner-card');
-        if(embedded) embedded.style.display = 'none';
-    } else {
-        const embedded = document.getElementById('solidworks-beginner-card');
-        if(embedded) embedded.style.display = '';
-    }
+    console.log('🔍 Filtering by category:', category);
     
-    // Hide all cards first
-    const cards = document.querySelectorAll('.project-card');
-    cards.forEach(card => {
-        card.classList.add('hidden');
-        card.classList.remove('visible');
-    });
+    const embedded = document.getElementById('solidworks-beginner-card');
     
-    // Show filtered projects after a short delay
-    setTimeout(() => {
+    if (category === 'all') {
+        // Show all projects
+        console.log('✅ Showing all projects');
+        if(embedded) {
+            embedded.classList.remove('hidden');
+            embedded.classList.add('visible');
+            embedded.style.display = '';
+        }
+        renderProjects(sampleProjects);
+    } else if (category === 'desktop') {
+        // Show only desktop projects (SOLIDWORKS embedded card)
+        console.log('✅ Showing desktop projects');
+        if(embedded) {
+            embedded.classList.remove('hidden');
+            embedded.classList.add('visible');
+            embedded.style.display = '';
+        }
+        // Filter other projects that are desktop category
+        const filteredProjects = sampleProjects.filter(p => p.category === 'desktop');
         renderProjects(filteredProjects);
-    }, 300);
+    } else {
+        // Show web/mobile projects, hide SOLIDWORKS
+        console.log('✅ Showing', category, 'projects');
+        if(embedded) {
+            embedded.classList.add('hidden');
+            embedded.classList.remove('visible');
+            embedded.style.display = 'none';
+        }
+        const filteredProjects = sampleProjects.filter(p => p.category === category);
+        renderProjects(filteredProjects);
+    }
 }
 
 // Filter button event listeners
@@ -1108,8 +1138,15 @@ filterBtns.forEach(btn => {
 // Initialize projects
 console.log('🎨 Initializing projects...');
 console.log('📦 Total sample projects:', sampleProjects.length);
-console.log('📋 Projects:', sampleProjects.map(p => p.title));
-renderProjects();
+console.log('📋 Projects:', sampleProjects.map(p => `${p.title} (${p.category})`));
+
+if (projectsGrid) {
+    console.log('✅ Projects grid found, rendering...');
+    renderProjects();
+    console.log('🎬 Initial render complete');
+} else {
+    console.error('❌ Projects grid element not found! Check HTML for id="projects-grid"');
+}
 
 // Contact form handling
 if (contactForm) {
