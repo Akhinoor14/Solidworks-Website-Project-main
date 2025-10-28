@@ -187,12 +187,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
 
         function showView(name){
+            console.log('🔄 Switching to view:', name);
             current = name;
             views.forEach(v=>{
                 const match = v.getAttribute('data-view') === name;
                 if(match){
                     v.removeAttribute('hidden');
                     v.classList.add('active-sw-view');
+                    console.log('✅ Showing view:', v.getAttribute('data-view'));
                 } else {
                     v.setAttribute('hidden','');
                     v.classList.remove('active-sw-view');
@@ -203,21 +205,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     const target = btn.getAttribute('data-target');
                     if(target === name || (name!== 'cw' && name !== 'hw' && target==='root')){
                         btn.setAttribute('aria-current','true');
+                        console.log('✅ Active button:', target);
                     } else {
                         btn.removeAttribute('aria-current');
                     }
                 });
         }
+        
         tiles.forEach(t=> t.addEventListener('click', ()=>{
             const target = t.getAttribute('data-target');
+            console.log('🎯 Tile clicked, target:', target);
             if(target) showView(target);
         }));
+        
         backButtons.forEach(b=> b.addEventListener('click', ()=>{
             const back = b.getAttribute('data-back');
+            console.log('⬅️ Back button clicked, going to:', back);
             if(back) showView(back);
         }));
+        
         modeBtns.forEach(mb => mb.addEventListener('click', ()=>{
             const target = mb.getAttribute('data-target');
+            console.log('🔘 Mode button clicked, target:', target);
             if(target) showView(target);
         }));
         // Keyboard support: ESC to go back if not root
@@ -802,21 +811,48 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// Active nav link tracking on scroll
+function updateActiveNavLink() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    let currentSection = '';
+    const scrollPosition = window.scrollY + 100;
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            currentSection = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentSection}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
 // Navbar background on scroll
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        if (document.documentElement.getAttribute('data-theme') === 'dark') {
-            navbar.style.background = 'rgba(17, 24, 39, 0.98)';
-        }
+        navbar.style.background = 'linear-gradient(180deg, rgba(10,10,10,0.98), rgba(20,0,0,0.98))';
+        navbar.style.boxShadow = '0 8px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.06)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        if (document.documentElement.getAttribute('data-theme') === 'dark') {
-            navbar.style.background = 'rgba(17, 24, 39, 0.95)';
-        }
+        navbar.style.background = 'linear-gradient(180deg, rgba(10,10,10,0.95), rgba(20,0,0,0.95))';
+        navbar.style.boxShadow = '0 6px 30px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 0, 0, 0.04)';
     }
+    
+    // Update active nav link
+    updateActiveNavLink();
 });
+
+// Initialize active nav link on load
+document.addEventListener('DOMContentLoaded', updateActiveNavLink);
 
 // Projects functionality
 // Projects functionality with enhanced interactivity
@@ -910,9 +946,12 @@ function createProjectCard(project) {
 }
 
 function renderProjects(projectsToShow = sampleProjects) {
+    console.log('Rendering projects:', projectsToShow.length, 'projects');
+    
     // Preserve embedded SOLIDWORKS card if exists
     const embedded = document.getElementById('solidworks-beginner-card');
     const keepEmbedded = !!embedded;
+    
     // Remove all dynamically generated cards only
     Array.from(projectsGrid.children).forEach(child => {
         if(!keepEmbedded || child !== embedded) {
@@ -921,15 +960,28 @@ function renderProjects(projectsToShow = sampleProjects) {
             }
         }
     });
-    if(embedded) embedded.classList.add('visible');
+    
+    // Ensure embedded card is visible
+    if(embedded) {
+        embedded.classList.add('visible');
+        embedded.style.display = '';
+    }
+    
     // Append dynamic cards after embedded card (or at start if none)
     projectsToShow.forEach((project, index) => {
         // Skip if project is the embedded concept to avoid duplicate
         if(project.title === 'SOLIDWORKS Beginner Projects') return;
+        
+        console.log('Creating card for:', project.title);
         const card = createProjectCard(project);
         projectsGrid.appendChild(card);
-        setTimeout(() => { card.classList.add('visible'); }, index * 100);
+        setTimeout(() => { 
+            card.classList.add('visible'); 
+            console.log('Card made visible:', project.title);
+        }, index * 100);
     });
+    
+    console.log('Total cards in grid:', projectsGrid.children.length);
 }
 
 // Filter projects
