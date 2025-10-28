@@ -412,10 +412,42 @@
                     </div>
                 </div>
                 <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
+
+                <!-- Auto Upload & Management Card (Embedded in Projects Grid) -->
+                <div class="project-card desktop visible" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.3);">
+                    <header class="sw-header">
+                        <div class="sw-header-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="fas fa-sync-alt"></i></div>
+                        <div class="sw-header-text">
+                            <h3 class="sw-card-title" style="color: #667eea;">🚀 Auto-Update System <span class="sw-badge-new">Live</span></h3>
+                            <p class="sw-intro">Upload, update, or delete SOLIDWORKS projects on GitHub and sync with this website in real-time!</p>
+                        </div>
+                    </header>
+                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
+                    <div class="sw-quick-actions" style="padding: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                            <button onclick="openCentralUpload('cw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff0000, #cc0000); padding: 0.8rem 1rem;">
+                                <i class="fas fa-upload"></i> Upload CW
+                            </button>
+                            <button onclick="openCentralUpload('hw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff3333, #ff0000); padding: 0.8rem 1rem;">
+                                <i class="fas fa-upload"></i> Upload HW
+                            </button>
+                            <button onclick="openCentralUpdate()" class="btn btn-secondary" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 0.8rem 1rem;">
+                                <i class="fas fa-edit"></i> Update Files
+                            </button>
+                            <button onclick="openCentralDelete()" class="btn btn-secondary" style="background: linear-gradient(135deg, #cc0000, #990000); padding: 0.8rem 1rem;">
+                                <i class="fas fa-trash-alt"></i> Delete Files
+                            </button>
+                            <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary" style="background: linear-gradient(135deg, #555, #333); padding: 0.8rem 1rem;">
+                                <i class="fas fa-question-circle"></i> Help
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Auto Upload Card -->
             </div>
 
-            <!-- Auto Upload Section -->
-            <div class="github-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 15px; margin: 30px 0;">
+            <!-- Auto Upload Section - Removed (Moved to Projects Grid Above) -->
+            <div class="github-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 15px; margin: 30px 0; display: none;">
                 <h3 style="color: #667eea;">🚀 Auto Upload & Management System</h3>
                 <p>Upload, update, or delete SOLIDWORKS projects on GitHub and sync with this website in real-time!</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px;">

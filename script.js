@@ -871,24 +871,30 @@ async function loadSolidworksContent(type) {
                 if (!dayResponse.ok) continue;
                 const dayContents = await dayResponse.json();
                 
+                console.log(`📂 Day ${dayNum} contents:`, dayContents.map(e => `${e.name} (${e.type})`).join(', '));
+                
                 // Check if there are subfolders (CW1, CW2, etc.)
                 const subfolders = dayContents.filter(entry => entry.type === 'dir');
                 
                 if (subfolders.length > 0) {
                     // Has subfolders - group by subfolder
+                    console.log(`✨ Day ${dayNum} has ${subfolders.length} subfolders:`, subfolders.map(s => s.name).join(', '));
                     dayGroups[dayNum] = { type: 'subfolders', data: {} };
                     for (const subfolder of subfolders) {
                         const subFiles = await fetchAllFilesRecursive(subfolder.url, headers);
                         const filtered = subFiles.filter(f => isInterestingSwFile(f.name));
                         if (filtered.length > 0) {
+                            console.log(`  🎯 ${subfolder.name}: ${filtered.length} files`);
                             dayGroups[dayNum].data[subfolder.name] = filtered;
                         }
                     }
                 } else {
                     // No subfolders - just files
+                    console.log(`📄 Day ${dayNum} has no subfolders, loading files directly`);
                     const allFiles = await fetchAllFilesRecursive(item.url, headers);
                     const filtered = allFiles.filter(f => isInterestingSwFile(f.name));
                     if (filtered.length > 0) {
+                        console.log(`  📎 Found ${filtered.length} files`);
                         dayGroups[dayNum] = { type: 'files', data: filtered };
                     }
                 }
@@ -935,9 +941,11 @@ async function loadSolidworksContent(type) {
             
             if (dayData.type === 'subfolders') {
                 // Render subfolders as separate colorful cards
+                console.log(`🎨 Rendering Day ${dayNum} with colorful subfolder cards`);
                 html += `<div class="sw-subfolder-grid">`;
                 
                 const subfolderNames = Object.keys(dayData.data).sort();
+                console.log(`  📋 Subfolders to render:`, subfolderNames);
                 subfolderNames.forEach((subfolderName, index) => {
                     const files = dayData.data[subfolderName];
                     const color = subfolderColors[index % subfolderColors.length];
@@ -1981,6 +1989,105 @@ window.closeSolidworksWindow = closeSolidworksWindow;
 window.refreshSolidworksContent = refreshSolidworksContent;
 window.uploadToSolidworks = uploadToSolidworks;
 
+// Debug helper: Test colorful cards with mock data
+window.testColorfulCards = function() {
+    console.log('🧪 Testing colorful subfolder cards...');
+    
+    const mockData = {
+        type: 'subfolders',
+        data: {
+            'CW1': [
+                { name: 'Part1.SLDPRT', download_url: '#', html_url: '#' },
+                { name: 'Assembly.SLDASM', download_url: '#', html_url: '#' }
+            ],
+            'CW2': [
+                { name: 'Drawing.SLDDRW', download_url: '#', html_url: '#' },
+                { name: 'Question.pdf', download_url: '#', html_url: '#' }
+            ],
+            'CW3': [
+                { name: 'Model.SLDPRT', download_url: '#', html_url: '#' }
+            ]
+        }
+    };
+    
+    // Temporarily replace dayGroups with mock data
+    const testDiv = document.createElement('div');
+    testDiv.style.cssText = 'position:fixed; top:100px; left:50%; transform:translateX(-50%); z-index:9999; background:rgba(0,0,0,0.95); padding:2rem; border-radius:15px; max-width:90vw; max-height:80vh; overflow:auto;';
+    testDiv.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:2px solid rgba(255,0,0,0.3); padding-bottom:0.5rem;">
+            <h3 style="color:#ff6666; margin:0;">🎨 Colorful Cards Preview</h3>
+            <button onclick="this.parentElement.parentElement.remove()" style="background:rgba(255,0,0,0.3); color:#fff; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Close</button>
+        </div>
+        <div class="sw-day-section-compact">
+            <h4 class="sw-day-title-compact">📅 Test Day <span style="color:#ff6666; font-size:0.8rem;">(5 files, 3 sections)</span></h4>
+            ${renderSubfolderCards(mockData)}
+        </div>
+    `;
+    document.body.appendChild(testDiv);
+};
+
+function renderSubfolderCards(dayData) {
+    const subfolderColors = [
+        { bg: 'rgba(255, 107, 107, 0.15)', border: 'rgba(255, 107, 107, 0.5)', accent: '#ff6b6b', icon: '🔴' },
+        { bg: 'rgba(78, 205, 196, 0.15)', border: 'rgba(78, 205, 196, 0.5)', accent: '#4ecdc4', icon: '🔵' },
+        { bg: 'rgba(255, 195, 113, 0.15)', border: 'rgba(255, 195, 113, 0.5)', accent: '#ffc371', icon: '🟠' },
+        { bg: 'rgba(162, 155, 254, 0.15)', border: 'rgba(162, 155, 254, 0.5)', accent: '#a29bfe', icon: '🟣' },
+        { bg: 'rgba(253, 121, 168, 0.15)', border: 'rgba(253, 121, 168, 0.5)', accent: '#fd79a8', icon: '🟡' },
+        { bg: 'rgba(85, 230, 193, 0.15)', border: 'rgba(85, 230, 193, 0.5)', accent: '#55efc4', icon: '🟢' }
+    ];
+    
+    let html = '<div class="sw-subfolder-grid">';
+    const subfolderNames = Object.keys(dayData.data).sort();
+    
+    subfolderNames.forEach((subfolderName, index) => {
+        const files = dayData.data[subfolderName];
+        const color = subfolderColors[index % subfolderColors.length];
+        
+        html += `
+            <div class="sw-subfolder-card" style="background: ${color.bg}; border-color: ${color.border};">
+                <div class="sw-subfolder-header" style="border-bottom-color: ${color.border};">
+                    <span class="subfolder-icon">${color.icon}</span>
+                    <h5 class="subfolder-title" style="color: ${color.accent};">${subfolderName}</h5>
+                    <span class="subfolder-count" style="background: ${color.border}; color: ${color.accent};">
+                        ${files.length} file${files.length > 1 ? 's' : ''}
+                    </span>
+                </div>
+                <div class="sw-subfolder-files">
+        `;
+        
+        files.forEach(file => {
+            const ext = fileExt(file.name).toUpperCase();
+            const baseName = file.name.replace(/\.[^/.]+$/, '');
+            
+            html += `
+                <div class="sw-subfolder-file-item">
+                    <div class="file-item-info">
+                        <span class="file-ext-badge-small" style="background: ${color.border}; color: ${color.accent};">${ext}</span>
+                        <span class="file-item-name" title="${file.name}">${baseName}</span>
+                    </div>
+                    <div class="file-item-actions">
+                        <a href="${file.download_url}" download="${file.name}" class="file-item-btn" title="Download" style="color: ${color.accent};">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        <a href="${file.html_url}" target="_blank" class="file-item-btn" title="View on GitHub" style="color: ${color.accent};">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    return html;
+}
+window.renderSubfolderCards = renderSubfolderCards;
+
 // Utility: Escape HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -2348,9 +2455,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
         
-        tiles.forEach(t=> t.addEventListener('click', ()=>{
+        tiles.forEach(t=> t.addEventListener('click', (e)=>{
             const target = t.getAttribute('data-target');
             console.log('🎯 Tile clicked, target:', target);
+            
+            // For CW/HW, open in new window instead of inline view
+            if(target === 'cw' || target === 'hw') {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🚀 Opening SOLIDWORKS window for:', target);
+                openSolidworksWindow(target);
+                return false;
+            }
+            
             if(target) showView(target);
         }));
         
@@ -2389,6 +2506,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if(e.target.classList.contains('sw-tile') && (e.key==='Enter' || e.key===' ')){
                 e.preventDefault();
                 const target = e.target.getAttribute('data-target');
+                
+                // For CW/HW, open in new window
+                if(target === 'cw' || target === 'hw') {
+                    openSolidworksWindow(target);
+                    return;
+                }
+                
                 if(target) showView(target);
             }
         });
@@ -4405,10 +4529,13 @@ function initEmbeddedProjectCard(cardId, sectionDefs) {
             }
         });
     }
-    tiles.forEach(t => t.addEventListener('click', () => {
+    tiles.forEach(t => t.addEventListener('click', (e) => {
         const target = t.getAttribute('data-target');
         if (target === 'cw' || target === 'hw') {
+            e.preventDefault();
+            e.stopPropagation();
             openSolidworksWindow(target);
+            return false;
         } else if (target) {
             showView(target);
         }
