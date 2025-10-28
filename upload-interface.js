@@ -639,9 +639,14 @@ ${formData.type} ${formData.number} - Day ${formData.day.padStart(2, '0')} uploa
 
         message += `
 
-Your project is now live and accessible!`;
+Your project is now live and accessible!
+
+🔄 Website will auto-refresh to show your new project...`;
         
         this.showNotification(message, 'success');
+        
+        // Trigger website refresh in main site
+        this.triggerWebsiteRefresh();
         
         // Also create clickable links if available
         if (uploadResult && uploadResult.folderUrl) {
@@ -650,6 +655,7 @@ Your project is now live and accessible!`;
 
 • GitHub Folder: ${uploadResult.folderUrl}
 • Repository: https://github.com/Akhinoor14/SOLIDWORKS-Projects
+• Main Website: ../index.html (Auto-refreshing now!)
 
 Click to open in new tab!`;
                 
@@ -756,6 +762,52 @@ Click to open in new tab!`;
 
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * 🔄 Trigger website refresh after successful upload
+     */
+    triggerWebsiteRefresh() {
+        console.log('🔄 Triggering website refresh...');
+        
+        // Method 1: Use localStorage to signal main website
+        localStorage.setItem('triggerRefresh', Date.now().toString());
+        localStorage.setItem('newUploadCompleted', 'true');
+        
+        // Method 2: Try to communicate with main website tab if open
+        try {
+            // Use BroadcastChannel for cross-tab communication
+            const channel = new BroadcastChannel('websiteUpdates');
+            channel.postMessage({
+                type: 'UPLOAD_COMPLETED',
+                timestamp: Date.now(),
+                action: 'FORCE_REFRESH'
+            });
+            console.log('✅ Broadcast message sent to main website');
+        } catch (error) {
+            console.log('⚠️ BroadcastChannel not supported:', error.message);
+        }
+        
+        // Method 3: Show instructions for manual refresh
+        setTimeout(() => {
+            this.showNotification(`
+🔄 Upload Complete! 
+
+To see your new project on the website:
+1. Go back to the main website tab
+2. Click the "Sync Projects" button
+3. Or refresh the page manually
+
+The website should auto-update within 1 minute!
+            `, 'info');
+        }, 3000);
+        
+        // Method 4: Offer to open main website
+        setTimeout(() => {
+            if (confirm('🌐 Would you like to open the main website to see your new project?')) {
+                window.open('../index.html', '_blank');
+            }
+        }, 5000);
     }
 }
 

@@ -132,6 +132,14 @@
                                 <span class="btn-text">Sync Projects</span>
                                 <span class="btn-icon">🔄</span>
                             </button>
+                            <button class="btn btn-status" onclick="showSyncStatus()" title="View Sync Status">
+                                <span class="btn-text">Status</span>
+                                <span class="btn-icon">📊</span>
+                            </button>
+                            <button class="btn btn-detect" title="Detect All GitHub Projects">
+                                <span class="btn-text">Detect All</span>
+                                <span class="btn-icon">🔍</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -317,12 +325,12 @@
                         <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
                         <div class="sw-header-text">
                             <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
-                            <p id="sw-intro" class="sw-intro">21 SOLIDWORKS projects across 5 days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.</p>
+                            <p id="sw-intro" class="sw-intro">23 SOLIDWORKS projects across 7 days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.</p>
                         </div>
                         <div class="sw-meta-counters" aria-label="Progress overview">
-                            <div class="sw-meta-item"><span class="sw-meta-num">11</span><span class="sw-meta-label">CW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">10</span><span class="sw-meta-label">HW</span></div>
-                            <div class="sw-meta-item"><span class="sw-meta-num">21</span><span class="sw-meta-label">Total</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">12</span><span class="sw-meta-label">CW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">11</span><span class="sw-meta-label">HW</span></div>
+                            <div class="sw-meta-item"><span class="sw-meta-num">23</span><span class="sw-meta-label">Total</span></div>
                         </div>
                     </header>
                     <nav class="sw-mode-switch" aria-label="Section selector">
@@ -549,7 +557,10 @@
         </div>
     </footer>
 
-    <!-- GitHub Auto-Sync System -->
+    <!-- Auto-Update Systems -->
+    <script src="github-projects-detector.js"></script>
+    <script src="auto-refresh.js"></script>
+    <script src="realtime-github-sync.js"></script>
     <script src="github-sync.js"></script>
     <script src="script.js?v=20251020133251"></script>
     
@@ -619,6 +630,37 @@
             
             showNotification('🧪 Check console for test results', 'info');
         };
+
+        // Status dashboard function
+        window.showSyncStatus = () => {
+            const statusInfo = `
+📊 SYNC SYSTEM STATUS
+
+🔄 Real-Time Sync: ${window.realTimeSync ? '✅ Active' : '❌ Inactive'}
+🔄 Auto-Refresh: ${window.autoRefresh ? '✅ Active' : '❌ Inactive'}  
+🔄 Manual Sync: ${githubSync ? '✅ Ready' : '❌ Not Ready'}
+
+📡 GitHub API: Testing connection...
+🌐 Cross-Tab Comm: ${typeof BroadcastChannel !== 'undefined' ? '✅ Supported' : '❌ Not Supported'}
+
+⏰ Last Check: ${localStorage.getItem('lastSyncTime') ? new Date(parseInt(localStorage.getItem('lastSyncTime'))).toLocaleTimeString() : 'Never'}
+📦 Last Upload Signal: ${localStorage.getItem('triggerRefresh') ? new Date(parseInt(localStorage.getItem('triggerRefresh'))).toLocaleTimeString() : 'None'}
+
+💡 Systems running to auto-update website when you upload to GitHub!
+            `;
+            
+            showNotification(statusInfo, 'info');
+            
+            // Test GitHub connection
+            fetch('https://api.github.com/repos/Akhinoor14/SOLIDWORKS-Projects')
+                .then(response => {
+                    const connectionStatus = response.ok ? '🟢 Connected' : '🔴 Failed';
+                    showNotification(`GitHub API Status: ${connectionStatus} (${response.status})`, response.ok ? 'success' : 'error');
+                })
+                .catch(error => {
+                    showNotification(`GitHub API Status: 🔴 Error (${error.message})`, 'error');
+                });
+        };
         
         // Enhanced manual sync function with UI feedback
         window.syncWithGitHub = async (event) => {
@@ -631,7 +673,36 @@
             
             const originalText = btn.querySelector('.btn-text').textContent;
             
-            // Initialize githubSync if not already done
+            // Use real-time sync if available, fallback to old system
+            if (typeof window.realTimeSync !== 'undefined') {
+                console.log('🔄 Using Real-Time Sync system...');
+                
+                // Show loading state
+                btn.querySelector('.btn-text').textContent = 'Syncing...';
+                btn.disabled = true;
+                
+                try {
+                    showNotification('🔄 Force syncing with GitHub...', 'info');
+                    await window.realTimeSync.forceSync();
+                    showNotification('✅ Website successfully synced with GitHub!', 'success');
+                    
+                    // Optional reload
+                    setTimeout(() => {
+                        showNotification('🔄 Refreshing to show all changes...', 'info');
+                        location.reload();
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('❌ Real-time sync failed:', error);
+                    showNotification(`❌ Sync failed: ${error.message}`, 'error');
+                } finally {
+                    btn.querySelector('.btn-text').textContent = originalText;
+                    btn.disabled = false;
+                }
+                return;
+            }
+            
+            // Fallback to old system
             if (!githubSync) {
                 if (typeof GitHubAutoSync === 'undefined') {
                     showNotification('❌ GitHub sync system not loaded', 'error');
@@ -699,8 +770,67 @@
             }
         };
         
+        // Cross-tab communication for upload notifications
+        function setupCrossTabCommunication() {
+            try {
+                const channel = new BroadcastChannel('websiteUpdates');
+                
+                channel.addEventListener('message', (event) => {
+                    console.log('📡 Received cross-tab message:', event.data);
+                    
+                    if (event.data.type === 'UPLOAD_COMPLETED') {
+                        showNotification('🆕 New upload detected from upload interface! Refreshing...', 'info');
+                        
+                        // Force refresh after 2 seconds
+                        setTimeout(() => {
+                            if (window.realTimeSync) {
+                                window.realTimeSync.forceSync();
+                            } else {
+                                location.reload();
+                            }
+                        }, 2000);
+                    }
+                });
+                
+                console.log('✅ Cross-tab communication setup successful');
+                
+            } catch (error) {
+                console.log('⚠️ Cross-tab communication not supported:', error.message);
+            }
+        }
+
+        // Check localStorage for refresh signals
+        function checkForRefreshSignals() {
+            const triggerRefresh = localStorage.getItem('triggerRefresh');
+            const newUploadCompleted = localStorage.getItem('newUploadCompleted');
+            
+            if (newUploadCompleted === 'true') {
+                console.log('🔄 Upload completion signal detected');
+                showNotification('🆕 New upload detected! Refreshing website...', 'success');
+                
+                // Clear the signal
+                localStorage.removeItem('newUploadCompleted');
+                localStorage.removeItem('triggerRefresh');
+                
+                // Force refresh
+                setTimeout(() => {
+                    if (window.realTimeSync) {
+                        window.realTimeSync.forceSync();
+                    } else {
+                        location.reload();
+                    }
+                }, 2000);
+            }
+        }
+
         // Auto-sync notification on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Setup cross-tab communication
+            setupCrossTabCommunication();
+            
+            // Check for upload signals
+            checkForRefreshSignals();
+            
             // Initialize GitHub sync system
             if (typeof GitHubAutoSync !== 'undefined') {
                 githubSync = new GitHubAutoSync('Akhinoor14', 'SOLIDWORKS-Projects');
@@ -724,6 +854,40 @@
                     console.log('✅ Sync button event listener attached');
                 } else {
                     console.warn('⚠️ Sync button not found!');
+                }
+
+                // Attach event listener to detect button
+                const detectButton = document.querySelector('.btn-detect');
+                if (detectButton) {
+                    detectButton.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        console.log('🔍 Detect All button clicked!');
+                        
+                        const btn = e.target.closest('.btn-detect');
+                        const originalText = btn.querySelector('.btn-text').textContent;
+                        
+                        try {
+                            // Show loading state
+                            btn.querySelector('.btn-text').textContent = 'Detecting...';
+                            btn.disabled = true;
+                            
+                            if (typeof detectAllGitHubProjects === 'function') {
+                                await detectAllGitHubProjects();
+                            } else {
+                                throw new Error('Detection system not loaded');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error in detect button handler:', error);
+                            showNotification(`❌ Detection failed: ${error.message}`, 'error');
+                        } finally {
+                            // Restore button state
+                            btn.querySelector('.btn-text').textContent = originalText;
+                            btn.disabled = false;
+                        }
+                    });
+                    console.log('✅ Detect button event listener attached');
+                } else {
+                    console.warn('⚠️ Detect button not found!');
                 }
                 
                 // Show loading notification initially
@@ -838,6 +1002,34 @@
     
     .sync-notification.info {
         background: linear-gradient(135deg, #17a2b8, #007bff);
+    }
+    
+    /* Status Button Styles */
+    .btn-status {
+        background: linear-gradient(135deg, #17a2b8, #007bff);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-status:hover {
+        background: linear-gradient(135deg, #138496, #0056b3);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(23, 162, 184, 0.3);
+    }
+    
+    /* Detect Button Styles */
+    .btn-detect {
+        background: linear-gradient(135deg, #fd7e14, #e63946);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-detect:hover {
+        background: linear-gradient(135deg, #e8590c, #d00000);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(253, 126, 20, 0.3);
     }
     </style>
 </body>

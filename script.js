@@ -640,46 +640,58 @@ const sampleProjects = [
                 cw: [
                     { 
                         name: "CW 1 - Day 06", 
-                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Day%2006/CW",
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2006",
                         downloads: [
                             {
                                 type: "Assembly",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/Assem1%20day%206.SLDASM"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/Assem1%20day%206.SLDASM"
                             },
                             {
                                 type: "Part 1", 
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/part1%20day%206.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/part1%20day%206.SLDPRT"
                             },
                             {
                                 type: "Part 2",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/part2%20day%206.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/part2%20day%206.SLDPRT"
                             }
                         ],
-                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/Screenshot%20day%206.png"
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/Screenshot%20day%206.png"
                     }
                 ],
-                hw: []
+                hw: [
+                    { 
+                        name: "HW 1 - Day 06", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW/Day%2006",
+                        downloads: [
+                            {
+                                type: "Part",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2006/hw%20day%206.SLDPRT"
+                            }
+                        ],
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%2006/Screenshot%20hw%20day%206.png"
+                    }
+                ]
             },
             "Day 07": {
                 cw: [
                     { 
                         name: "CW 1 - Day 07", 
-                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Day%2007/CW",
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW/Day%2007",
                         downloads: [
                             {
                                 type: "Assembly",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/Assem1%20day%207.SLDASM"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/Assem1%20day%207.SLDASM"
                             },
                             {
                                 type: "Part 1",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/part1%20day%207.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/part1%20day%207.SLDPRT"
                             },
                             {
                                 type: "Part 2", 
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/part2%20day%207.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/part2%20day%207.SLDPRT"
                             }
                         ],
-                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/Screenshot%20day%207.png"
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/Screenshot%20day%207.png"
                     }
                 ],
                 hw: []
@@ -2013,4 +2025,119 @@ document.addEventListener('DOMContentLoaded', function () {
     ]);
 });
 
-// ...existing code...
+/**
+ * 🌍 GLOBAL COUNTER UPDATE UTILITY
+ * Universal function to update all counters across the website
+ */
+window.updateAllCountersGlobally = function(totalCW = 0, totalHW = 0, totalDays = 0) {
+    console.log('🌍 [GLOBAL] Updating ALL website counters...');
+    
+    const totalProjects = totalCW + totalHW;
+    
+    try {
+        // 1. Update Hero Section - Animated Counter with data-target="23"
+        const heroCounters = document.querySelectorAll('[data-target="23"]');
+        heroCounters.forEach(counter => {
+            counter.textContent = '0';
+            counter.setAttribute('data-target', totalProjects);
+        });
+
+        // 2. Update Hero Section - Days counter with data-target="7" 
+        const daysCounters = document.querySelectorAll('[data-target="7"]');
+        daysCounters.forEach(counter => {
+            counter.textContent = '0';
+            counter.setAttribute('data-target', totalDays);
+        });
+
+        // 3. Update Hero Section - HW counter with data-target="8"
+        const hwCounters = document.querySelectorAll('[data-target="8"]');
+        hwCounters.forEach(counter => {
+            counter.textContent = '0';
+            counter.setAttribute('data-target', totalHW);
+        });
+
+        // 4. Update Static stat-number counters (23+, 3+, 8+)
+        const staticCounters = document.querySelectorAll('.stat-number');
+        staticCounters.forEach(counter => {
+            const text = counter.textContent;
+            if (text.includes('23')) {
+                counter.textContent = `${totalProjects}+`;
+            } else if (text.includes('3') && !text.includes('23')) {
+                counter.textContent = `${totalDays}+`;
+            } else if (text.includes('8')) {
+                counter.textContent = `${totalHW}+`;
+            }
+        });
+
+        // 5. Update SOLIDWORKS Meta Counters (CW, HW, Total)
+        const metaCounters = document.querySelectorAll('.sw-meta-num');
+        if (metaCounters.length >= 3) {
+            metaCounters[0].textContent = totalCW;      // CW
+            metaCounters[1].textContent = totalHW;      // HW  
+            metaCounters[2].textContent = totalProjects; // Total
+        }
+
+        // 6. Update SW Intro text
+        const swIntro = document.getElementById('sw-intro');
+        if (swIntro) {
+            swIntro.textContent = `${totalProjects} SOLIDWORKS projects across ${totalDays} days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.`;
+        }
+
+        // 7. Trigger counter animations
+        if (typeof animateCounters === 'function') {
+            setTimeout(() => animateCounters(), 100);
+        }
+
+        console.log(`✅ [GLOBAL] ALL counters updated successfully!`);
+        console.log(`📊 Global Stats: ${totalCW} CW + ${totalHW} HW = ${totalProjects} Total (${totalDays} days)`);
+
+        // 8. Dispatch custom event for other systems
+        window.dispatchEvent(new CustomEvent('countersUpdated', {
+            detail: { totalCW, totalHW, totalProjects, totalDays }
+        }));
+
+    } catch (error) {
+        console.error('❌ [GLOBAL] Error updating counters:', error);
+    }
+};
+
+/**
+ * 🔢 CALCULATE COUNTS FROM dayProjects
+ * Helper to extract counts from current dayProjects data
+ */
+window.calculateProjectCounts = function() {
+    if (!window.dayProjects) return { totalCW: 0, totalHW: 0, totalDays: 0 };
+    
+    let totalCW = 0, totalHW = 0;
+    const totalDays = Object.keys(window.dayProjects).length;
+    
+    Object.values(window.dayProjects).forEach(day => {
+        if (day.cw) totalCW += day.cw.length;
+        if (day.hw) totalHW += day.hw.length;
+    });
+    
+    return { totalCW, totalHW, totalDays };
+};
+
+/**
+ * 🎯 AUTO-UPDATE COUNTERS FROM CURRENT DATA
+ * Updates all counters based on current dayProjects
+ */
+window.refreshAllCounters = function() {
+    const counts = window.calculateProjectCounts();
+    window.updateAllCountersGlobally(counts.totalCW, counts.totalHW, counts.totalDays);
+};
+
+// Auto-refresh counters when dayProjects changes
+let dayProjectsWatcher = window.dayProjects;
+Object.defineProperty(window, 'dayProjects', {
+    get: function() { return dayProjectsWatcher; },
+    set: function(newValue) {
+        dayProjectsWatcher = newValue;
+        // Auto-update counters when data changes
+        setTimeout(() => window.refreshAllCounters(), 100);
+    }
+});
+
+console.log('🌍 Global counter utilities loaded!');
+console.log('💡 Use refreshAllCounters() to update all counters manually');
