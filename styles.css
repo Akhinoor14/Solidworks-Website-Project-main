@@ -159,23 +159,23 @@ body {
 .sw-chip:active { transform:translateY(0); }
 
 /* Dark mode support (assumes a .dark class on body or html) */
-.dark .solidworks-featured { background:linear-gradient(145deg,#1e293b,#0f172a); border:1px solid #334155; }
+.dark .solidworks-featured { background:linear-gradient(145deg,#1a0000,#0a0a0a); border:1px solid #330000; }
 .dark .solidworks-featured p, .dark .solidworks-featured .sw-hint { color:#cbd5e1; }
-.dark .sw-chip { --chip-bg:#1e293b; --chip-color:#93c5fd; }
-.dark .sw-chip:hover { background:#334155; }
-.dark .sw-section { background:#1e293b; border-color:#334155; }
-.dark .sw-section:hover { background:#24324a; border-color:#475569; }
+.dark .sw-chip { --chip-bg:#1a0000; --chip-color:#ff6666; }
+.dark .sw-chip:hover { background:#330000; }
+.dark .sw-section { background:#1a0000; border-color:#330000; }
+.dark .sw-section:hover { background:#220000; border-color:#440000; }
 .dark .folder-link { background:linear-gradient(135deg, #ff0000, #cc0000); color:#fff; border:1px solid rgba(255,255,255,0.2); }
 .dark .folder-link:hover { background:linear-gradient(135deg, #ff3333, #ff0000); box-shadow:0 4px 15px rgba(255,0,0,0.4); }
 .dark .sw-links a { color:#e2e8f0; }
 .dark .sw-links a:hover { color:#ff3333; }
-.dark .sw-modal-content { background:#0f172a; color:#e2e8f0; }
+.dark .sw-modal-content { background:#0a0a0a; color:#e2e8f0; }
 .dark .badge { background:#cc0000; }
 .dark .badge-alt { background:#990000; }
 .dark .btn.btn-outline { border-color:#ff3333; color:#ff3333; }
 .dark .btn.btn-outline:hover { background:#ff0000; color:#fff; }
-.dark .btn.btn-secondary { background:#334155; color:#e2e8f0; }
-.dark .btn.btn-secondary:hover { background:#475569; }
+.dark .btn.btn-secondary { background:#330000; color:#e2e8f0; }
+.dark .btn.btn-secondary:hover { background:#440000; }
 .dark .sw-close { color:#94a3b8; }
 .dark .sw-close:hover { color:#ffffff; }
 
@@ -190,14 +190,14 @@ body {
     grid-column: 1 / -1; 
     padding: 2.4rem 2.3rem 2rem; 
     background:
-        radial-gradient(circle at 18% 28%, rgba(180,210,255,.55), rgba(255,255,255,0) 60%),
-        radial-gradient(circle at 82% 70%, rgba(160,200,255,.45), rgba(255,255,255,0) 62%),
-        linear-gradient(130deg,#f5faff 0%, #ffffff 50%, #eef5ff 100%);
-    border: 1px solid #d9e3ee; 
+        radial-gradient(circle at 18% 28%, rgba(255,200,200,.35), rgba(255,255,255,0) 60%),
+        radial-gradient(circle at 82% 70%, rgba(255,160,160,.25), rgba(255,255,255,0) 62%),
+        linear-gradient(130deg,#fff5f5 0%, #ffffff 50%, #ffeeee 100%);
+    border: 1px solid #ffe0e0; 
     border-radius: 20px; 
     position:relative; 
     overflow:hidden; 
-    box-shadow: 0 4px 14px -4px rgba(20,40,90,.18), 0 2px 4px rgba(30,60,110,.08); 
+    box-shadow: 0 4px 14px -4px rgba(90,20,20,.18), 0 2px 4px rgba(110,30,30,.08); 
 }
 .projects-grid .solidworks-featured:before, 
 .projects-grid .solidworks-featured:after { 
@@ -209,31 +209,30 @@ body {
 }
 .projects-grid .solidworks-featured:before { 
     background-image: linear-gradient(55deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 28%),
-        repeating-linear-gradient(135deg, rgba(120,150,200,.09) 0 2px, rgba(120,150,200,0) 2px 6px);
+        repeating-linear-gradient(135deg, rgba(200,120,120,.09) 0 2px, rgba(200,120,120,0) 2px 6px);
     mix-blend-mode:overlay; 
 }
 .projects-grid .solidworks-featured:after { 
-    background: radial-gradient(circle at 65% 35%, rgba(90,130,200,.14), rgba(255,255,255,0) 55%); 
-    filter: blur(18px); 
+    background: radial-gradient(circle at 65% 35%, rgba(200,90,90,.14), rgba(255,255,255,0) 55%); 
     opacity:.55; 
 }
 .projects-grid .solidworks-featured:hover { 
-    box-shadow: 0 8px 28px -6px rgba(20,40,90,.25), 0 4px 12px rgba(30,60,110,.10); 
+    box-shadow: 0 8px 28px -6px rgba(90,20,20,.25), 0 4px 12px rgba(110,30,30,.10); 
 }
 .dark .projects-grid .solidworks-featured { 
     background:
-        radial-gradient(circle at 18% 28%, rgba(56,85,140,.45), rgba(15,23,42,0) 62%),
-        radial-gradient(circle at 82% 70%, rgba(40,70,120,.35), rgba(15,23,42,0) 65%),
-        linear-gradient(135deg,#0f172a 0%, #162337 55%, #1e2f47 100%);
-    border-color:#253447; 
-    box-shadow: 0 4px 16px -4px rgba(0,0,0,.55), 0 0 0 1px rgba(60,90,140,.25); 
+        radial-gradient(circle at 18% 28%, rgba(140,56,56,.35), rgba(15,10,10,0) 62%),
+        radial-gradient(circle at 82% 70%, rgba(120,40,40,.25), rgba(15,10,10,0) 65%),
+        linear-gradient(135deg,#0a0a0a 0%, #1a0000 55%, #2a0000 100%);
+    border-color:#330000; 
+    box-shadow: 0 4px 16px -4px rgba(0,0,0,.55), 0 0 0 1px rgba(140,60,60,.25); 
 }
 .dark .projects-grid .solidworks-featured:before { 
     background-image: linear-gradient(55deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 30%),
-        repeating-linear-gradient(135deg, rgba(120,170,250,.06) 0 2px, rgba(120,170,250,0) 2px 6px); 
+        repeating-linear-gradient(135deg, rgba(250,120,120,.06) 0 2px, rgba(250,120,120,0) 2px 6px); 
 }
 .dark .projects-grid .solidworks-featured:after { 
-    background: radial-gradient(circle at 70% 40%, rgba(120,170,250,.18), rgba(15,23,42,0) 60%); 
+    background: radial-gradient(circle at 70% 40%, rgba(250,120,120,.18), rgba(15,10,10,0) 60%); 
 }
 
 /* Calmer tile aesthetic & focus states */
@@ -1344,8 +1343,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .btn-outline {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.4);
     color: #ffffff;
     font-weight: 600;
@@ -1480,11 +1478,10 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     padding: 3rem;
     border-radius: 20px;
     background: 
-        linear-gradient(135deg, rgba(20, 0, 0, 0.4), rgba(10, 0, 0, 0.3)),
+        linear-gradient(135deg, rgba(20, 0, 0, 0.5), rgba(10, 0, 0, 0.4)),
         url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="none" stroke="rgba(255,0,0,0.1)" stroke-width="0.5" x="10" y="10" width="80" height="80"/><line stroke="rgba(255,0,0,0.1)" stroke-width="0.5" x1="10" y1="50" x2="90" y2="50"/><line stroke="rgba(255,0,0,0.1)" stroke-width="0.5" x1="50" y1="10" x2="50" y2="90"/><circle fill="none" stroke="rgba(255,0,0,0.15)" stroke-width="0.5" cx="50" cy="50" r="35"/></svg>');
     background-size: cover, 100px 100px;
     background-position: center, center;
-    backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 0, 0, 0.2);
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.4),
@@ -2769,7 +2766,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: 
         linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(10, 0, 0, 0.85)),
         repeating-linear-gradient(45deg, rgba(255, 0, 0, 0.03) 0px, rgba(255, 0, 0, 0.03) 2px, transparent 2px, transparent 4px);
-    backdrop-filter: blur(15px);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 
@@ -2777,11 +2773,10 @@ h1, h2, h3, h4, h5, h6, p, span, div {
         0 0 0 1px rgba(255, 0, 0, 0.2),
         inset 0 0 40px rgba(255, 0, 0, 0.05);
     border: 2px solid rgba(255, 0, 0, 0.2);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: block !important;
-    transform-style: preserve-3d;
-    perspective: 1000px;
+    will-change: transform;
 }
 
 /* Animated corner accents */
@@ -2813,9 +2808,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     border-radius: 20px;
     opacity: 0;
     z-index: -1;
-    filter: blur(20px);
-    animation: glowPulse 3s ease-in-out infinite;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.4s ease;
 }
 
 @keyframes glowPulse {
@@ -2829,7 +2822,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card:hover::after {
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .project-card.visible {
@@ -2845,10 +2838,10 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card:hover {
-    transform: translateY(-15px) scale(1.02);
+    transform: translateY(-10px) scale(1.01);
     box-shadow: 
         0 20px 60px rgba(0, 0, 0, 0.8),
-        0 0 60px rgba(255, 0, 0, 0.3),
+        0 0 30px rgba(255, 0, 0, 0.3),
         inset 0 0 60px rgba(255, 0, 0, 0.1);
     border-color: rgba(255, 0, 0, 0.6);
 }
@@ -2869,7 +2862,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card:hover .project-image img {
-    transform: scale(1.15) rotate(2deg);
+    transform: scale(1.1);
     filter: brightness(0.6) contrast(1.2);
 }
 
@@ -2882,13 +2875,12 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: 
         linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 0, 0, 0.85)),
         repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0px, transparent 2px, transparent 4px);
-    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 1.8rem;
     opacity: 0;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateY(20px);
 }
 
@@ -2944,7 +2936,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     font-size: 0.85rem;
     font-weight: 700;
     border: 2px solid rgba(255, 0, 0, 0.5);
-    backdrop-filter: blur(15px);
+    background: rgba(20, 0, 0, 0.8);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -3042,7 +3034,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .tech-tag {
     background: 
-        linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(150, 0, 0, 0.15)),
+        linear-gradient(135deg, rgba(255, 0, 0, 0.25), rgba(150, 0, 0, 0.2)),
         repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(255, 0, 0, 0.05) 1px, rgba(255, 0, 0, 0.05) 2px);
     color: #ff6666;
     padding: 0.5rem 1rem;
@@ -3050,9 +3042,9 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     font-size: 0.85rem;
     font-weight: 600;
     border: 1px solid rgba(255, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    will-change: transform;
 }
 
 .tech-tag:hover {
@@ -3169,22 +3161,21 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     box-shadow: 
         0 8px 30px rgba(255, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px) scale(1.03);
     border-color: rgba(255, 255, 255, 0.5);
 }
 
 .project-link.secondary {
-    background: linear-gradient(135deg, rgba(255, 51, 51, 0.3), rgba(255, 0, 0, 0.2));
+    background: linear-gradient(135deg, rgba(255, 51, 51, 0.35), rgba(255, 0, 0, 0.25));
     color: white;
     border: 2px solid rgba(255, 51, 51, 0.5);
-    backdrop-filter: blur(10px);
 }
 
 .project-link.secondary:hover {
     background: linear-gradient(135deg, rgba(255, 51, 51, 0.5), rgba(255, 0, 0, 0.4));
     box-shadow: 0 8px 25px rgba(255, 51, 51, 0.4);
     border-color: rgba(255, 51, 51, 0.8);
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px) scale(1.03);
 }
 
 .project-link.details {
@@ -3200,7 +3191,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     box-shadow: 
         0 4px 20px rgba(255, 0, 0, 0.3),
         inset 0 0 20px rgba(255, 0, 0, 0.1);
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px) scale(1.03);
 }
 
 .project-link i {
@@ -3265,7 +3256,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: 
         linear-gradient(135deg, #ff3333, #ff0000),
         repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.08) 2px, rgba(255, 255, 255, 0.08) 4px);
-    transform: translateY(-4px) scale(1.08);
+    transform: translateY(-3px) scale(1.05);
     box-shadow: 
         0 10px 35px rgba(255, 0, 0, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -3277,14 +3268,13 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .view-details-btn:hover i {
-    transform: rotate(15deg) scale(1.2);
+    transform: rotate(15deg) scale(1.1);
 }
 
 .github-section {
     text-align: center;
     padding: 3.5rem 2.5rem;
-    background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(15, 0, 0, 0.4));
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.7), rgba(15, 0, 0, 0.5));
     border-radius: 20px;
     border: 1px solid rgba(255, 0, 0, 0.3);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -4177,3 +4167,39 @@ h1, h2, h3, h4, h5, h6, p, span, div {
         width: calc(100vw - 2rem);
     }
 }
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Disable heavy animations for devices that prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .project-card::after {
+        animation: none !important;
+    }
+}
+
+/* Optimize animations for better performance */
+.project-card,
+.project-link,
+.tech-tag,
+.view-details-btn {
+    will-change: transform;
+}
+
+/* Remove will-change after transition completes */
+.project-card:not(:hover),
+.project-link:not(:hover),
+.tech-tag:not(:hover),
+.view-details-btn:not(:hover) {
+    will-change: auto;
+}
+
