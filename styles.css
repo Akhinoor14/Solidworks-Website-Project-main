@@ -2198,29 +2198,46 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 /* Sections */
 .section-title {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 1rem;
-    color: var(--text-color);
+    color: #ffffff;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff0000, transparent);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .section-subtitle {
     text-align: center;
-    color: var(--text-light);
-    font-size: 1.1rem;
-    margin-bottom: 3rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.15rem;
+    margin-bottom: 3.5rem;
+    margin-top: 1.5rem;
 }
 
 /* About Section */
 .about {
     padding: 100px 0;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 50%, #0a0a0a 100%);
     position: relative;
     overflow: hidden;
 }
 
-/* Animated gradient background */
+/* Blueprint Grid Background - Vertical Lines Pattern */
 .about::before {
     content: '';
     position: absolute;
@@ -2228,15 +2245,16 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(150, 0, 0, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(100, 0, 0, 0.03) 0%, transparent 50%);
-    animation: gradientShift 15s ease infinite;
+    background-image: 
+        repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255, 0, 0, 0.08) 49px, rgba(255, 0, 0, 0.08) 50px),
+        repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255, 0, 0, 0.08) 49px, rgba(255, 0, 0, 0.08) 50px);
+    background-size: 250px 250px;
+    animation: blueprintSlide 40s linear infinite;
     pointer-events: none;
+    opacity: 0.5;
 }
 
-/* Floating particles effect */
+/* Technical Measurement Markers */
 .about::after {
     content: '';
     position: absolute;
@@ -2245,35 +2263,19 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     top: 0;
     left: 0;
     background-image: 
-        radial-gradient(2px 2px at 20% 30%, rgba(255, 0, 0, 0.2), transparent),
-        radial-gradient(2px 2px at 60% 70%, rgba(200, 0, 0, 0.2), transparent),
-        radial-gradient(1px 1px at 50% 50%, rgba(150, 0, 0, 0.2), transparent),
-        radial-gradient(1px 1px at 80% 10%, rgba(255, 0, 0, 0.2), transparent),
-        radial-gradient(2px 2px at 90% 60%, rgba(180, 0, 0, 0.2), transparent);
-    background-size: 200px 200px, 300px 300px, 250px 250px, 280px 280px, 220px 220px;
-    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px, 150px 50px;
-    animation: particlesFloat 60s linear infinite;
+        linear-gradient(90deg, rgba(255, 0, 0, 0.15) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 0, 0, 0.15) 1px, transparent 1px);
+    background-size: 100px 100px;
     pointer-events: none;
-    opacity: 0.4;
+    opacity: 0.3;
 }
 
-@keyframes gradientShift {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.1) rotate(5deg);
-    }
-}
-
-@keyframes particlesFloat {
+@keyframes blueprintSlide {
     0% {
-        transform: translateY(0);
+        transform: translateX(0) translateY(0);
     }
     100% {
-        transform: translateY(-100px);
+        transform: translateX(50px) translateY(50px);
     }
 }
 
@@ -2282,7 +2284,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     z-index: 1;
 }
 
-/* Decorative shapes */
+/* Decorative shapes - Engineering Corner Markers */
 .about-decorations {
     position: absolute;
     width: 100%;
@@ -2295,48 +2297,44 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .about-shape {
     position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.15;
-    animation: floatShape 20s ease-in-out infinite;
+    width: 150px;
+    height: 150px;
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    opacity: 0.4;
 }
 
 .about-shape-1 {
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    top: 10%;
-    left: 5%;
-    animation-delay: 0s;
+    top: 50px;
+    left: 50px;
+    border-left: none;
+    border-bottom: none;
+    animation: pulseCorner 3s ease-in-out infinite;
 }
 
 .about-shape-2 {
-    width: 250px;
-    height: 250px;
-    background: linear-gradient(135deg, var(--secondary-color), #ed64a6);
-    bottom: 15%;
-    right: 10%;
-    animation-delay: 5s;
+    bottom: 50px;
+    right: 50px;
+    border-right: none;
+    border-top: none;
+    animation: pulseCorner 3s ease-in-out infinite 1.5s;
 }
 
 .about-shape-3 {
-    width: 200px;
-    height: 200px;
-    background: linear-gradient(135deg, #ed64a6, var(--primary-color));
-    top: 50%;
-    right: 5%;
-    animation-delay: 10s;
+    top: 50px;
+    right: 50px;
+    border-right: none;
+    border-bottom: none;
+    animation: pulseCorner 3s ease-in-out infinite 0.75s;
 }
 
-@keyframes floatShape {
+@keyframes pulseCorner {
     0%, 100% {
-        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
+        box-shadow: 0 0 0 rgba(255, 0, 0, 0);
     }
-    33% {
-        transform: translate(30px, -30px) scale(1.1);
-    }
-    66% {
-        transform: translate(-20px, 20px) scale(0.9);
+    50% {
+        opacity: 0.6;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
     }
 }
 
@@ -2345,28 +2343,48 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     grid-template-columns: 2fr 1fr;
     gap: 4rem;
     align-items: start;
+    position: relative;
+    z-index: 1;
 }
 
 .about-text {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.4), rgba(15, 0, 0, 0.2));
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.2);
     border-radius: 20px;
     padding: 2.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.about-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.08), transparent);
+    transition: left 0.6s ease;
+}
+
+.about-text:hover::before {
+    left: 100%;
 }
 
 .about-text:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(255, 0, 0, 0.15);
-    border-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 12px 40px rgba(255, 0, 0, 0.25);
+    border-color: rgba(255, 0, 0, 0.4);
 }
 
 .about-text h3 {
-    color: var(--primary-color);
-    font-size: 1.3rem;
+    color: #ff3333;
+    font-size: 1.4rem;
     margin-bottom: 1rem;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
 
 .skills {
@@ -2378,9 +2396,9 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .skill-category h4 {
-    color: var(--text-color);
+    color: #ffffff;
     margin-bottom: 1rem;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -2388,7 +2406,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .skill-category h4 i {
-    color: var(--primary-color);
+    color: #ff3333;
     font-size: 1rem;
 }
 
@@ -2512,6 +2530,42 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 /* Projects Section */
 .projects {
     padding: 100px 0;
+    background: linear-gradient(180deg, #0a0a0a 0%, #150000 50%, #0a0a0a 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Diagonal Grid Pattern */
+.projects::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 49px, rgba(255, 0, 0, 0.06) 49px, rgba(255, 0, 0, 0.06) 50px),
+        repeating-linear-gradient(-45deg, transparent, transparent 49px, rgba(255, 0, 0, 0.06) 49px, rgba(255, 0, 0, 0.06) 50px);
+    background-size: 200px 200px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* Corner Brackets */
+.projects::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        linear-gradient(90deg, rgba(255, 0, 0, 0.2) 2px, transparent 2px),
+        linear-gradient(0deg, rgba(255, 0, 0, 0.2) 2px, transparent 2px);
+    background-size: 150px 150px;
+    background-position: 0 0;
+    pointer-events: none;
+    opacity: 0.2;
 }
 
 .project-filters {
@@ -2524,20 +2578,40 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .filter-btn {
     padding: 10px 20px;
-    border: 2px solid var(--border-color);
-    background: transparent;
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(20, 0, 0, 0.4), rgba(10, 0, 0, 0.6));
+    backdrop-filter: blur(10px);
     border-radius: 25px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-weight: 500;
-    color: var(--text-color);
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.filter-btn:hover::before {
+    left: 100%;
 }
 
 .filter-btn.active,
 .filter-btn:hover {
-    background: var(--primary-color);
+    background: linear-gradient(135deg, #ff0000, #cc0000);
     color: white;
-    border-color: var(--primary-color);
+    border-color: #ff0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+    transform: translateY(-2px);
 }
 
 .projects-grid {
@@ -2548,13 +2622,33 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card {
-    background: var(--bg-color);
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(15, 0, 0, 0.4));
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
     transform: translateY(20px);
+    position: relative;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid rgba(255, 0, 0, 0.4);
+    border-radius: 15px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
 }
 
 .project-card.visible {
@@ -2564,7 +2658,10 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .project-card:hover {
     transform: translateY(-10px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.5);
 }
 
 .project-image {
@@ -2578,13 +2675,14 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(20, 0, 0, 0.75));
+    backdrop-filter: blur(5px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1.5rem;
     opacity: 0;
-    transition: var(--transition);
+    transition: all 0.4s ease;
 }
 
 .project-card:hover .project-overlay {
@@ -2598,21 +2696,25 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .featured-badge {
-    background: #fbbf24;
-    color: #92400e;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .category-badge {
-    background: var(--primary-color);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(150, 0, 0, 0.2));
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: 600;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
 }
 
 .project-content {
@@ -2620,14 +2722,15 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-title {
-    font-size: 1.3rem;
+    font-size: 1.35rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
+    margin-bottom: 0.6rem;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .project-description {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.75);
     margin-bottom: 1rem;
     line-height: 1.6;
 }
@@ -2638,9 +2741,9 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .feature-tag {
     display: block;
-    color: var(--text-light);
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
 }
 
 .project-tech {
@@ -2651,17 +2754,18 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .tech-tag {
-    background: var(--primary-light);
-    color: var(--primary-color);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.25), rgba(150, 0, 0, 0.15));
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.78rem;
+    border: 1px solid rgba(255, 0, 0, 0.3);
     font-weight: 500;
 }
 
 .tech-more {
-    color: var(--text-light);
-    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
     padding: 4px 8px;
 }
 
@@ -2708,32 +2812,93 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .github-section {
     text-align: center;
-    padding: 3rem 2rem;
-    background: var(--bg-secondary);
-    border-radius: 15px;
+    padding: 3.5rem 2.5rem;
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(15, 0, 0, 0.4));
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.github-section::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.4), transparent, rgba(255, 0, 0, 0.4));
+    border-radius: 20px;
+    z-index: -1;
+    animation: borderPulse 4s ease-in-out infinite;
+}
+
+@keyframes borderPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
 }
 
 .github-section h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: var(--text-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
 
 .github-section p {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.75);
     margin-bottom: 2rem;
+    font-size: 1.05rem;
 }
 
 /* Contact Section */
 .contact {
     padding: 100px 0;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hexagonal Grid Pattern */
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 0, 0, 0.05) 40px, rgba(255, 0, 0, 0.05) 41px),
+        repeating-linear-gradient(60deg, transparent, transparent 40px, rgba(255, 0, 0, 0.05) 40px, rgba(255, 0, 0, 0.05) 41px),
+        repeating-linear-gradient(120deg, transparent, transparent 40px, rgba(255, 0, 0, 0.05) 40px, rgba(255, 0, 0, 0.05) 41px);
+    background-size: 80px 140px;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* Radial Grid Accent */
+.contact::after {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 .contact-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
+    position: relative;
+    z-index: 1;
 }
 
 .contact-info {
@@ -2746,46 +2911,104 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem;
-    background: var(--bg-color);
-    border-radius: 10px;
-    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.5), rgba(15, 0, 0, 0.3));
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.contact-item:hover::before {
+    left: 100%;
+}
+
+.contact-item:hover {
+    transform: translateX(8px);
+    border-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 8px 30px rgba(255, 0, 0, 0.2);
 }
 
 .contact-icon {
-    width: 50px;
-    height: 50px;
-    background: var(--primary-light);
-    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(150, 0, 0, 0.2));
+    border-radius: 12px;
+    border: 2px solid rgba(255, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-color);
-    font-size: 1.2rem;
+    color: #ff3333;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+}
+
+.contact-item:hover .contact-icon {
+    transform: rotate(360deg) scale(1.1);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.5), rgba(200, 0, 0, 0.3));
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
 }
 
 .contact-details h4 {
     font-weight: 600;
-    margin-bottom: 0.25rem;
-    color: var(--text-color);
+    margin-bottom: 0.4rem;
+    color: #ffffff;
+    font-size: 1.1rem;
 }
 
 .contact-details p,
 .contact-details a {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     transition: var(--transition);
 }
 
 .contact-details a:hover {
-    color: var(--primary-color);
+    color: #ff3333;
 }
 
 .contact-form {
-    background: var(--bg-color);
-    padding: 2rem;
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.5), rgba(15, 0, 0, 0.3));
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
     border-radius: 15px;
-    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), transparent, rgba(255, 0, 0, 0.3));
+    border-radius: 15px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
 }
 
 .form-group {
@@ -2795,27 +3018,49 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 .form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 12px 16px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
+    padding: 14px 18px;
+    border: 2px solid rgba(255, 0, 0, 0.25);
+    border-radius: 10px;
     font-size: 1rem;
-    transition: var(--transition);
-    background: var(--bg-color);
-    color: var(--text-color);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, rgba(20, 0, 0, 0.4), rgba(10, 0, 0, 0.2));
+    color: #ffffff;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: #ff0000;
+    background: linear-gradient(135deg, rgba(30, 0, 0, 0.5), rgba(15, 0, 0, 0.3));
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
 }
 
 /* Footer */
 .footer {
-    background: var(--text-color);
-    color: var(--bg-color);
-    padding: 2rem 0;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a0000 100%);
+    color: #ffffff;
+    padding: 3rem 0 2rem 0;
     text-align: center;
+    border-top: 2px solid rgba(255, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ff0000, transparent);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .footer .container {
@@ -2824,6 +3069,8 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .social-links {
@@ -2835,18 +3082,41 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(150, 0, 0, 0.2));
+    color: #ffffff;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 0, 0, 0.4);
     text-decoration: none;
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 0, 0, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+.social-link:hover::before {
+    width: 100%;
+    height: 100%;
 }
 
 .social-link:hover {
-    transform: translateY(-3px);
-    background: var(--secondary-color);
+    transform: translateY(-5px) rotate(5deg);
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    border-color: #ff0000;
+    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4);
 }
 
 /* SOLIDWORKS Project Folders (CW/HW) Interactive Section */
