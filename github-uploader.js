@@ -189,8 +189,11 @@ class GitHubUploader {
         let uploadedCount = 0;
         
         try {
+            console.log(`🚀 Starting upload to folder: ${folderPath}`);
+            
             // Upload each file
             for (const file of files) {
+                console.log(`📤 Uploading file: ${file.name} (${file.size} bytes)`);
                 const result = await this.uploadFile(folderPath, file);
                 uploadResults.push(result);
                 uploadedCount++;
@@ -247,11 +250,16 @@ class GitHubUploader {
                 branch: this.config.branch
             };
             
-            // Check if file already exists
-            const existingFile = await this.checkFileExists(filePath);
-            if (existingFile) {
-                requestData.sha = existingFile.sha;
-                console.log(`Updating existing file: ${filePath}`);
+            // Check if file already exists (skip for new uploads to avoid 404 errors)
+            try {
+                const existingFile = await this.checkFileExists(filePath);
+                if (existingFile) {
+                    requestData.sha = existingFile.sha;
+                    console.log(`Updating existing file: ${filePath}`);
+                }
+            } catch (error) {
+                // File doesn't exist yet, which is normal for new uploads
+                console.log(`File ${filePath} doesn't exist yet, creating new file`);
             }
             
             // Upload file
@@ -295,10 +303,15 @@ class GitHubUploader {
                 branch: this.config.branch
             };
             
-            // Check if file already exists
-            const existingFile = await this.checkFileExists(filePath);
-            if (existingFile) {
-                requestData.sha = existingFile.sha;
+            // Check if file already exists (skip for new uploads to avoid 404 errors)
+            try {
+                const existingFile = await this.checkFileExists(filePath);
+                if (existingFile) {
+                    requestData.sha = existingFile.sha;
+                }
+            } catch (error) {
+                // File doesn't exist yet, which is normal for new uploads
+                console.log(`README ${filePath} doesn't exist yet, creating new file`);
             }
             
             const response = await this.makeRequest(
@@ -352,7 +365,11 @@ class GitHubUploader {
         const numberPadded = number.toString().padStart(2, '0');
         
         // Follow existing pattern: CW/Day 06/cw 01 day 6
-        return `${type}/Day ${dayPadded}/${type.toLowerCase()} ${numberPadded} day ${parseInt(day)}`;
+        const path = `${type}/Day ${dayPadded}/${type.toLowerCase()} ${numberPadded} day ${parseInt(day)}`;
+        console.log(`📁 Generated folder path: "${path}"`);
+        console.log(`📋 Parameters: day=${day}, type=${type}, number=${number}`);
+        
+        return path;
     }
 
     /**
@@ -538,6 +555,11 @@ ${this.generateTechnicalSpecs(filesByType)}
         const baseUrl = customBaseUrl || this.config.apiBase;
         const url = `${baseUrl}/${endpoint}`;
         
+        console.log(`🔍 GitHub API Request: ${method} ${url}`);
+        if (data && method === 'PUT') {
+            console.log(`📝 Request data keys:`, Object.keys(data));
+        }
+        
         const options = {
             method: method,
             headers: {
@@ -556,7 +578,25 @@ ${this.generateTechnicalSpecs(filesByType)}
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+            console.error(`❌ API Error: ${method} ${url}`);
+            console.error(`❌ Status: ${response.status} ${response.statusText}`);
+            console.error(`❌ Error details:`, errorData);
+            
+            // Provide helpful error messages
+            if (response.status === 404) {
+                if (url.includes('/contents/')) {
+                    throw new Error(`File path not found. This might be the first upload to this folder. Original error: ${errorMessage}`);
+                } else {
+                    throw new Error(`Repository not found or you don't have access. Check repository name and token permissions. Original error: ${errorMessage}`);
+                }
+            } else if (response.status === 403) {
+                throw new Error(`Access forbidden. Your token might not have sufficient permissions. Ensure it has 'repo' scope. Original error: ${errorMessage}`);
+            } else if (response.status === 401) {
+                throw new Error(`Authentication failed. Please check your GitHub token. Original error: ${errorMessage}`);
+            }
+            
+            throw new Error(errorMessage);
         }
 
         return await response.json();
