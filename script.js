@@ -1090,9 +1090,16 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.add('floating-animation');
     });
     
-    // Initialize counters on page load (keep existing values from HTML)
-    // Don't reset to 0, just prepare for updates
-    console.log('✅ Page loaded - counters ready');
+    // Initialize counters on page load
+    if (typeof window.refreshAllCounters === 'function') {
+        // Wait a bit for dayProjects to be fully loaded
+        setTimeout(() => {
+            window.refreshAllCounters();
+            console.log('✅ Counters initialized from dayProjects');
+        }, 500);
+    } else {
+        console.log('✅ Page loaded - counters ready');
+    }
 });
 
 // Counter animation for stats - SIMPLE VERSION (no reset to 0)
@@ -2067,16 +2074,12 @@ window.updateAllCountersGlobally = function(totalCW = 0, totalHW = 0, totalDays 
             counter.textContent = totalHW; // Direct value
         });
 
-        // 4. Update Static counters (23+, 3+, 8+)
-        const staticCounters = document.querySelectorAll('.stat-number');
-        staticCounters.forEach(counter => {
-            const text = counter.textContent;
-            if (text.includes('23')) {
-                counter.textContent = `${totalProjects}+`;
-            } else if (text.includes('3') && !text.includes('23')) {
-                counter.textContent = `${totalDays}+`;
-            } else if (text.includes('8')) {
-                counter.textContent = `${totalHW}+`;
+        // 4. Update Hero Static counters only (not About section)
+        const heroStaticCounters = document.querySelectorAll('.hero-stats .stat-number');
+        heroStaticCounters.forEach(counter => {
+            const target = counter.getAttribute('data-target');
+            if (target) {
+                counter.textContent = counter.getAttribute('data-target');
             }
         });
 
