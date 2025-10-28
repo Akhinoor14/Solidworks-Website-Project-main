@@ -4920,6 +4920,310 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     font-size: 1.4rem;
 }
 
+/* Compact SOLIDWORKS Window Styles */
+.sw-day-section-compact {
+    margin-bottom: 1.5rem;
+    background: rgba(255, 0, 0, 0.03);
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    border-left: 4px solid rgba(255, 0, 0, 0.5);
+}
+
+.sw-day-title-compact {
+    color: #ff3333;
+    font-size: 1.1rem;
+    margin: 0 0 0.8rem 0;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Grid layout for individual file cards */
+.sw-file-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.8rem;
+}
+
+.sw-file-card-compact {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.sw-file-card-compact:hover {
+    background: rgba(255, 0, 0, 0.08);
+    border-color: rgba(255, 0, 0, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+}
+
+.sw-file-header-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.file-name-compact {
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.sw-file-actions-compact {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+.sw-file-btn-compact {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6666;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sw-file-btn-compact:hover {
+    background: rgba(255, 0, 0, 0.4);
+    color: #ffffff;
+    border-color: rgba(255, 0, 0, 0.6);
+    transform: scale(1.05);
+}
+
+.file-ext-badge {
+    background: rgba(255, 0, 0, 0.4);
+    color: #ff3333;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+/* Subfolder Grid - for CW1, CW2, etc. */
+.sw-subfolder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.2rem;
+    margin-top: 0.8rem;
+}
+
+.sw-subfolder-card {
+    background: rgba(255, 0, 0, 0.05);
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sw-subfolder-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.sw-subfolder-header {
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 2px solid rgba(255, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.subfolder-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.subfolder-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    flex: 1;
+    text-transform: uppercase;
+}
+
+.subfolder-count {
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.sw-subfolder-files {
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sw-subfolder-file-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s ease;
+}
+
+.sw-subfolder-file-item:hover {
+    background: rgba(0, 0, 0, 0.35);
+    transform: translateX(4px);
+}
+
+.file-item-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    overflow: hidden;
+}
+
+.file-ext-badge-small {
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.file-item-name {
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-item-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.file-item-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.file-item-btn:hover {
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.15) rotate(5deg);
+}
+
+/* Legacy list styles - kept for embedded views */
+.sw-file-list-compact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.4rem;
+}
+
+.sw-file-list-compact li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.sw-file-list-compact li:hover {
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.sw-file-list-compact a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sw-file-list-compact a:hover {
+    color: #ff6666;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments for subfolder cards */
+@media (max-width: 768px) {
+    .sw-subfolder-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .sw-subfolder-card:hover {
+        transform: translateY(-2px) scale(1.01);
+    }
+    
+    .subfolder-icon {
+        font-size: 1.1rem;
+    }
+    
+    .subfolder-title {
+        font-size: 0.9rem;
+    }
+    
+    .file-item-name {
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .sw-subfolder-grid {
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    }
+}
+
 /* Markdown Viewer */
 .markdown-viewer {
     background: rgba(255, 255, 255, 0.05);

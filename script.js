@@ -860,15 +860,50 @@ async function loadSolidworksContent(type) {
         
         const items = await response.json();
         
-        // Group files by day (recursively scan inside Day folders)
+        // Group files by day and subfolders
         const dayGroups = {};
         for (const item of items) {
             if (item.type === 'dir' && /^Day\s*\d+/i.test(item.name)) {
                 const dayNum = item.name.replace(/Day\s*/i, '').trim();
-                const allFiles = await fetchAllFilesRecursive(item.url, headers);
-                dayGroups[dayNum] = allFiles.filter(f => isInterestingSwFile(f.name));
+                
+                // Fetch contents of day folder
+                const dayResponse = await fetch(item.url, { headers });
+                if (!dayResponse.ok) continue;
+                const dayContents = await dayResponse.json();
+                
+                // Check if there are subfolders (CW1, CW2, etc.)
+                const subfolders = dayContents.filter(entry => entry.type === 'dir');
+                
+                if (subfolders.length > 0) {
+                    // Has subfolders - group by subfolder
+                    dayGroups[dayNum] = { type: 'subfolders', data: {} };
+                    for (const subfolder of subfolders) {
+                        const subFiles = await fetchAllFilesRecursive(subfolder.url, headers);
+                        const filtered = subFiles.filter(f => isInterestingSwFile(f.name));
+                        if (filtered.length > 0) {
+                            dayGroups[dayNum].data[subfolder.name] = filtered;
+                        }
+                    }
+                } else {
+                    // No subfolders - just files
+                    const allFiles = await fetchAllFilesRecursive(item.url, headers);
+                    const filtered = allFiles.filter(f => isInterestingSwFile(f.name));
+                    if (filtered.length > 0) {
+                        dayGroups[dayNum] = { type: 'files', data: filtered };
+                    }
+                }
             }
         }
+        
+        // Color palette for subfolder cards (vibrant and eye-catching)
+        const subfolderColors = [
+            { bg: 'rgba(255, 107, 107, 0.15)', border: 'rgba(255, 107, 107, 0.5)', accent: '#ff6b6b', icon: '🔴' },
+            { bg: 'rgba(78, 205, 196, 0.15)', border: 'rgba(78, 205, 196, 0.5)', accent: '#4ecdc4', icon: '🔵' },
+            { bg: 'rgba(255, 195, 113, 0.15)', border: 'rgba(255, 195, 113, 0.5)', accent: '#ffc371', icon: '🟠' },
+            { bg: 'rgba(162, 155, 254, 0.15)', border: 'rgba(162, 155, 254, 0.5)', accent: '#a29bfe', icon: '🟣' },
+            { bg: 'rgba(253, 121, 168, 0.15)', border: 'rgba(253, 121, 168, 0.5)', accent: '#fd79a8', icon: '🟡' },
+            { bg: 'rgba(85, 230, 193, 0.15)', border: 'rgba(85, 230, 193, 0.5)', accent: '#55efc4', icon: '🟢' }
+        ];
         
         // Render grouped content
         let html = '<div class="sw-files-container">';
@@ -880,34 +915,108 @@ async function loadSolidworksContent(type) {
         });
         
         for (const dayNum of sortedDays) {
-            const files = dayGroups[dayNum];
-            if (files.length === 0) continue;
+            const dayData = dayGroups[dayNum];
+            if (!dayData) continue;
+            
+            // Count total files
+            let totalFiles = 0;
+            if (dayData.type === 'subfolders') {
+                Object.values(dayData.data).forEach(files => totalFiles += files.length);
+            } else {
+                totalFiles = dayData.data.length;
+            }
             
             html += `
-                <div class="sw-day-section">
-                    <h3 class="sw-day-title">
-                        <i class="fas fa-calendar-day"></i> Day ${dayNum}
-                    </h3>
-                    <ul class="sw-file-list">
+                <div class="sw-day-section-compact">
+                    <h4 class="sw-day-title-compact">
+                        📅 Day ${dayNum} <span style="color:#ff6666; font-size:0.8rem;">(${totalFiles} files${dayData.type === 'subfolders' ? ', ' + Object.keys(dayData.data).length + ' sections' : ''})</span>
+                    </h4>
             `;
             
-            files.forEach(file => {
-                const downloadUrl = file.download_url;
-                const ghUrl = file.html_url;
-                html += `
-                    <li>
-                        <a href="${downloadUrl}" download="${file.name}">
-                            ${file.name}
-                        </a>
-                        <a href="${ghUrl}" target="_blank" style="margin-left:8px; font-size:.8rem; color:#ff6666;">(GitHub)</a>
-                    </li>
-                `;
-            });
+            if (dayData.type === 'subfolders') {
+                // Render subfolders as separate colorful cards
+                html += `<div class="sw-subfolder-grid">`;
+                
+                const subfolderNames = Object.keys(dayData.data).sort();
+                subfolderNames.forEach((subfolderName, index) => {
+                    const files = dayData.data[subfolderName];
+                    const color = subfolderColors[index % subfolderColors.length];
+                    
+                    html += `
+                        <div class="sw-subfolder-card" style="background: ${color.bg}; border-color: ${color.border};">
+                            <div class="sw-subfolder-header" style="border-bottom-color: ${color.border};">
+                                <span class="subfolder-icon">${color.icon}</span>
+                                <h5 class="subfolder-title" style="color: ${color.accent};">${subfolderName}</h5>
+                                <span class="subfolder-count" style="background: ${color.border}; color: ${color.accent};">
+                                    ${files.length} file${files.length > 1 ? 's' : ''}
+                                </span>
+                            </div>
+                            <div class="sw-subfolder-files">
+                    `;
+                    
+                    files.forEach(file => {
+                        const downloadUrl = file.download_url;
+                        const ext = fileExt(file.name).toUpperCase();
+                        const fileName = file.name;
+                        const baseName = fileName.replace(/\.[^/.]+$/, '');
+                        
+                        html += `
+                            <div class="sw-subfolder-file-item">
+                                <div class="file-item-info">
+                                    <span class="file-ext-badge-small" style="background: ${color.border}; color: ${color.accent};">${ext}</span>
+                                    <span class="file-item-name" title="${fileName}">${baseName}</span>
+                                </div>
+                                <div class="file-item-actions">
+                                    <a href="${downloadUrl}" download="${fileName}" class="file-item-btn" title="Download" style="color: ${color.accent};">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a href="${file.html_url}" target="_blank" class="file-item-btn" title="View on GitHub" style="color: ${color.accent};">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            } else {
+                // Render files directly (no subfolders)
+                html += `<div class="sw-file-grid-compact">`;
+                
+                dayData.data.forEach(file => {
+                    const downloadUrl = file.download_url;
+                    const ext = fileExt(file.name).toUpperCase();
+                    const fileName = file.name;
+                    const baseName = fileName.replace(/\.[^/.]+$/, '');
+                    
+                    html += `
+                        <div class="sw-file-card-compact">
+                            <div class="sw-file-header-compact">
+                                <span class="file-ext-badge">${ext}</span>
+                                <span class="file-name-compact" title="${fileName}">${baseName}</span>
+                            </div>
+                            <div class="sw-file-actions-compact">
+                                <a href="${downloadUrl}" download="${fileName}" class="sw-file-btn-compact" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <a href="${file.html_url}" target="_blank" class="sw-file-btn-compact" title="View on GitHub">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
             
-            html += `
-                    </ul>
-                </div>
-            `;
+            html += `</div>`;
         }
         
         html += '</div>';
