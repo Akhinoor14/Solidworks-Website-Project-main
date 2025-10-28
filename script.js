@@ -1,13 +1,78 @@
+// Modal functions in global scope for onclick handlers
+function openProjectModal(projectTitle) {
+    console.log('🔍 Opening modal for:', projectTitle);
+    const project = sampleProjects.find(p => p.title === projectTitle);
+    if (!project) {
+        console.warn('⚠️ Project not found:', projectTitle);
+        return;
+    }
+    
+    const modal = createProjectModal(project);
+    document.body.appendChild(modal);
+    
+    // Add animation
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', function closeOnEscape(e) {
+        if (e.key === 'Escape') {
+            closeProjectModal();
+            document.removeEventListener('keydown', closeOnEscape);
+        }
+    });
+}
+
+function closeProjectModal() {
+    const modal = document.getElementById('projectModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+
+function changeMainImage(imgSrc, thumbnail) {
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+        mainImage.src = imgSrc;
+    }
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    if (thumbnail) {
+        thumbnail.classList.add('active');
+    }
+}
+
 // Modal interactivity for project details
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM Content Loaded');
+    
     // Embedded SOLIDWORKS Beginner Projects navigation
     (function initSolidworksEmbedded(){
+        console.log('🔧 Initializing SOLIDWORKS embedded card...');
         const card = document.getElementById('solidworks-beginner-card');
-        if(!card) return;
+        if(!card) {
+            console.warn('⚠️ SOLIDWORKS card not found!');
+            return;
+        }
+        console.log('✅ SOLIDWORKS card found:', card);
+        
         const views = card.querySelectorAll('.sw-view');
         const tiles = card.querySelectorAll('.sw-tile');
         const backButtons = card.querySelectorAll('.sw-back');
-            const modeBtns = card.querySelectorAll('.sw-mode-btn');
+        const modeBtns = card.querySelectorAll('.sw-mode-btn');
+        
+        console.log('📊 Card elements:', {
+            views: views.length,
+            tiles: tiles.length,
+            backButtons: backButtons.length,
+            modeBtns: modeBtns.length
+        });
+        
         let current = 'root';
 
         // Inject day-specific projects into CW and HW sections
@@ -750,12 +815,26 @@ const sampleProjects = [
 ];
 
 // DOM Elements
+console.log('🔍 Selecting DOM elements...');
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const themeToggle = document.getElementById('theme-toggle');
 const projectsGrid = document.getElementById('projects-grid');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const contactForm = document.querySelector('.contact-form');
+
+console.log('📌 DOM Elements found:', {
+    hamburger: !!hamburger,
+    navMenu: !!navMenu,
+    themeToggle: !!themeToggle,
+    projectsGrid: !!projectsGrid,
+    filterBtns: filterBtns.length,
+    contactForm: !!contactForm
+});
+
+if (!projectsGrid) {
+    console.error('❌ Projects grid not found! Cannot render projects.');
+}
 
 // Mobile Navigation Toggle
 hamburger.addEventListener('click', () => {
@@ -857,6 +936,7 @@ document.addEventListener('DOMContentLoaded', updateActiveNavLink);
 // Projects functionality
 // Projects functionality with enhanced interactivity
 function createProjectCard(project) {
+    console.log('🎴 Creating card for:', project.title);
     const card = document.createElement('div');
     card.className = `project-card ${project.category} ${project.featured ? 'featured' : ''}`;
     
@@ -1026,12 +1106,16 @@ filterBtns.forEach(btn => {
 });
 
 // Initialize projects
+console.log('🎨 Initializing projects...');
+console.log('📦 Total sample projects:', sampleProjects.length);
+console.log('📋 Projects:', sampleProjects.map(p => p.title));
 renderProjects();
 
 // Contact form handling
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
     const formData = new FormData(contactForm);
     const name = formData.get('name');
     const email = formData.get('email');
@@ -1043,7 +1127,10 @@ contactForm.addEventListener('submit', (e) => {
     
     // Reset form
     contactForm.reset();
-});
+    });
+} else {
+    console.log('ℹ️ Contact form not found on this page');
+}
 
 // Scroll animations
 function observeElements() {
@@ -1564,28 +1651,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addProjectSearch();
 });
 
-// Project Modal functionality
-function openProjectModal(projectTitle) {
-    const project = sampleProjects.find(p => p.title === projectTitle);
-    if (!project) return;
-    
-    const modal = createProjectModal(project);
-    document.body.appendChild(modal);
-    
-    // Add animation
-    setTimeout(() => {
-        modal.classList.add('show');
-    }, 10);
-    
-    // Close modal on escape key
-    document.addEventListener('keydown', function closeOnEscape(e) {
-        if (e.key === 'Escape') {
-            closeProjectModal();
-            document.removeEventListener('keydown', closeOnEscape);
-        }
-    });
-}
-
+// Helper function to create project modal (used by openProjectModal)
 function createProjectModal(project) {
     const modal = document.createElement('div');
     modal.className = 'project-modal';
@@ -1701,11 +1767,11 @@ function createProjectModal(project) {
         
         .modal-header {
             padding: 20px 30px;
-            border-bottom: 1px solid var(--border-color, #eee);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(135deg, var(--primary-color, #4f46e5), var(--secondary-color, #7c3aed));
+            background: linear-gradient(135deg, #cc0000, #ff0000);
             color: white;
         }
         
@@ -1778,12 +1844,12 @@ function createProjectModal(project) {
         }
         
         .thumbnail:hover, .thumbnail.active {
-            border-color: var(--primary-color, #4f46e5);
+            border-color: #ff0000;
             transform: scale(1.1);
         }
         
         .project-details h3 {
-            color: var(--primary-color, #4f46e5);
+            color: #ff0000;
             margin: 20px 0 10px 0;
             font-size: 1.2rem;
         }
@@ -1818,8 +1884,8 @@ function createProjectModal(project) {
         }
         
         .tech-badge {
-            background: var(--primary-light, #eef2ff);
-            color: var(--primary-color, #4f46e5);
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -1861,19 +1927,24 @@ function createProjectModal(project) {
         }
         
         .modal-btn.primary {
-            background: var(--primary-color, #4f46e5);
+            background: #ff0000;
             color: white;
         }
         
         .modal-btn.secondary {
-            background: #10b981;
+            background: #cc0000;
             color: white;
         }
         
         .modal-btn.outline {
             background: transparent;
-            color: var(--text-color, #333);
-            border: 2px solid var(--border-color, #ddd);
+            color: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+        }
+        
+        .modal-btn.outline:hover {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff0000;
         }
         
         .modal-btn:hover {
@@ -1904,26 +1975,6 @@ function createProjectModal(project) {
     }
     
     return modal;
-}
-
-function changeMainImage(imageSrc, thumbnail) {
-    const mainImage = document.getElementById('mainImage');
-    const thumbnails = document.querySelectorAll('.thumbnail');
-    
-    mainImage.src = imageSrc;
-    
-    thumbnails.forEach(thumb => thumb.classList.remove('active'));
-    thumbnail.classList.add('active');
-}
-
-function closeProjectModal() {
-    const modal = document.getElementById('projectModal');
-    if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.remove();
-        }, 300);
-    }
 }
 
 // 3D viewer modal logic (moved from index.html for maintainability)

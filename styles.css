@@ -2800,6 +2800,13 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     transform: translateY(0);
 }
 
+.project-card.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    display: none;
+}
+
 .project-card:hover {
     transform: translateY(-10px);
     box-shadow: 
