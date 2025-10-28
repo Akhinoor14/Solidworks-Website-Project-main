@@ -243,13 +243,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return document.getElementById('model-viewer-modal');
         }
 
-        // Call the injection function after DOM is ready
-        setTimeout(injectDayProjects, 100);
-        
-        // Backup call in case timing is an issue
-        setTimeout(() => {
-            injectDayProjects();
-        }, 2000);
+        // Call the injection function immediately
+        console.log('📝 Calling injectDayProjects...');
+        injectDayProjects();
+        console.log('✅ Day projects injected');
 
         function showView(name){
             console.log('🔄 Switching to view:', name);
@@ -1072,20 +1069,8 @@ function renderProjects(projectsToShow = sampleProjects) {
         
         console.log('🎴 Creating dynamic card for:', project.title);
         const card = createProjectCard(project);
-        
-        console.log('📦 Card object:', card);
-        console.log('📦 Card className:', card.className);
-        console.log('📦 Card innerHTML length:', card.innerHTML.length);
-        console.log('📦 Card style:', card.style.cssText);
-        
         projectsGrid.appendChild(card);
-        
-        console.log('✅ Card appended!');
-        console.log('🔍 Card in DOM:', document.body.contains(card));
-        console.log('🔍 Card parent:', card.parentElement);
-        console.log('🔍 Card offsetHeight:', card.offsetHeight);
-        console.log('🔍 Card computed display:', window.getComputedStyle(card).display);
-        console.log('🔍 Card computed opacity:', window.getComputedStyle(card).opacity);
+        console.log('✅ Card appended:', project.title);
     });
     
     console.log('📊 Total cards in grid:', projectsGrid.children.length);
