@@ -306,29 +306,36 @@ async function viewFile(owner, repo, path, name, downloadUrl) {
     }
 }
 
-// View PDF files
+// View PDF files (use PDF.js viewer to avoid download prompts)
 async function viewPDF(url, container) {
+    // Use Mozilla PDF.js hosted viewer for reliable inline rendering
+    const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
     container.innerHTML = `
         <div class="pdf-viewer">
-            <iframe src="${url}" frameborder="0"></iframe>
+            <iframe src="${viewerUrl}" frameborder="0" allow="fullscreen"></iframe>
             <p class="pdf-fallback">
-                If the PDF doesn't load, 
-                <a href="${url}" target="_blank">click here to open it</a>
+                If the PDF doesn't load,
+                <a href="${url}" target="_blank" rel="noopener">open it directly</a>
             </p>
         </div>
     `;
 }
 
-// View Markdown files with proper rendering
+// View Markdown files with proper rendering + relative asset fixups
 async function viewMarkdown(owner, repo, path, container) {
     try {
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
         const data = await response.json();
-        const content = atob(data.content); // Decode base64
-        
-        // Convert markdown to HTML (basic conversion)
-        const html = markdownToHTML(content);
-        
+        const content = atob(data.content || ''); // Decode base64
+
+        // Determine base directory of the markdown file for resolving relative links
+        const pathParts = path.split('/');
+        pathParts.pop();
+        const baseDir = pathParts.join('/');
+
+        // Convert markdown to HTML and rewrite relative URLs for images/links
+        const html = markdownToHTML(content, { owner, repo, baseDir });
+
         container.innerHTML = `
             <div class="markdown-viewer">
                 ${html}
@@ -340,40 +347,68 @@ async function viewMarkdown(owner, repo, path, container) {
 }
 
 // Basic Markdown to HTML converter
-function markdownToHTML(markdown) {
+function markdownToHTML(markdown, opts = {}) {
+    const { owner = '', repo = '', baseDir = '' } = opts;
+
+    // Helper to detect absolute URLs
+    const isAbsolute = (u) => /^(https?:)?\/\//i.test(u) || u.startsWith('data:') || u.startsWith('#');
+
+    // Resolve relative repository URLs
+    const resolveRepoUrl = (u, type = 'link') => {
+        if (!u || isAbsolute(u)) return u;
+        // Handle root-relative paths
+        const pathResolved = u.startsWith('/') ? u.replace(/^\/+/, '') : [baseDir, u].filter(Boolean).join('/');
+        if (type === 'image') {
+            // Raw content URL for images
+            return `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${pathResolved}`;
+        }
+        // Default to GitHub blob URL for other links
+        return `https://github.com/${owner}/${repo}/blob/HEAD/${pathResolved}`;
+    };
+
     let html = markdown;
-    
+
+    // Code blocks first to avoid interfering with inline formatting
+    html = html.replace(/```(.*?)\n([\s\S]*?)```/g, (m, lang, code) => {
+        return `<pre><code class="language-${lang.trim()}">${escapeHtml(code)}</code></pre>`;
+    });
+
     // Headers
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-    
-    // Bold
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Italic
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // Code blocks
-    html = html.replace(/```(.*?)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
-    
+    html = html.replace(/^### (.*$)/gim, '<h3>$1<\/h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1<\/h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1>$1<\/h1>');
+
+    // Bold and italic
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1<\/strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1<\/em>');
+
     // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-    
-    // Images
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-    
-    // Lists
-    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-    
-    // Line breaks
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = '<p>' + html + '</p>';
-    
+    html = html.replace(/`([^`]+)`/g, '<code>$1<\/code>');
+
+    // Images (rewrite relative URLs to raw)
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src) => {
+        const fixed = resolveRepoUrl(src.trim(), 'image');
+        return `<img src="${fixed}" alt="${escapeHtml(alt)}" />`;
+    });
+
+    // Links (rewrite relative URLs to GitHub blob)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, href) => {
+        const fixed = resolveRepoUrl(href.trim(), 'link');
+        return `<a href="${fixed}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`;
+    });
+
+    // Lists (bulleted)
+    // Convert lines starting with * or - into list items, then wrap consecutive items in <ul>
+    html = html.replace(/^\s*[-*] (.*)$/gim, '<li>$1<\/li>');
+    html = html.replace(/(?:<li>.*?<\/li>\s*)+/gims, (block) => `<ul>${block}<\/ul>`);
+
+    // Paragraphs
+    html = html.replace(/(^|\n)([^<\n][^\n]*)/g, (m, pre, line) => {
+        // Skip if this line already starts with an HTML block element
+        if (/^\s*<\/?(h\d|ul|ol|li|pre|img|blockquote|code)/i.test(line)) return m;
+        return `${pre}<p>${line}<\/p>`;
+    });
+
     return html;
 }
 
@@ -924,8 +959,39 @@ const sampleProjects = [
             "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop",
             "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop"
         ],
-        features: ["Dark/Light Theme", "Interactive Animations", "Project Modals", "Responsive Design", "GitHub Integration", "Contact Form"],
-        featured: true
+        features: ["Responsive Design", "Dark/Light Theme", "GitHub API", "Interactive UI"],
+        featured: true,
+        // Special Portfolio website structure
+        specialType: "portfolio",
+        websiteFeatures: [
+            {
+                name: "Modern UI/UX",
+                icon: "🎨",
+                details: ["Engineering architecture theme", "Blueprint grid patterns", "Smooth animations", "Interactive cards"]
+            },
+            {
+                name: "Advanced Features",
+                icon: "⚡",
+                details: ["GitHub repository browser", "PDF viewer", "Markdown renderer", "3D model support"]
+            },
+            {
+                name: "Tech Stack",
+                icon: "💻",
+                details: ["Vanilla JavaScript", "CSS3 Grid/Flexbox", "HTML5 semantic tags", "GitHub Pages deployment"]
+            },
+            {
+                name: "Performance",
+                icon: "🚀",
+                details: ["Optimized animations", "Lazy loading", "Fast page load", "Mobile responsive"]
+            }
+        ],
+        repoFiles: {
+            hasHTML: true,
+            hasCSS: true,
+            hasJavaScript: true,
+            hasDocumentation: true,
+            hasDeployment: true
+        }
     },
     {
         title: "SOLIDWORKS Beginner Projects",
@@ -1214,14 +1280,48 @@ const sampleProjects = [
             "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=800&h=400&fit=crop",
             "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=400&fit=crop"
         ],
-        features: ["40+ Projects", "Circuit diagrams", "Commented code", "IoT applications"],
-        featured: false
+        features: ["40+ Arduino Projects", "Tinkercad Simulations", "Circuit Diagrams", "IoT & Sensors"],
+        featured: false,
+        // Special Arduino project structure
+        specialType: "arduino",
+        arduinoCategories: [
+            {
+                name: "LED & Display Projects",
+                icon: "💡",
+                count: 12,
+                examples: ["Blinking LED", "7-Segment Display", "LED Matrix", "RGB LED Control"]
+            },
+            {
+                name: "Sensor Projects",
+                icon: "📡",
+                count: 15,
+                examples: ["Ultrasonic Distance", "Temperature (DHT11)", "IR Sensor", "LDR Light Sensor"]
+            },
+            {
+                name: "Motor & Actuators",
+                icon: "⚙️",
+                count: 8,
+                examples: ["DC Motor Control", "Servo Motor", "Stepper Motor", "Relay Module"]
+            },
+            {
+                name: "IoT & Communication",
+                icon: "🌐",
+                count: 5,
+                examples: ["Bluetooth HC-05", "WiFi ESP8266", "RFID Reader", "GSM Module"]
+            }
+        ],
+        repoFiles: {
+            hasCircuitDiagrams: true,
+            hasCodeFiles: true,
+            hasTinkercadLinks: true,
+            hasReadmeGuides: true
+        }
     },
     {
         title: "Electronic Components Guide",
         shortDescription: "Interactive guide to essential electronic components with detailed explanations and practical circuit examples.",
         fullDescription: "A comprehensive interactive guide covering essential electronic components used in modern circuit design and electronics engineering. This educational resource provides detailed explanations of resistors, capacitors, transistors, integrated circuits, and other fundamental components. Each component section includes theoretical background, practical applications, circuit examples, and troubleshooting tips. The guide features visual representations, component specifications, and real-world usage scenarios that help students and engineers understand how to properly select and implement components in their designs. Essential for anyone working with electronics, from hobbyists to professional engineers developing complex systems.",
-        tech: ["Electronics", "Circuit Design", "Component Analysis", "PCB Design"],
+        tech: ["Electronics", "Circuit Design", "Component Analysis", "PCB Design", "Datasheets"],
         category: "web",
         github: "https://github.com/Akhinoor14/Electronic-Components-",
         demo: null,
@@ -1231,8 +1331,43 @@ const sampleProjects = [
             "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=800&h=400&fit=crop",
             "https://images.unsplash.com/photo-1581093804475-577d72e38aa0?w=800&h=400&fit=crop"
         ],
-        features: ["Component specs", "Circuit examples", "Visual guides", "Troubleshooting tips"],
-        featured: false
+        features: ["Component Database", "Circuit Examples", "Datasheets & Specs", "Practical Tutorials"],
+        featured: false,
+        // Special Electronics component structure
+        specialType: "electronics",
+        componentCategories: [
+            {
+                name: "Passive Components",
+                icon: "🔌",
+                components: ["Resistors", "Capacitors", "Inductors", "Diodes", "Crystals"]
+            },
+            {
+                name: "Active Components",
+                icon: "⚡",
+                components: ["Transistors (BJT/FET)", "Op-Amps", "Voltage Regulators", "MOSFETs", "IGBTs"]
+            },
+            {
+                name: "Integrated Circuits",
+                icon: "🔲",
+                components: ["Microcontrollers", "Logic Gates", "Memory ICs", "Timer ICs (555)", "ADC/DAC"]
+            },
+            {
+                name: "Power Components",
+                icon: "⚙️",
+                components: ["Transformers", "Batteries", "Solar Cells", "Power Supplies", "Buck/Boost Converters"]
+            },
+            {
+                name: "Sensors & Modules",
+                icon: "📊",
+                components: ["Temperature Sensors", "Pressure Sensors", "Proximity Sensors", "Gas Sensors", "Gyroscopes"]
+            }
+        ],
+        repoFiles: {
+            hasDatasheets: true,
+            hasCircuitExamples: true,
+            hasCalculators: true,
+            hasSpecs: true
+        }
     }
 ];
 
@@ -1384,6 +1519,209 @@ function createProjectCard(project) {
         ? 'https://via.placeholder.com/600x300/7C3AED/ffffff?text=Portfolio+Website'
         : 'https://via.placeholder.com/600x300/6366F1/ffffff?text=Engineering+Project';
     
+    // Check for special project types and render custom content
+    if (project.specialType === 'arduino' && project.arduinoCategories) {
+        card.innerHTML = `
+            <div class="project-image">
+                <img src="${project.image}" 
+                     alt="${project.title}" 
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='${fallbackImage}';">
+                <div class="project-overlay">
+                    <div class="project-status">
+                        ${project.featured ? '<span class="featured-badge">⭐ Featured</span>' : ''}
+                        <span class="category-badge">${project.category.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="blueprint-grid"></div>
+            </div>
+            <div class="project-content">
+                <div class="content-header">
+                    <h3 class="project-title">${project.title}</h3>
+                    <div class="title-accent"></div>
+                </div>
+                <p class="project-description">${project.shortDescription}</p>
+                
+                <div class="special-content arduino-categories">
+                    ${project.arduinoCategories.map(cat => `
+                        <details class="category-section">
+                            <summary class="category-header">
+                                <span class="category-icon">${cat.icon}</span>
+                                <span class="category-name">${cat.name}</span>
+                                <span class="category-count">${cat.count} projects</span>
+                            </summary>
+                            <div class="category-body">
+                                <p class="category-description">Example projects:</p>
+                                <ul class="project-list">
+                                    ${cat.examples.map(example => `<li>${example}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </details>
+                    `).join('')}
+                </div>
+                
+                <div class="project-tech">
+                    ${project.tech.slice(0, 4).map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                    ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
+                </div>
+                
+                <div class="project-actions-grid">
+                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub Repository</span>
+                    </a>
+                    ${project.demo ? `
+                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Live Demo</span>
+                    </a>` : ''}
+                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Browse Files</span>
+                    </button>
+                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Full Details</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+    
+    if (project.specialType === 'electronics' && project.componentCategories) {
+        card.innerHTML = `
+            <div class="project-image">
+                <img src="${project.image}" 
+                     alt="${project.title}" 
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='${fallbackImage}';">
+                <div class="project-overlay">
+                    <div class="project-status">
+                        ${project.featured ? '<span class="featured-badge">⭐ Featured</span>' : ''}
+                        <span class="category-badge">${project.category.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="blueprint-grid"></div>
+            </div>
+            <div class="project-content">
+                <div class="content-header">
+                    <h3 class="project-title">${project.title}</h3>
+                    <div class="title-accent"></div>
+                </div>
+                <p class="project-description">${project.shortDescription}</p>
+                
+                <div class="special-content electronics-components">
+                    ${project.componentCategories.map(cat => `
+                        <details class="category-section">
+                            <summary class="category-header">
+                                <span class="category-icon">⚡</span>
+                                <span class="category-name">${cat.type}</span>
+                            </summary>
+                            <div class="category-body">
+                                <ul class="component-list">
+                                    ${cat.components.map(comp => `<li><span class="component-bullet">▸</span>${comp}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </details>
+                    `).join('')}
+                </div>
+                
+                <div class="project-tech">
+                    ${project.tech.slice(0, 4).map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                    ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
+                </div>
+                
+                <div class="project-actions-grid">
+                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub Repository</span>
+                    </a>
+                    ${project.demo ? `
+                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Live Demo</span>
+                    </a>` : ''}
+                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Browse Files</span>
+                    </button>
+                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Full Details</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+    
+    if (project.specialType === 'portfolio' && project.websiteFeatures) {
+        card.innerHTML = `
+            <div class="project-image">
+                <img src="${project.image}" 
+                     alt="${project.title}" 
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='${fallbackImage}';">
+                <div class="project-overlay">
+                    <div class="project-status">
+                        ${project.featured ? '<span class="featured-badge">⭐ Featured</span>' : ''}
+                        <span class="category-badge">${project.category.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="blueprint-grid"></div>
+            </div>
+            <div class="project-content">
+                <div class="content-header">
+                    <h3 class="project-title">${project.title}</h3>
+                    <div class="title-accent"></div>
+                </div>
+                <p class="project-description">${project.shortDescription}</p>
+                
+                <div class="special-content portfolio-features">
+                    ${project.websiteFeatures.map(feature => `
+                        <div class="feature-group">
+                            <div class="feature-group-header">
+                                <span class="feature-icon">${feature.icon}</span>
+                                <span class="feature-name">${feature.name}</span>
+                            </div>
+                            <ul class="feature-details">
+                                ${feature.details.map(detail => `<li><span class="detail-bullet">✓</span>${detail}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="project-tech">
+                    ${project.tech.slice(0, 4).map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                    ${project.tech.length > 4 ? `<span class="tech-more">+${project.tech.length - 4}</span>` : ''}
+                </div>
+                
+                <div class="project-actions-grid">
+                    <a href="${project.github}" class="action-btn btn-github" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub Repository</span>
+                    </a>
+                    ${project.demo ? `
+                    <a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Live Demo</span>
+                    </a>` : ''}
+                    <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Browse Files</span>
+                    </button>
+                    <button class="action-btn btn-details" onclick="openProjectModal('${project.title}')">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Full Details</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+    
+    // Default card rendering for standard projects
     // Add interactive CW/HW folders for SOLIDWORKS project
     let foldersHtml = '';
     if (project.title === "SOLIDWORKS Beginner Projects" && project.folders) {

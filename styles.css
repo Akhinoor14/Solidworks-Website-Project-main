@@ -3117,6 +3117,209 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* Special Project Content Styles */
+
+/* Arduino Categories */
+.special-content {
+    margin: 1rem 0;
+    padding: 0.5rem 0;
+}
+
+.arduino-categories .category-section,
+.electronics-components .category-section {
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 0, 0, 0.3);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.arduino-categories .category-section:hover,
+.electronics-components .category-section:hover {
+    border-color: rgba(255, 0, 0, 0.4);
+    background: rgba(20, 0, 0, 0.4);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    list-style: none;
+}
+
+.category-header::-webkit-details-marker {
+    display: none;
+}
+
+.category-section[open] .category-header {
+    background: rgba(255, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.category-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.category-name {
+    flex: 1;
+    color: #ffffff;
+}
+
+.category-count {
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.category-body {
+    padding: 1rem;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-description {
+    color: #cccccc;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.project-list,
+.component-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.project-list li,
+.component-list li {
+    color: #ffffff;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(255, 0, 0, 0.05);
+    border-left: 2px solid #ff3333;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.project-list li:hover,
+.component-list li:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-left-color: #ff0000;
+    transform: translateX(4px);
+}
+
+.component-bullet {
+    color: #ff3333;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+/* Portfolio Features */
+.portfolio-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.feature-group {
+    background: rgba(15, 0, 0, 0.3);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.feature-group:hover {
+    border-color: rgba(255, 0, 0, 0.4);
+    background: rgba(20, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.feature-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.feature-icon {
+    font-size: 1.1rem;
+}
+
+.feature-name {
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.feature-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.feature-details li {
+    color: #cccccc;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    line-height: 1.4;
+}
+
+.detail-bullet {
+    color: #ff3333;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+/* Responsive adjustments for special content */
+@media (max-width: 768px) {
+    .portfolio-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-header {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .category-count {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+    }
+}
+
 /* Old styles cleanup */
 
 /* GitHub Section */
@@ -4463,6 +4666,9 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     color: #e0e0e0;
     line-height: 1.8;
     max-width: 900px;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .markdown-viewer h1,
@@ -4495,7 +4701,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: rgba(255, 0, 0, 0.15);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
+    font-family: Consolas, Monaco, "Courier New", monospace;
     color: #ff6666;
 }
 
@@ -4639,7 +4845,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 .code-viewer code {
     color: #e0e0e0;
-    font-family: 'Courier New', monospace;
+    font-family: Consolas, Monaco, "Courier New", monospace;
     font-size: 0.9rem;
     line-height: 1.6;
 }
