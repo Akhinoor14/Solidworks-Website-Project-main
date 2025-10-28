@@ -640,22 +640,22 @@ const sampleProjects = [
                 cw: [
                     { 
                         name: "CW 1 - Day 06", 
-                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2006/cw%2001%20day%206/README.md",
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Day%2006/CW",
                         downloads: [
                             {
                                 type: "Assembly",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/Assem1%20day%206.SLDASM"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/Assem1%20day%206.SLDASM"
                             },
                             {
                                 type: "Part 1", 
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/part1%20day%206.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/part1%20day%206.SLDPRT"
                             },
                             {
                                 type: "Part 2",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/part2%20day%206.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/part2%20day%206.SLDPRT"
                             }
                         ],
-                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/Screenshot%20day%206.png"
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2006/CW/Screenshot%20day%206.png"
                     }
                 ],
                 hw: []
@@ -664,22 +664,22 @@ const sampleProjects = [
                 cw: [
                     { 
                         name: "CW 1 - Day 07", 
-                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2007/cw%2001%20day%207/README.md",
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Day%2007/CW",
                         downloads: [
                             {
                                 type: "Assembly",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/Assem1%20day%207.SLDASM"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/Assem1%20day%207.SLDASM"
                             },
                             {
                                 type: "Part 1",
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/part1%20day%207.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/part1%20day%207.SLDPRT"
                             },
                             {
                                 type: "Part 2", 
-                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/part2%20day%207.SLDPRT"
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/part2%20day%207.SLDPRT"
                             }
                         ],
-                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/Screenshot%20day%207.png"
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/Day%2007/CW/Screenshot%20day%207.png"
                     }
                 ],
                 hw: []
