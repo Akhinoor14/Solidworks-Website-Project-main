@@ -130,12 +130,19 @@ class WebsiteAutoUpdater {
      */
     async updateCountersAndDescriptions(isNewDay) {
         const stats = this.calculateStats();
+        
+        console.log('📊 [Website Updater] Updating counters with stats:', stats);
 
-        // Update hero section
-        this.updateHeroStats(stats);
-
-        // Update SOLIDWORKS card
-        this.updateSolidworksCard(stats);
+        // Use global counter update utility if available
+        if (typeof window.updateAllCountersGlobally === 'function') {
+            console.log('📊 [Website Updater] Using global counter utility...');
+            window.updateAllCountersGlobally(stats.totalCW, stats.totalHW, stats.totalDays);
+        } else {
+            console.log('📊 [Website Updater] Using fallback counter update...');
+            // Fallback to old method
+            this.updateHeroStats(stats);
+            this.updateSolidworksCard(stats);
+        }
 
         // Update project descriptions
         this.updateProjectDescriptions(stats);

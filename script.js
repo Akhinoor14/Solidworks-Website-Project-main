@@ -2031,56 +2031,86 @@ document.addEventListener('DOMContentLoaded', function () {
  */
 window.updateAllCountersGlobally = function(totalCW = 0, totalHW = 0, totalDays = 0) {
     console.log('🌍 [GLOBAL] Updating ALL website counters...');
+    console.log('🌍 Input values:', { totalCW, totalHW, totalDays });
     
     const totalProjects = totalCW + totalHW;
+    console.log('🌍 Calculated totalProjects:', totalProjects);
     
     try {
         // 1. Update Hero Section - Animated Counter with data-target="23"
         const heroCounters = document.querySelectorAll('[data-target="23"]');
-        heroCounters.forEach(counter => {
+        console.log('🌍 Found hero counters:', heroCounters.length);
+        heroCounters.forEach((counter, i) => {
             counter.textContent = '0';
             counter.setAttribute('data-target', totalProjects);
+            console.log(`   Hero counter ${i+1}: set to target ${totalProjects}`);
         });
 
         // 2. Update Hero Section - Days counter with data-target="7" 
         const daysCounters = document.querySelectorAll('[data-target="7"]');
-        daysCounters.forEach(counter => {
+        console.log('🌍 Found days counters:', daysCounters.length);
+        daysCounters.forEach((counter, i) => {
             counter.textContent = '0';
             counter.setAttribute('data-target', totalDays);
+            console.log(`   Days counter ${i+1}: set to target ${totalDays}`);
         });
 
         // 3. Update Hero Section - HW counter with data-target="8"
         const hwCounters = document.querySelectorAll('[data-target="8"]');
-        hwCounters.forEach(counter => {
+        console.log('🌍 Found HW counters:', hwCounters.length);
+        hwCounters.forEach((counter, i) => {
             counter.textContent = '0';
             counter.setAttribute('data-target', totalHW);
+            console.log(`   HW counter ${i+1}: set to target ${totalHW}`);
         });
 
         // 4. Update Static stat-number counters (23+, 3+, 8+)
         const staticCounters = document.querySelectorAll('.stat-number');
-        staticCounters.forEach(counter => {
+        console.log('🌍 Found static counters:', staticCounters.length);
+        staticCounters.forEach((counter, i) => {
             const text = counter.textContent;
+            const oldText = text;
             if (text.includes('23')) {
                 counter.textContent = `${totalProjects}+`;
+                console.log(`   Static counter ${i+1}: ${oldText} → ${totalProjects}+`);
             } else if (text.includes('3') && !text.includes('23')) {
                 counter.textContent = `${totalDays}+`;
+                console.log(`   Static counter ${i+1}: ${oldText} → ${totalDays}+`);
             } else if (text.includes('8')) {
                 counter.textContent = `${totalHW}+`;
+                console.log(`   Static counter ${i+1}: ${oldText} → ${totalHW}+`);
+            } else {
+                console.log(`   Static counter ${i+1}: ${oldText} (unchanged)`);
             }
         });
 
         // 5. Update SOLIDWORKS Meta Counters (CW, HW, Total)
         const metaCounters = document.querySelectorAll('.sw-meta-num');
+        console.log('🌍 Found meta counters:', metaCounters.length);
         if (metaCounters.length >= 3) {
+            const oldCW = metaCounters[0].textContent;
+            const oldHW = metaCounters[1].textContent;
+            const oldTotal = metaCounters[2].textContent;
+            
             metaCounters[0].textContent = totalCW;      // CW
             metaCounters[1].textContent = totalHW;      // HW  
             metaCounters[2].textContent = totalProjects; // Total
+            
+            console.log(`   Meta CW: ${oldCW} → ${totalCW}`);
+            console.log(`   Meta HW: ${oldHW} → ${totalHW}`);
+            console.log(`   Meta Total: ${oldTotal} → ${totalProjects}`);
+        } else {
+            console.warn('⚠️ Meta counters not found or insufficient count');
         }
 
         // 6. Update SW Intro text
         const swIntro = document.getElementById('sw-intro');
+        console.log('🌍 SW Intro element found:', !!swIntro);
         if (swIntro) {
-            swIntro.textContent = `${totalProjects} SOLIDWORKS projects across ${totalDays} days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.`;
+            const oldText = swIntro.textContent;
+            const newText = `${totalProjects} SOLIDWORKS projects across ${totalDays} days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.`;
+            swIntro.textContent = newText;
+            console.log(`   SW Intro updated: ${oldText.substring(0,50)}... → ${newText.substring(0,50)}...`);
         }
 
         // 7. Trigger counter animations
@@ -2139,5 +2169,98 @@ Object.defineProperty(window, 'dayProjects', {
     }
 });
 
+/**
+ * 🐛 DEBUG COUNTER SYSTEM
+ * Comprehensive counter debugging and testing
+ */
+window.debugCounters = function() {
+    console.log('🐛 === COUNTER DEBUG REPORT ===');
+    
+    // 1. Check if global utility exists
+    console.log('1️⃣ Global Utility Check:');
+    console.log('   updateAllCountersGlobally:', typeof window.updateAllCountersGlobally);
+    console.log('   refreshAllCounters:', typeof window.refreshAllCounters);
+    console.log('   calculateProjectCounts:', typeof window.calculateProjectCounts);
+    
+    // 2. Check dayProjects data
+    console.log('\n2️⃣ Data Check:');
+    console.log('   dayProjects exists:', !!window.dayProjects);
+    if (window.dayProjects) {
+        const counts = window.calculateProjectCounts();
+        console.log('   Calculated counts:', counts);
+        console.log('   Days in data:', Object.keys(window.dayProjects));
+    }
+    
+    // 3. Check DOM elements
+    console.log('\n3️⃣ DOM Elements Check:');
+    
+    const heroCounters = document.querySelectorAll('[data-target="23"]');
+    console.log('   Hero counters (data-target="23"):', heroCounters.length);
+    heroCounters.forEach((el, i) => {
+        console.log(`     Counter ${i+1}:`, el.textContent, 'target:', el.getAttribute('data-target'));
+    });
+    
+    const daysCounters = document.querySelectorAll('[data-target="7"]');
+    console.log('   Days counters (data-target="7"):', daysCounters.length);
+    
+    const hwCounters = document.querySelectorAll('[data-target="8"]');
+    console.log('   HW counters (data-target="8"):', hwCounters.length);
+    
+    const metaCounters = document.querySelectorAll('.sw-meta-num');
+    console.log('   Meta counters (.sw-meta-num):', metaCounters.length);
+    metaCounters.forEach((el, i) => {
+        console.log(`     Meta ${i+1}:`, el.textContent);
+    });
+    
+    const staticCounters = document.querySelectorAll('.stat-number');
+    console.log('   Static counters (.stat-number):', staticCounters.length);
+    staticCounters.forEach((el, i) => {
+        console.log(`     Static ${i+1}:`, el.textContent);
+    });
+    
+    // 4. Test counter update
+    console.log('\n4️⃣ Testing Counter Update:');
+    if (window.dayProjects) {
+        try {
+            window.refreshAllCounters();
+            console.log('   ✅ Counter update test successful');
+        } catch (error) {
+            console.log('   ❌ Counter update failed:', error.message);
+        }
+    } else {
+        console.log('   ⚠️ No dayProjects data to test with');
+    }
+    
+    console.log('\n🔚 === DEBUG COMPLETE ===');
+};
+
+/**
+ * 🧪 TEST COUNTER WITH SAMPLE DATA
+ */
+window.testCounters = function(cw = 12, hw = 11, days = 7) {
+    console.log(`🧪 Testing counters with sample data: ${cw} CW, ${hw} HW, ${days} days`);
+    
+    try {
+        window.updateAllCountersGlobally(cw, hw, days);
+        console.log('✅ Test counter update successful');
+        
+        // Check results
+        setTimeout(() => {
+            const metaCounters = document.querySelectorAll('.sw-meta-num');
+            console.log('📊 Results after test:');
+            if (metaCounters.length >= 3) {
+                console.log('   CW:', metaCounters[0].textContent);
+                console.log('   HW:', metaCounters[1].textContent);
+                console.log('   Total:', metaCounters[2].textContent);
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.log('❌ Test failed:', error.message);
+    }
+};
+
 console.log('🌍 Global counter utilities loaded!');
 console.log('💡 Use refreshAllCounters() to update all counters manually');
+console.log('🐛 Use debugCounters() to debug counter system');
+console.log('🧪 Use testCounters() to test with sample data');

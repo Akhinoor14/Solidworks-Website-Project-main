@@ -295,28 +295,39 @@ class GitHubProjectsAutoDetector {
      * 📊 Update ALL website counters using global utility
      */
     updateCounters() {
-        console.log('📊 [Auto-Detector] Using global counter update...');
+        console.log('📊 [Auto-Detector] Updating counters...');
+        console.log('📊 Current counts:', { totalCW: this.totalCW, totalHW: this.totalHW });
         
         const totalDays = Object.keys(this.detectedProjects).length;
+        console.log('📊 Total days detected:', totalDays);
         
-        // Use global counter update utility
-        if (typeof window.updateAllCountersGlobally === 'function') {
-            window.updateAllCountersGlobally(this.totalCW, this.totalHW, totalDays);
-        } else {
-            console.warn('⚠️ Global counter utility not available, using fallback...');
-            
-            // Fallback method
-            const totalProjects = this.totalCW + this.totalHW;
-            
-            // Update SOLIDWORKS Meta Counters only
-            const metaCounters = document.querySelectorAll('.sw-meta-num');
-            if (metaCounters.length >= 3) {
-                metaCounters[0].textContent = this.totalCW;      // CW
-                metaCounters[1].textContent = this.totalHW;      // HW  
-                metaCounters[2].textContent = totalProjects;     // Total
+        try {
+            // Use global counter update utility
+            if (typeof window.updateAllCountersGlobally === 'function') {
+                console.log('📊 Using global counter utility...');
+                window.updateAllCountersGlobally(this.totalCW, this.totalHW, totalDays);
+                console.log('✅ Global counter update completed');
+            } else {
+                console.warn('⚠️ Global counter utility not available, using fallback...');
+                
+                // Fallback method
+                const totalProjects = this.totalCW + this.totalHW;
+                
+                // Update SOLIDWORKS Meta Counters only
+                const metaCounters = document.querySelectorAll('.sw-meta-num');
+                console.log('📊 Found meta counters:', metaCounters.length);
+                
+                if (metaCounters.length >= 3) {
+                    metaCounters[0].textContent = this.totalCW;      // CW
+                    metaCounters[1].textContent = this.totalHW;      // HW  
+                    metaCounters[2].textContent = totalProjects;     // Total
+                    console.log(`✅ Fallback counters updated: ${this.totalCW} CW + ${this.totalHW} HW = ${totalProjects} Total`);
+                } else {
+                    console.warn('⚠️ Meta counters not found in DOM');
+                }
             }
-            
-            console.log(`✅ Fallback counters updated: ${this.totalCW} CW + ${this.totalHW} HW = ${totalProjects} Total`);
+        } catch (error) {
+            console.error('❌ Counter update failed:', error);
         }
     }
 

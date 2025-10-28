@@ -548,6 +548,20 @@ class SolidworksUploadInterface {
             this.updateProgressBar(100);
             this.updateProgressText('Upload completed successfully!');
             
+            // Trigger counter update after successful upload
+            console.log('🔄 Triggering counter update after upload...');
+            if (typeof window.refreshAllCounters === 'function') {
+                setTimeout(() => {
+                    window.refreshAllCounters();
+                    console.log('✅ Counters refreshed after upload');
+                }, 500);
+            }
+            
+            // Notify other tabs about upload completion
+            if (typeof window.broadcastUploadComplete === 'function') {
+                window.broadcastUploadComplete();
+            }
+            
             // Show success message with actual results
             setTimeout(() => {
                 this.showSuccessMessage(formData, uploadResult);

@@ -304,7 +304,7 @@ class RealTimeGitHubSync {
      * 📊 Update ALL website counters using global utility  
      */
     updateAllWebsiteCounters(projectsData, totalDays) {
-        console.log('📊 [Real-Time] Using global counter update...');
+        console.log('📊 [Real-Time] Updating counters...');
         
         // Calculate counts from project data
         let totalCW = 0, totalHW = 0;
@@ -314,23 +314,34 @@ class RealTimeGitHubSync {
             if (day.hw) totalHW += day.hw.length;
         });
         
-        // Use global counter update utility
-        if (typeof window.updateAllCountersGlobally === 'function') {
-            window.updateAllCountersGlobally(totalCW, totalHW, totalDays);
-        } else {
-            console.warn('⚠️ [Real-Time] Global counter utility not available, using fallback...');
-            
-            const totalProjects = totalCW + totalHW;
-            
-            // Update SOLIDWORKS Meta Counters only  
-            const metaCounters = document.querySelectorAll('.sw-meta-num');
-            if (metaCounters.length >= 3) {
-                metaCounters[0].textContent = totalCW;      // CW
-                metaCounters[1].textContent = totalHW;      // HW  
-                metaCounters[2].textContent = totalProjects; // Total
+        console.log('📊 [Real-Time] Calculated counts:', { totalCW, totalHW, totalDays });
+        
+        try {
+            // Use global counter update utility
+            if (typeof window.updateAllCountersGlobally === 'function') {
+                console.log('📊 [Real-Time] Using global counter utility...');
+                window.updateAllCountersGlobally(totalCW, totalHW, totalDays);
+                console.log('✅ [Real-Time] Global counter update completed');
+            } else {
+                console.warn('⚠️ [Real-Time] Global counter utility not available, using fallback...');
+                
+                const totalProjects = totalCW + totalHW;
+                
+                // Update SOLIDWORKS Meta Counters only  
+                const metaCounters = document.querySelectorAll('.sw-meta-num');
+                console.log('📊 [Real-Time] Found meta counters:', metaCounters.length);
+                
+                if (metaCounters.length >= 3) {
+                    metaCounters[0].textContent = totalCW;      // CW
+                    metaCounters[1].textContent = totalHW;      // HW  
+                    metaCounters[2].textContent = totalProjects; // Total
+                    console.log(`✅ [Real-Time] Fallback counters updated: ${totalCW} CW + ${totalHW} HW = ${totalProjects} Total`);
+                } else {
+                    console.warn('⚠️ [Real-Time] Meta counters not found in DOM');
+                }
             }
-            
-            console.log(`✅ [Real-Time] Fallback counters updated: ${totalCW} CW + ${totalHW} HW = ${totalProjects} Total`);
+        } catch (error) {
+            console.error('❌ [Real-Time] Counter update failed:', error);
         }
     }
 
