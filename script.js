@@ -1741,6 +1741,8 @@ function createProjectCard(project) {
     // Helper to build action buttons (no Details button as requested)
     const buildActions = () => {
         const hasDemo = !!project.demo;
+        const escapedGithub = (project.github || '').replace(/'/g, "\\'");
+        const escapedTitle = (project.title || '').replace(/'/g, "\\'");
         // Prioritize: GitHub, README, Browse, Demo|ZIP
         const lastBtn = hasDemo 
             ? `<a href="${project.demo}" class="action-btn btn-demo" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i><span>Live Demo</span></a>`
@@ -1755,7 +1757,7 @@ function createProjectCard(project) {
                     <i class="fas fa-book"></i>
                     <span>README</span>
                 </a>
-                <button class="action-btn btn-browse" onclick="openGitHubBrowser('${project.github}', '${project.title}')">
+                <button class="action-btn btn-browse" onclick="openGitHubBrowser('${escapedGithub}', '${escapedTitle}')">
                     <i class="fas fa-folder-open"></i>
                     <span>Browse</span>
                 </button>
