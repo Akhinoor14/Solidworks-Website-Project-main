@@ -434,7 +434,7 @@ const sampleProjects = [
     {
         title: "SOLIDWORKS Beginner Projects",
         shortDescription: "21+ SOLIDWORKS projects for beginners with step-by-step tutorials covering mechanical parts, assemblies, and technical drawings across 5 days of structured learning.",
-        fullDescription: "A comprehensive collection of 21+ SOLIDWORKS projects specifically designed for beginners entering the world of CAD design. This repository serves as a complete learning resource featuring mechanical parts design, complex assemblies, and professional technical drawings across 5 days of structured coursework and homework assignments. Each project includes detailed step-by-step tutorials with screenshots, downloadable SOLIDWORKS files, preview images, and real-world engineering applications. Perfect for students, engineers, and hobbyists looking to master 3D modeling techniques used in modern engineering design. Projects range from simple bracket designs to complex mechanical assemblies and technical drawings, providing a progressive learning path that builds skills systematically from Day 1 through Day 5.",
+        fullDescription: "A comprehensive collection of 21+ SOLIDWORKS projects specifically designed for beginners entering the world of CAD design. This repository serves as a complete learning resource featuring mechanical parts design, complex assemblies, and professional technical drawings across 5 days of structured coursework and homework assignments. Each project includes detailed step-by-step tutorials with screenshots, downloadable SOLIDWORKS files, preview images, and real-world engineering applications. Perfect for students, engineers, and hobbyists looking to master 3D modeling techniques used in modern engineering design. Projects range from simple bracket designs to complex mechanical assemblies and technical drawings, providing a progressive learning path that builds skills systematically from Day 1 through Day 7.",
         tech: ["SOLIDWORKS", "CAD Design", "3D Modeling", "Technical Drawing", "Engineering"],
         category: "desktop",
         github: "https://github.com/Akhinoor14/SOLIDWORKS-Projects",
@@ -635,6 +635,54 @@ const sampleProjects = [
                         preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/HW/Day%205/hw%2002%20day%205/Screenshot%202025-10-20%20120639.png"
                     }
                 ]
+            },
+            "Day 06": {
+                cw: [
+                    { 
+                        name: "CW 1 - Day 06", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2006/cw%2001%20day%206/README.md",
+                        downloads: [
+                            {
+                                type: "Assembly",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/Assem1%20day%206.SLDASM"
+                            },
+                            {
+                                type: "Part 1", 
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/part1%20day%206.SLDPRT"
+                            },
+                            {
+                                type: "Part 2",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/part2%20day%206.SLDPRT"
+                            }
+                        ],
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2006/cw%2001%20day%206/Screenshot%20day%206.png"
+                    }
+                ],
+                hw: []
+            },
+            "Day 07": {
+                cw: [
+                    { 
+                        name: "CW 1 - Day 07", 
+                        page: "https://github.com/Akhinoor14/SOLIDWORKS-Projects/blob/main/CW/Day%2007/cw%2001%20day%207/README.md",
+                        downloads: [
+                            {
+                                type: "Assembly",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/Assem1%20day%207.SLDASM"
+                            },
+                            {
+                                type: "Part 1",
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/part1%20day%207.SLDPRT"
+                            },
+                            {
+                                type: "Part 2", 
+                                url: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/part2%20day%207.SLDPRT"
+                            }
+                        ],
+                        preview: "https://raw.githubusercontent.com/Akhinoor14/SOLIDWORKS-Projects/main/CW/Day%2007/cw%2001%20day%207/Screenshot%20day%207.png"
+                    }
+                ],
+                hw: []
             }
         },
         // Quick access links

@@ -460,22 +460,26 @@ ${this.generateTechnicalSpecs(filesByType)}
     generateProjectDescription(type, filesByType) {
         const typeText = type === 'CW' ? 'Class Work' : 'Home Work';
         const partCount = filesByType.parts.length;
+        const hasAssembly = filesByType.assembly !== null;
         const hasGuide = filesByType.guide !== null;
 
-        let description = `This is a ${typeText} project featuring `;
+        let description = `This is a ${typeText} project`;
         
-        if (partCount === 0) {
-            description += 'a SOLIDWORKS assembly';
-        } else if (partCount === 1) {
-            description += 'a single-part mechanical assembly';
-        } else {
-            description += `a ${partCount}-part mechanical assembly`;
+        // Build description based on available files
+        const fileTypes = [];
+        if (hasAssembly) fileTypes.push('assembly');
+        if (partCount > 0) fileTypes.push(`${partCount} part${partCount > 1 ? 's' : ''}`);
+        if (filesByType.screenshot) fileTypes.push('preview screenshot');
+        if (hasGuide) fileTypes.push('documentation');
+        
+        if (fileTypes.length > 0) {
+            description += ` featuring ${fileTypes.join(', ')}`;
         }
-
-        description += '. The project includes detailed SOLIDWORKS files with proper constraints, relations, and technical specifications designed to enhance CAD modeling skills';
+        
+        description += '. The project includes SOLIDWORKS files designed to enhance CAD modeling skills';
 
         if (hasGuide) {
-            description += ', along with a comprehensive guide for better understanding';
+            description += ' with comprehensive documentation';
         }
 
         description += '.';

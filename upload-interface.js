@@ -7,9 +7,9 @@ class SolidworksUploadInterface {
     constructor() {
         this.selectedFiles = new Map();
         this.requirements = {
-            assembly: { required: true, found: false, extensions: ['.sldasm'] },
-            parts: { required: true, found: false, extensions: ['.sldprt'] },
-            screenshot: { required: true, found: false, extensions: ['.png', '.jpg', '.jpeg'] },
+            assembly: { required: false, found: false, extensions: ['.sldasm'] },
+            parts: { required: false, found: false, extensions: ['.sldprt'] },
+            screenshot: { required: false, found: false, extensions: ['.png', '.jpg', '.jpeg'] },
             guide: { required: false, found: false, extensions: ['.pdf'] }
         };
         
@@ -349,12 +349,10 @@ class SolidworksUploadInterface {
         // Check required fields
         const fieldsValid = daySelect && projectType && projectNumber;
         
-        // Check required files
-        const requiredFilesValid = this.requirements.assembly.found && 
-                                 this.requirements.parts.found && 
-                                 this.requirements.screenshot.found;
+        // Check if at least one file is selected (any type)
+        const hasFiles = this.selectedFiles.size > 0;
         
-        const isValid = fieldsValid && requiredFilesValid;
+        const isValid = fieldsValid && hasFiles;
         
         const uploadBtn = document.getElementById('upload-btn');
         uploadBtn.disabled = !isValid;
@@ -441,12 +439,7 @@ class SolidworksUploadInterface {
         }
 
         if (this.selectedFiles.size === 0) {
-            this.showNotification('Please select files to upload.', 'error');
-            return false;
-        }
-
-        if (!this.requirements.assembly.found) {
-            this.showNotification('Assembly file (.SLDASM) is required.', 'error');
+            this.showNotification('Please select at least one file to upload.', 'error');
             return false;
         }
 

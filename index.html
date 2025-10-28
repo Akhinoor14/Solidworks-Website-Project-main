@@ -99,12 +99,12 @@
                         <!-- Interactive Stats Counter -->
                         <div class="hero-stats animate-on-load">
                             <div class="stat-item">
-                                <div class="stat-number" data-target="21">0</div>
-                                <div class="stat-label">Projects Completed</div>
+                                <div class="stat-number" data-target="23">0</div>
+                                <div class="stat-text">Projects</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number" data-target="5">0</div>
-                                <div class="stat-label">Days of Learning</div>
+                                <div class="stat-number" data-target="7">0</div>
+                                <div class="stat-text">Days</div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-number" data-target="8">0</div>
@@ -127,6 +127,10 @@
                             <button class="btn btn-outline btn-download" onclick="downloadResume()">
                                 <span class="btn-text">Download CV</span>
                                 <span class="btn-icon">📄</span>
+                            </button>
+                            <button class="btn btn-sync" onclick="syncWithGitHub()" title="Sync with GitHub">
+                                <span class="btn-text">Sync Projects</span>
+                                <span class="btn-icon">🔄</span>
                             </button>
                         </div>
                     </div>
@@ -276,7 +280,7 @@
                 </div>
                 <div class="about-stats">
                     <div class="stat-card">
-                        <div class="stat-number">21+</div>
+                        <div class="stat-number">23+</div>
                         <div class="stat-label">Projects Completed</div>
                     </div>
                     <div class="stat-card">
@@ -545,7 +549,117 @@
         </div>
     </footer>
 
+    <!-- GitHub Auto-Sync System -->
+    <script src="github-sync.js"></script>
     <script src="script.js?v=20251020133251"></script>
+    
+    <!-- Sync Notification System -->
+    <script>
+        // Enhanced notification system
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existing = document.querySelectorAll('.sync-notification');
+            existing.forEach(n => n.remove());
+            
+            // Get appropriate icon
+            const icons = {
+                success: '✅',
+                error: '❌', 
+                warning: '⚠️',
+                info: '🔄'
+            };
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = `sync-notification ${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.2em;">${icons[type] || '📢'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Auto-hide after duration based on type
+            const duration = type === 'info' ? 3000 : 5000;
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, duration);
+        }
+        
+        // Initialize GitHub Sync System
+        let githubSync;
+        
+        // Enhanced manual sync function with UI feedback
+        window.syncWithGitHub = async () => {
+            const btn = event.target.closest('.btn-sync');
+            const originalText = btn.querySelector('.btn-text').textContent;
+            
+            // Initialize githubSync if not already done
+            if (!githubSync) {
+                if (typeof GitHubAutoSync === 'undefined') {
+                    showNotification('❌ GitHub sync system not loaded', 'error');
+                    return;
+                }
+                githubSync = new GitHubAutoSync('Akhinoor14', 'SOLIDWORKS-Projects');
+            }
+            
+            // Show loading state
+            btn.querySelector('.btn-text').textContent = 'Syncing...';
+            btn.disabled = true;
+            
+            try {
+                console.log('🔄 Manual sync requested...');
+                showNotification('🔄 Syncing with GitHub...', 'info');
+                
+                const result = await githubSync.updateWebsite();
+                
+                if (result.success) {
+                    showNotification(`✅ Synced successfully! ${result.stats.totalProjects} projects, ${result.stats.totalDays} days`, 'success');
+                    
+                    // Reload page to show changes
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'Unknown sync error');
+                }
+            } catch (error) {
+                console.error('❌ Sync failed:', error);
+                showNotification(`❌ Sync failed: ${error.message}`, 'error');
+            } finally {
+                // Restore button state
+                btn.querySelector('.btn-text').textContent = originalText;
+                btn.disabled = false;
+            }
+        };
+        
+        // Auto-sync notification on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize GitHub sync system
+            if (typeof GitHubAutoSync !== 'undefined') {
+                githubSync = new GitHubAutoSync('Akhinoor14', 'SOLIDWORKS-Projects');
+                
+                // Store global instance for periodic sync
+                window.githubSyncInstance = githubSync;
+                
+                // Show loading notification initially
+                setTimeout(() => {
+                    showNotification('🔄 Auto-syncing with GitHub...', 'info');
+                }, 2000);
+            } else {
+                console.warn('⚠️ GitHubAutoSync class not found');
+                setTimeout(() => {
+                    showNotification('⚠️ GitHub sync system not available', 'warning');
+                }, 2000);
+            }
+        });
+    </script>
     <script>
     // 3D viewer modal logic
     document.querySelectorAll('.view-3d-btn').forEach(btn => {
@@ -579,6 +693,73 @@
         font-weight: bold;
         font-size: 1.1em;
         letter-spacing: 0.05em;
+    }
+    
+    /* GitHub Sync Button Styles */
+    .btn-sync {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-sync:hover {
+        background: linear-gradient(135deg, #218838, #17a2b8);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-sync:active {
+        transform: translateY(0);
+    }
+    
+    .btn-sync .btn-icon {
+        animation: none;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-sync:hover .btn-icon {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Sync notification styles */
+    .sync-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        z-index: 10000;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.5s ease;
+    }
+    
+    .sync-notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .sync-notification.error {
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
+    }
+    
+    .sync-notification.warning {
+        background: linear-gradient(135deg, #ffc107, #ff8f00);
+    }
+    
+    .sync-notification.info {
+        background: linear-gradient(135deg, #17a2b8, #007bff);
     }
     </style>
 </body>
