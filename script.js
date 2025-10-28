@@ -70,17 +70,30 @@ function getGitHubHeaders(){
 }
 
 // Open GitHub repository browser modal
-function openGitHubBrowser(repoUrl, projectTitle) {
-    console.log('📂 Opening GitHub browser for:', repoUrl);
+function openGitHubBrowser(repoUrlOrOwner, projectTitleOrRepo, optionalTitle) {
+    console.log('📂 Opening GitHub browser');
     
-    // Extract owner and repo from URL
-    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-    if (!match) {
-        console.error('Invalid GitHub URL');
-        return;
+    let owner, repo, projectTitle;
+    
+    // Check if called with (owner, repo, title) or (url, title)
+    if (optionalTitle) {
+        // Called with (owner, repo, title)
+        owner = repoUrlOrOwner;
+        repo = projectTitleOrRepo;
+        projectTitle = optionalTitle;
+    } else {
+        // Called with (url, title) - legacy format
+        const match = repoUrlOrOwner.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+        if (!match) {
+            console.error('Invalid GitHub URL');
+            return;
+        }
+        [, owner, repo] = match;
+        projectTitle = projectTitleOrRepo;
     }
     
-    const [, owner, repo] = match;
+    console.log(`📂 Owner: ${owner}, Repo: ${repo}`);
+    
     const modal = createGitHubBrowserModal(owner, repo, projectTitle);
     document.body.appendChild(modal);
     
@@ -723,6 +736,1120 @@ function viewGenericFile(name, url, container) {
     `;
 }
 
+// Open SOLIDWORKS CW/HW in full-page window
+function openSolidworksWindow(type) {
+    const titles = {
+        'cw': 'Class Work (CW)',
+        'hw': 'Home Work (HW)'
+    };
+    const folderPaths = {
+        'cw': 'CW',
+        'hw': 'HW'
+    };
+    
+    const modal = document.createElement('div');
+    modal.id = `solidworks${type.toUpperCase()}Modal`;
+    modal.className = 'project-modal solidworks-window';
+    modal.innerHTML = `
+        <div class="modal-content sw-window-content">
+            <button class="close-modal" onclick="closeSolidworksWindow('${type}')" title="Close (ESC)">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="sw-window-header">
+                <div class="sw-header-info">
+                    <i class="fas fa-cube"></i>
+                    <h2>SOLIDWORKS ${titles[type]}</h2>
+                    <span class="sw-path">SOLIDWORKS-Projects/${folderPaths[type]}</span>
+                </div>
+                <div class="sw-window-actions">
+                    <button class="sw-action-btn" onclick="window.open('https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${folderPaths[type]}', '_blank')">
+                        <i class="fab fa-github"></i> Open in GitHub
+                    </button>
+                    <button class="sw-action-btn" onclick="uploadToSolidworks('${type}')">
+                        <i class="fas fa-upload"></i> Upload Files
+                    </button>
+                    <button class="sw-action-btn" onclick="refreshSolidworksContent('${type}')" title="Refresh from GitHub">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sw-window-body" id="sw${type.toUpperCase()}Content">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Loading ${titles[type]}...
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    // ESC key handler
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeSolidworksWindow(type);
+        }
+    };
+    modal.escHandler = escHandler;
+    document.addEventListener('keydown', escHandler);
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    
+    // Load content
+    loadSolidworksContent(type);
+}
+
+// Close SOLIDWORKS window
+function closeSolidworksWindow(type) {
+    const modal = document.getElementById(`solidworks${type.toUpperCase()}Modal`);
+    if (modal) {
+        modal.classList.remove('show');
+        if (modal.escHandler) {
+            document.removeEventListener('keydown', modal.escHandler);
+        }
+        setTimeout(() => {
+            modal.remove();
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+// Load SOLIDWORKS content from GitHub
+async function loadSolidworksContent(type) {
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPaths = { 'cw': 'CW', 'hw': 'HW' };
+    const path = folderPaths[type];
+    
+    const contentDiv = document.getElementById(`sw${type.toUpperCase()}Content`);
+    
+    try {
+        const headers = getGitHubHeaders();
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { headers });
+        
+        if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+        
+        const items = await response.json();
+        
+        // Group files by day
+        const dayGroups = {};
+        
+        for (const item of items) {
+            if (item.type === 'dir' && item.name.startsWith('Day')) {
+                const dayNum = item.name.replace('Day', '').trim();
+                const dayResponse = await fetch(item.url, { headers });
+                const dayFiles = await dayResponse.json();
+                
+                dayGroups[dayNum] = dayFiles.filter(f => 
+                    f.type === 'file' && 
+                    (f.name.endsWith('.SLDPRT') || f.name.endsWith('.SLDASM') || f.name.endsWith('.SLDDRW'))
+                );
+            }
+        }
+        
+        // Render grouped content
+        let html = '<div class="sw-files-container">';
+        
+        const sortedDays = Object.keys(dayGroups).sort((a, b) => {
+            const numA = parseInt(a);
+            const numB = parseInt(b);
+            return numA - numB;
+        });
+        
+        for (const dayNum of sortedDays) {
+            const files = dayGroups[dayNum];
+            if (files.length === 0) continue;
+            
+            html += `
+                <div class="sw-day-section">
+                    <h3 class="sw-day-title">
+                        <i class="fas fa-calendar-day"></i> Day ${dayNum}
+                    </h3>
+                    <ul class="sw-file-list">
+            `;
+            
+            files.forEach(file => {
+                const downloadUrl = file.download_url;
+                html += `
+                    <li>
+                        <a href="${downloadUrl}" download="${file.name}">
+                            ${file.name}
+                        </a>
+                    </li>
+                `;
+            });
+            
+            html += `
+                    </ul>
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        
+        if (sortedDays.length === 0) {
+            html = `
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No ${type.toUpperCase()} files found</p>
+                </div>
+            `;
+        }
+        
+        contentDiv.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading SOLIDWORKS content:', error);
+        contentDiv.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load content</p>
+                <button class="sw-action-btn" onclick="loadSolidworksContent('${type}')">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Refresh SOLIDWORKS content
+async function refreshSolidworksContent(type) {
+    const contentDiv = document.getElementById(`sw${type.toUpperCase()}Content`);
+    contentDiv.innerHTML = `
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Refreshing...
+        </div>
+    `;
+    
+    // Clear cache and reload
+    await loadSolidworksContent(type);
+    
+    // Show success toast
+    showToast('Refreshed', `${type.toUpperCase()} content updated from GitHub`);
+}
+
+// Upload to SOLIDWORKS - Full Upload System
+async function uploadToSolidworks(type) {
+    const token = getGitHubToken();
+    if (!token) {
+        showUploadDialog(type, 'needToken');
+        return;
+    }
+    
+    showUploadDialog(type, 'upload');
+}
+
+// Show upload dialog
+function showUploadDialog(type, mode = 'upload') {
+    const titles = {
+        'cw': 'Class Work (CW)',
+        'hw': 'Home Work (HW)'
+    };
+    
+    const modeText = mode === 'needToken' ? 'GitHub Token Required' : `Upload to ${titles[type]}`;
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog">
+            <div class="upload-header">
+                <h3><i class="fas fa-upload"></i> ${modeText}</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            ${mode === 'needToken' ? `
+                <div class="upload-body">
+                    <div class="token-needed">
+                        <i class="fas fa-key fa-3x"></i>
+                        <h4>GitHub Personal Access Token Required</h4>
+                        <p>To upload files, you need a GitHub token with 'repo' permission.</p>
+                        
+                        <div class="token-steps">
+                            <h5>How to create a token:</h5>
+                            <ol>
+                                <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></li>
+                                <li>Click "Generate new token (classic)"</li>
+                                <li>Give it a name (e.g., "SOLIDWORKS Upload")</li>
+                                <li>Select scope: <strong>repo</strong> (Full control of private repositories)</li>
+                                <li>Click "Generate token"</li>
+                                <li>Copy the token and paste it below</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="token-input-group">
+                            <input type="password" id="uploadTokenInput" placeholder="Paste your GitHub token here" />
+                            <button class="btn-save-token" onclick="saveUploadToken('${type}')">
+                                <i class="fas fa-save"></i> Save & Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ` : `
+                <div class="upload-body">
+                    <div class="upload-options">
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'new')">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Upload New Files</span>
+                            <small>Add new SOLIDWORKS files to a day folder</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'question')">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Upload Question</span>
+                            <small>Add question PDF or image for a day</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'update')">
+                            <i class="fas fa-edit"></i>
+                            <span>Update Existing File</span>
+                            <small>Replace or modify an existing file</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'delete')">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Delete File</span>
+                            <small>Remove a file from repository</small>
+                        </button>
+                    </div>
+                </div>
+            `}
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Close upload dialog
+function closeUploadDialog() {
+    const dialog = document.getElementById('uploadDialog');
+    if (dialog) {
+        dialog.classList.remove('show');
+        setTimeout(() => dialog.remove(), 300);
+    }
+}
+
+// Save upload token
+function saveUploadToken(type) {
+    const input = document.getElementById('uploadTokenInput');
+    const token = input.value.trim();
+    
+    if (!token) {
+        alert('Please enter a valid GitHub token');
+        return;
+    }
+    
+    setGitHubToken(token);
+    closeUploadDialog();
+    
+    setTimeout(() => {
+        showUploadDialog(type, 'upload');
+    }, 400);
+}
+
+// Select upload mode
+function selectUploadMode(type, mode) {
+    closeUploadDialog();
+    
+    setTimeout(() => {
+        if (mode === 'new') {
+            showFileUploadForm(type, 'new');
+        } else if (mode === 'question') {
+            showQuestionUploadForm(type);
+        } else if (mode === 'update') {
+            showFileUpdateForm(type);
+        } else if (mode === 'delete') {
+            showFileDeleteForm(type);
+        }
+    }, 400);
+}
+
+// Show file upload form
+function showFileUploadForm(type, mode = 'new') {
+    const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-upload"></i> Upload Files to ${titles[type]}</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Select Day:</label>
+                        <select id="uploadDaySelect" class="form-control">
+                            <option value="">-- Choose Day --</option>
+                            ${Array.from({length: 30}, (_, i) => `<option value="Day ${String(i+1).padStart(2, '0')}">Day ${String(i+1).padStart(2, '0')}</option>`).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-file"></i> Select Files:</label>
+                        <input type="file" id="uploadFileInput" class="form-control" multiple accept=".SLDPRT,.SLDASM,.SLDDRW,.sldprt,.sldasm,.slddrw" />
+                        <small>Accepted: .SLDPRT, .SLDASM, .SLDDRW</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> Commit Message (optional):</label>
+                        <input type="text" id="uploadCommitMsg" class="form-control" placeholder="e.g., Added Day 05 parts" />
+                    </div>
+                    
+                    <div class="upload-preview" id="uploadPreview"></div>
+                    
+                    <div class="upload-actions">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-upload" onclick="performFileUpload('${type}')">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload Files
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+    
+    // File preview
+    document.getElementById('uploadFileInput').addEventListener('change', (e) => {
+        const files = e.target.files;
+        const preview = document.getElementById('uploadPreview');
+        
+        if (files.length === 0) {
+            preview.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="preview-title">Selected Files:</div><ul class="file-preview-list">';
+        for (let file of files) {
+            const size = (file.size / 1024).toFixed(2);
+            html += `<li><i class="fas fa-cube"></i> ${file.name} <span class="file-size">(${size} KB)</span></li>`;
+        }
+        html += '</ul>';
+        preview.innerHTML = html;
+    });
+}
+
+// Show question upload form
+function showQuestionUploadForm(type) {
+    const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-question-circle"></i> Upload Question for ${titles[type]}</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Select Day:</label>
+                        <select id="questionDaySelect" class="form-control">
+                            <option value="">-- Choose Day --</option>
+                            ${Array.from({length: 30}, (_, i) => `<option value="Day ${String(i+1).padStart(2, '0')}">Day ${String(i+1).padStart(2, '0')}</option>`).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-file-pdf"></i> Select Question File:</label>
+                        <input type="file" id="questionFileInput" class="form-control" accept=".pdf,.png,.jpg,.jpeg" />
+                        <small>Accepted: PDF, PNG, JPG (Question images/PDFs)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> File Name:</label>
+                        <input type="text" id="questionFileName" class="form-control" placeholder="e.g., Question.pdf or Q1.png" />
+                        <small>This will be the name in GitHub</small>
+                    </div>
+                    
+                    <div class="upload-actions">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-upload" onclick="performQuestionUpload('${type}')">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload Question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Perform file upload
+async function performFileUpload(type) {
+    const daySelect = document.getElementById('uploadDaySelect');
+    const fileInput = document.getElementById('uploadFileInput');
+    const commitMsg = document.getElementById('uploadCommitMsg');
+    
+    const day = daySelect.value;
+    const files = fileInput.files;
+    const message = commitMsg.value.trim() || `Upload files to ${type.toUpperCase()} ${day}`;
+    
+    if (!day) {
+        alert('Please select a day');
+        return;
+    }
+    
+    if (files.length === 0) {
+        alert('Please select at least one file');
+        return;
+    }
+    
+    const token = getGitHubToken();
+    if (!token) {
+        alert('GitHub token not found. Please set it first.');
+        return;
+    }
+    
+    // Show progress
+    showUploadProgress('Uploading files...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        for (let file of files) {
+            try {
+                const path = `${folderPath}/${day}/${file.name}`;
+                const content = await readFileAsBase64(file);
+                
+                // Check if file exists
+                const checkUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+                const checkResponse = await fetch(checkUrl, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                let sha = null;
+                if (checkResponse.ok) {
+                    const existingFile = await checkResponse.json();
+                    sha = existingFile.sha;
+                }
+                
+                // Upload file
+                const uploadUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+                const uploadData = {
+                    message: message,
+                    content: content,
+                    branch: 'main'
+                };
+                
+                if (sha) {
+                    uploadData.sha = sha; // Update existing file
+                }
+                
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(uploadData)
+                });
+                
+                if (uploadResponse.ok) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    console.error(`Failed to upload ${file.name}:`, await uploadResponse.text());
+                }
+            } catch (error) {
+                failCount++;
+                console.error(`Error uploading ${file.name}:`, error);
+            }
+        }
+        
+        closeUploadDialog();
+        
+        if (successCount > 0) {
+            showToast('Success', `${successCount} file(s) uploaded successfully!`);
+            
+            // Refresh the SOLIDWORKS window
+            setTimeout(() => {
+                refreshSolidworksContent(type);
+            }, 1500);
+        }
+        
+        if (failCount > 0) {
+            alert(`${failCount} file(s) failed to upload. Check console for details.`);
+        }
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Upload failed: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Perform question upload
+async function performQuestionUpload(type) {
+    const daySelect = document.getElementById('questionDaySelect');
+    const fileInput = document.getElementById('questionFileInput');
+    const fileNameInput = document.getElementById('questionFileName');
+    
+    const day = daySelect.value;
+    const file = fileInput.files[0];
+    const fileName = fileNameInput.value.trim();
+    
+    if (!day) {
+        alert('Please select a day');
+        return;
+    }
+    
+    if (!file) {
+        alert('Please select a question file');
+        return;
+    }
+    
+    if (!fileName) {
+        alert('Please enter a file name');
+        return;
+    }
+    
+    const token = getGitHubToken();
+    if (!token) {
+        alert('GitHub token not found');
+        return;
+    }
+    
+    showUploadProgress('Uploading question...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const path = `${folderPath}/${day}/${fileName}`;
+        const content = await readFileAsBase64(file);
+        
+        // Check if exists
+        const checkUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        const checkResponse = await fetch(checkUrl, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        let sha = null;
+        if (checkResponse.ok) {
+            const existingFile = await checkResponse.json();
+            sha = existingFile.sha;
+        }
+        
+        // Upload
+        const uploadData = {
+            message: `Upload question for ${type.toUpperCase()} ${day}`,
+            content: content,
+            branch: 'main'
+        };
+        
+        if (sha) {
+            uploadData.sha = sha;
+        }
+        
+        const uploadResponse = await fetch(checkUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadData)
+        });
+        
+        if (uploadResponse.ok) {
+            closeUploadDialog();
+            showToast('Success', 'Question uploaded successfully!');
+            setTimeout(() => refreshSolidworksContent(type), 1500);
+        } else {
+            throw new Error('Upload failed: ' + await uploadResponse.text());
+        }
+        
+    } catch (error) {
+        console.error('Question upload error:', error);
+        alert('Failed to upload question: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Show file update form
+async function showFileUpdateForm(type) {
+    showUploadProgress('Loading files...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const items = await response.json();
+        const days = items.filter(item => item.type === 'dir' && item.name.startsWith('Day'));
+        
+        closeUploadDialog();
+        
+        const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+        const dialog = document.createElement('div');
+        dialog.id = 'uploadDialog';
+        dialog.className = 'upload-dialog-overlay';
+        dialog.innerHTML = `
+            <div class="upload-dialog upload-dialog-large">
+                <div class="upload-header">
+                    <h3><i class="fas fa-edit"></i> Update File in ${titles[type]}</h3>
+                    <button class="upload-close" onclick="closeUploadDialog()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="upload-body">
+                    <div class="upload-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Select Day:</label>
+                            <select id="updateDaySelect" class="form-control" onchange="loadDayFilesForUpdate('${type}')">
+                                <option value="">-- Choose Day --</option>
+                                ${days.map(day => `<option value="${day.name}">${day.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="updateFileSelectGroup" style="display:none;">
+                            <label><i class="fas fa-file"></i> Select File to Update:</label>
+                            <select id="updateFileSelect" class="form-control">
+                                <option value="">-- Choose File --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="updateNewFileGroup" style="display:none;">
+                            <label><i class="fas fa-upload"></i> Upload New Version:</label>
+                            <input type="file" id="updateFileInput" class="form-control" />
+                        </div>
+                        
+                        <div class="upload-actions" id="updateActions" style="display:none;">
+                            <button class="btn-cancel" onclick="closeUploadDialog()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button class="btn-upload" onclick="performFileUpdate('${type}')">
+                                <i class="fas fa-sync-alt"></i> Update File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        setTimeout(() => dialog.classList.add('show'), 10);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load files: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Load day files for update
+async function loadDayFilesForUpdate(type) {
+    const daySelect = document.getElementById('updateDaySelect');
+    const fileSelect = document.getElementById('updateFileSelect');
+    const day = daySelect.value;
+    
+    if (!day) {
+        document.getElementById('updateFileSelectGroup').style.display = 'none';
+        document.getElementById('updateNewFileGroup').style.display = 'none';
+        document.getElementById('updateActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
+        files.forEach(file => {
+            if (file.type === 'file') {
+                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
+            }
+        });
+        
+        document.getElementById('updateFileSelectGroup').style.display = 'block';
+        
+        fileSelect.onchange = () => {
+            if (fileSelect.value) {
+                document.getElementById('updateNewFileGroup').style.display = 'block';
+                document.getElementById('updateActions').style.display = 'flex';
+            } else {
+                document.getElementById('updateNewFileGroup').style.display = 'none';
+                document.getElementById('updateActions').style.display = 'none';
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files');
+    }
+}
+
+// Perform file update
+async function performFileUpdate(type) {
+    const daySelect = document.getElementById('updateDaySelect');
+    const fileSelect = document.getElementById('updateFileSelect');
+    const fileInput = document.getElementById('updateFileInput');
+    
+    const day = daySelect.value;
+    const oldFileName = fileSelect.value;
+    const newFile = fileInput.files[0];
+    
+    if (!day || !oldFileName || !newFile) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    const token = getGitHubToken();
+    
+    showUploadProgress('Updating file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const path = `${folderPath}/${day}/${oldFileName}`;
+        const content = await readFileAsBase64(newFile);
+        
+        const uploadData = {
+            message: `Update ${oldFileName} in ${type.toUpperCase()} ${day}`,
+            content: content,
+            sha: sha,
+            branch: 'main'
+        };
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadData)
+        });
+        
+        if (response.ok) {
+            closeUploadDialog();
+            showToast('Success', 'File updated successfully!');
+            setTimeout(() => refreshSolidworksContent(type), 1500);
+        } else {
+            throw new Error('Update failed: ' + await response.text());
+        }
+        
+    } catch (error) {
+        console.error('Update error:', error);
+        alert('Failed to update file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Show file delete form
+async function showFileDeleteForm(type) {
+    showUploadProgress('Loading files...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const items = await response.json();
+        const days = items.filter(item => item.type === 'dir' && item.name.startsWith('Day'));
+        
+        closeUploadDialog();
+        
+        const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+        const dialog = document.createElement('div');
+        dialog.id = 'uploadDialog';
+        dialog.className = 'upload-dialog-overlay';
+        dialog.innerHTML = `
+            <div class="upload-dialog upload-dialog-large">
+                <div class="upload-header">
+                    <h3><i class="fas fa-trash-alt"></i> Delete File from ${titles[type]}</h3>
+                    <button class="upload-close" onclick="closeUploadDialog()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="upload-body">
+                    <div class="upload-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Select Day:</label>
+                            <select id="deleteDaySelect" class="form-control" onchange="loadDayFilesForDelete('${type}')">
+                                <option value="">-- Choose Day --</option>
+                                ${days.map(day => `<option value="${day.name}">${day.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="deleteFileSelectGroup" style="display:none;">
+                            <label><i class="fas fa-file"></i> Select File to Delete:</label>
+                            <select id="deleteFileSelect" class="form-control">
+                                <option value="">-- Choose File --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="delete-warning" id="deleteWarning" style="display:none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p><strong>Warning:</strong> This action cannot be undone! The file will be permanently deleted from GitHub.</p>
+                        </div>
+                        
+                        <div class="upload-actions" id="deleteActions" style="display:none;">
+                            <button class="btn-cancel" onclick="closeUploadDialog()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button class="btn-delete" onclick="performFileDelete('${type}')">
+                                <i class="fas fa-trash"></i> Delete File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        setTimeout(() => dialog.classList.add('show'), 10);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load files: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Load day files for delete
+async function loadDayFilesForDelete(type) {
+    const daySelect = document.getElementById('deleteDaySelect');
+    const fileSelect = document.getElementById('deleteFileSelect');
+    const day = daySelect.value;
+    
+    if (!day) {
+        document.getElementById('deleteFileSelectGroup').style.display = 'none';
+        document.getElementById('deleteWarning').style.display = 'none';
+        document.getElementById('deleteActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
+        files.forEach(file => {
+            if (file.type === 'file') {
+                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
+            }
+        });
+        
+        document.getElementById('deleteFileSelectGroup').style.display = 'block';
+        
+        fileSelect.onchange = () => {
+            if (fileSelect.value) {
+                document.getElementById('deleteWarning').style.display = 'block';
+                document.getElementById('deleteActions').style.display = 'flex';
+            } else {
+                document.getElementById('deleteWarning').style.display = 'none';
+                document.getElementById('deleteActions').style.display = 'none';
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files');
+    }
+}
+
+// Perform file delete
+async function performFileDelete(type) {
+    const daySelect = document.getElementById('deleteDaySelect');
+    const fileSelect = document.getElementById('deleteFileSelect');
+    
+    const day = daySelect.value;
+    const fileName = fileSelect.value;
+    
+    if (!day || !fileName) {
+        alert('Please select a file to delete');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete "${fileName}"?\n\nThis action cannot be undone!`)) {
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    const token = getGitHubToken();
+    
+    showUploadProgress('Deleting file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const path = `${folderPath}/${day}/${fileName}`;
+        
+        const deleteData = {
+            message: `Delete ${fileName} from ${type.toUpperCase()} ${day}`,
+            sha: sha,
+            branch: 'main'
+        };
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(deleteData)
+        });
+        
+        if (response.ok) {
+            closeUploadDialog();
+            showToast('Success', 'File deleted successfully!');
+            setTimeout(() => refreshSolidworksContent(type), 1500);
+        } else {
+            throw new Error('Delete failed: ' + await response.text());
+        }
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Show upload progress
+function showUploadProgress(message) {
+    const existing = document.getElementById('uploadDialog');
+    if (existing) existing.remove();
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay show';
+    dialog.innerHTML = `
+        <div class="upload-dialog">
+            <div class="upload-body">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p style="margin-top: 1rem; font-size: 1.1rem;">${message}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+
+// Read file as base64
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Make upload functions globally accessible
+window.closeUploadDialog = closeUploadDialog;
+window.saveUploadToken = saveUploadToken;
+window.selectUploadMode = selectUploadMode;
+window.performFileUpload = performFileUpload;
+window.performQuestionUpload = performQuestionUpload;
+window.loadDayFilesForUpdate = loadDayFilesForUpdate;
+window.performFileUpdate = performFileUpdate;
+window.loadDayFilesForDelete = loadDayFilesForDelete;
+window.performFileDelete = performFileDelete;
+
+// Make SOLIDWORKS functions globally accessible
+window.openGitHubBrowser = openGitHubBrowser;
+window.closeSolidworksWindow = closeSolidworksWindow;
+window.refreshSolidworksContent = refreshSolidworksContent;
+window.uploadToSolidworks = uploadToSolidworks;
+
 // Utility: Escape HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -762,12 +1889,18 @@ document.addEventListener('DOMContentLoaded', function() {
         function injectDayProjects() {
             const solidworksProject = sampleProjects.find(p => p.title === "SOLIDWORKS Beginner Projects");
             if (!solidworksProject || !solidworksProject.dayProjects) {
+                // If no static data, load from GitHub dynamically
+                loadDynamicCWHWFiles();
                 return;
             }
 
             const cwFilesWrap = document.getElementById('cw-files-wrap');
             const hwFilesWrap = document.getElementById('hw-files-wrap');
-
+            
+            // Load dynamically from GitHub instead of static data
+            loadDynamicCWHWFiles();
+            
+            /* OLD STATIC CODE - Now using dynamic GitHub loading
             function createProjectItem(file, type) {
                 const spotTestBadge = file.isSpotTest ? '<span class="spot-test-badge">📝 Spot Test</span>' : '';
                 
@@ -848,9 +1981,139 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 hwFilesWrap.innerHTML = hwHtml;
             }
+            END OF OLD STATIC CODE */
 
             // Add quick links section
             addQuickLinksSection();
+        }
+        
+        // Dynamic CW/HW file loader from GitHub
+        async function loadDynamicCWHWFiles() {
+            const cwFilesWrap = document.getElementById('cw-files-wrap');
+            const hwFilesWrap = document.getElementById('hw-files-wrap');
+            
+            if (!cwFilesWrap && !hwFilesWrap) return;
+            
+            const owner = 'Akhinoor14';
+            const repo = 'SOLIDWORKS-Projects';
+            const headers = getGitHubHeaders();
+            
+            try {
+                // Load CW files
+                if (cwFilesWrap) {
+                    cwFilesWrap.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading CW files...</div>';
+                    const cwData = await loadFolderFiles(owner, repo, 'CW', headers);
+                    cwFilesWrap.innerHTML = renderDayFiles(cwData, 'cw');
+                }
+                
+                // Load HW files
+                if (hwFilesWrap) {
+                    hwFilesWrap.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading HW files...</div>';
+                    const hwData = await loadFolderFiles(owner, repo, 'HW', headers);
+                    hwFilesWrap.innerHTML = renderDayFiles(hwData, 'hw');
+                }
+                
+            } catch (error) {
+                console.error('Error loading CW/HW files:', error);
+                if (cwFilesWrap) {
+                    cwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load CW files</p></div>';
+                }
+                if (hwFilesWrap) {
+                    hwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load HW files</p></div>';
+                }
+            }
+        }
+        
+        // Load files from a folder (CW or HW)
+        async function loadFolderFiles(owner, repo, folder, headers) {
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}`, { headers });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load ${folder} folder`);
+            }
+            
+            const items = await response.json();
+            const dayGroups = {};
+            
+            // Load each day folder
+            for (const item of items) {
+                if (item.type === 'dir' && item.name.startsWith('Day')) {
+                    const dayNum = item.name.replace('Day', '').trim();
+                    const dayResponse = await fetch(item.url, { headers });
+                    const dayFiles = await dayResponse.json();
+                    
+                    dayGroups[item.name] = dayFiles.filter(f => f.type === 'file');
+                }
+            }
+            
+            return dayGroups;
+        }
+        
+        // Render day files as HTML
+        function renderDayFiles(dayGroups, type) {
+            const sortedDays = Object.keys(dayGroups).sort((a, b) => {
+                const numA = parseInt(a.replace('Day', '').trim());
+                const numB = parseInt(b.replace('Day', '').trim());
+                return numA - numB;
+            });
+            
+            if (sortedDays.length === 0) {
+                return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>No files found</p></div>';
+            }
+            
+            let html = '';
+            
+            for (const day of sortedDays) {
+                const files = dayGroups[day];
+                if (files.length === 0) continue;
+                
+                html += `
+                    <div class="sw-day-section">
+                        <h5 class="sw-day-title"><i class="fas fa-calendar-day"></i> ${day}</h5>
+                        <div class="sw-file-list">
+                `;
+                
+                files.forEach(file => {
+                    const downloadUrl = file.download_url;
+                    const fileName = file.name;
+                    const fileExt = fileName.split('.').pop().toUpperCase();
+                    
+                    // File type icon
+                    let icon = 'fa-file';
+                    if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
+                        icon = 'fa-cube';
+                    } else if (fileExt === 'PDF') {
+                        icon = 'fa-file-pdf';
+                    } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
+                        icon = 'fa-image';
+                    }
+                    
+                    html += `
+                        <div class="sw-file-item">
+                            <div class="sw-file-header">
+                                <i class="fas ${icon}"></i>
+                                <span class="sw-file-name">${fileName}</span>
+                                <span class="sw-file-badge">${fileExt}</span>
+                            </div>
+                            <div class="sw-file-actions">
+                                <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return html;
         }
 
         // Function to add quick links section
@@ -3016,7 +4279,11 @@ function initEmbeddedProjectCard(cardId, sectionDefs) {
     }
     tiles.forEach(t => t.addEventListener('click', () => {
         const target = t.getAttribute('data-target');
-        if (target) showView(target);
+        if (target === 'cw' || target === 'hw') {
+            openSolidworksWindow(target);
+        } else if (target) {
+            showView(target);
+        }
     }));
     backButtons.forEach(b => b.addEventListener('click', () => {
         const back = b.getAttribute('data-back');
@@ -3284,8 +4551,736 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         window.initTechBadges();
     }, 500);
+    
+    // Auto-update check for GitHub changes
+    startAutoUpdateCheck();
 });
 
 console.log('✅ Tech badge system loaded');
+
+// Auto-update functionality to keep website in sync with GitHub
+let lastCommitSHA = null;
+let autoUpdateInterval = null;
+
+async function checkForGitHubUpdates() {
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const headers = getGitHubHeaders();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/main`, { headers });
+        if (!response.ok) return;
+        
+        const commit = await response.json();
+        const currentSHA = commit.sha;
+        
+        if (lastCommitSHA === null) {
+            // First check, just store the SHA
+            lastCommitSHA = currentSHA;
+            console.log('📌 Initial commit SHA stored:', currentSHA.substring(0, 7));
+        } else if (lastCommitSHA !== currentSHA) {
+            // New commit detected!
+            console.log('🔄 New GitHub commit detected:', currentSHA.substring(0, 7));
+            lastCommitSHA = currentSHA;
+            
+            // Show update notification
+            showUpdateNotification(commit.commit.message);
+            
+            // Refresh any open SOLIDWORKS windows
+            refreshOpenSolidworksWindows();
+        }
+    } catch (error) {
+        console.error('Auto-update check failed:', error);
+    }
+}
+
+function showUpdateNotification(commitMessage) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 30px;
+        background: linear-gradient(135deg, rgba(0, 100, 0, 0.95), rgba(0, 60, 0, 0.9));
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(0, 255, 0, 0.5);
+        border-radius: 12px;
+        padding: 1.2rem 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        box-shadow: 0 10px 40px rgba(0, 255, 0, 0.3), 0 0 60px rgba(0, 0, 0, 0.5);
+        z-index: 10001;
+        animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 350px;
+        max-width: 500px;
+    `;
+    
+    notification.innerHTML = `
+        <div style="
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.3), rgba(0, 150, 0, 0.2));
+            border-radius: 50%;
+            color: #00ff00;
+            font-size: 1.6rem;
+        ">
+            <i class="fas fa-sync-alt fa-spin"></i>
+        </div>
+        <div style="flex: 1;">
+            <div style="
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 700;
+                color: #ffffff;
+                font-size: 1.1rem;
+                margin-bottom: 0.4rem;
+                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            ">
+                🎉 GitHub Updated!
+            </div>
+            <div style="
+                font-family: 'Source Sans Pro', sans-serif;
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.9);
+                text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+            ">
+                ${commitMessage.substring(0, 60)}${commitMessage.length > 60 ? '...' : ''}
+            </div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        " onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 8 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        setTimeout(() => notification.remove(), 500);
+    }, 8000);
+}
+
+function refreshOpenSolidworksWindows() {
+    // Check if CW window is open
+    const cwModal = document.getElementById('solidworksCWModal');
+    if (cwModal) {
+        refreshSolidworksContent('cw');
+    }
+    
+    // Check if HW window is open
+    const hwModal = document.getElementById('solidworksHWModal');
+    if (hwModal) {
+        refreshSolidworksContent('hw');
+    }
+}
+
+function startAutoUpdateCheck() {
+    // Check every 30 seconds for updates
+    autoUpdateInterval = setInterval(checkForGitHubUpdates, 30000);
+    
+    // Initial check after 5 seconds
+    setTimeout(checkForGitHubUpdates, 5000);
+    
+    console.log('🔄 Auto-update system started (checking every 30s)');
+}
+
+function stopAutoUpdateCheck() {
+    if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+        autoUpdateInterval = null;
+        console.log('⏸️ Auto-update system stopped');
+    }
+}
+
+// Add CSS animations for notifications
+const updateAnimStyle = document.createElement('style');
+updateAnimStyle.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(500px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(500px); opacity: 0; }
+    }
+`;
+document.head.appendChild(updateAnimStyle);
+
+// Central Upload System Functions (for Auto-Update card)
+function openCentralUpload(type) {
+    const token = getGitHubToken();
+    if (!token) {
+        showUploadDialog(type, 'needToken');
+        return;
+    }
+    
+    showFileUploadForm(type, 'new');
+}
+
+function openCentralUpdate() {
+    const token = getGitHubToken();
+    if (!token) {
+        showCentralTokenDialog('update');
+        return;
+    }
+    
+    showCentralUpdateDialog();
+}
+
+function openCentralDelete() {
+    const token = getGitHubToken();
+    if (!token) {
+        showCentralTokenDialog('delete');
+        return;
+    }
+    
+    showCentralDeleteDialog();
+}
+
+// Central token dialog for update/delete
+function showCentralTokenDialog(action) {
+    const actionText = action === 'update' ? 'Update Files' : 'Delete Files';
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog">
+            <div class="upload-header">
+                <h3><i class="fas fa-key"></i> GitHub Token Required</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="token-needed">
+                    <i class="fas fa-key fa-3x"></i>
+                    <h4>GitHub Personal Access Token Required</h4>
+                    <p>To ${action} files, you need a GitHub token with 'repo' permission.</p>
+                    
+                    <div class="token-steps">
+                        <h5>How to create a token:</h5>
+                        <ol>
+                            <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></li>
+                            <li>Click "Generate new token (classic)"</li>
+                            <li>Give it a name (e.g., "SOLIDWORKS Management")</li>
+                            <li>Select scope: <strong>repo</strong> (Full control of private repositories)</li>
+                            <li>Click "Generate token"</li>
+                            <li>Copy the token and paste it below</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="token-input-group">
+                        <input type="password" id="centralTokenInput" placeholder="Paste your GitHub token here" />
+                        <button class="btn-save-token" onclick="saveCentralToken('${action}')">
+                            <i class="fas fa-save"></i> Save & Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Save central token
+function saveCentralToken(action) {
+    const input = document.getElementById('centralTokenInput');
+    const token = input.value.trim();
+    
+    if (!token) {
+        alert('Please enter a valid GitHub token');
+        return;
+    }
+    
+    setGitHubToken(token);
+    closeUploadDialog();
+    
+    setTimeout(() => {
+        if (action === 'update') {
+            showCentralUpdateDialog();
+        } else if (action === 'delete') {
+            showCentralDeleteDialog();
+        }
+    }, 400);
+}
+
+// Central update dialog
+function showCentralUpdateDialog() {
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-edit"></i> Update SOLIDWORKS Files</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Select Type:</label>
+                        <select id="centralUpdateType" class="form-control" onchange="loadCentralUpdateDays()">
+                            <option value="">-- Choose Type --</option>
+                            <option value="cw">Class Work (CW)</option>
+                            <option value="hw">Home Work (HW)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="centralUpdateDayGroup" style="display:none;">
+                        <label><i class="fas fa-calendar"></i> Select Day:</label>
+                        <select id="centralUpdateDay" class="form-control" onchange="loadCentralUpdateFiles()">
+                            <option value="">-- Choose Day --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="centralUpdateFileGroup" style="display:none;">
+                        <label><i class="fas fa-file"></i> Select File to Update:</label>
+                        <select id="centralUpdateFile" class="form-control">
+                            <option value="">-- Choose File --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="centralUpdateNewFileGroup" style="display:none;">
+                        <label><i class="fas fa-upload"></i> Upload New Version:</label>
+                        <input type="file" id="centralUpdateNewFile" class="form-control" />
+                    </div>
+                    
+                    <div class="upload-actions" id="centralUpdateActions" style="display:none;">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-upload" onclick="performCentralUpdate()">
+                            <i class="fas fa-sync-alt"></i> Update File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Central delete dialog
+function showCentralDeleteDialog() {
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-trash-alt"></i> Delete SOLIDWORKS Files</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Select Type:</label>
+                        <select id="centralDeleteType" class="form-control" onchange="loadCentralDeleteDays()">
+                            <option value="">-- Choose Type --</option>
+                            <option value="cw">Class Work (CW)</option>
+                            <option value="hw">Home Work (HW)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="centralDeleteDayGroup" style="display:none;">
+                        <label><i class="fas fa-calendar"></i> Select Day:</label>
+                        <select id="centralDeleteDay" class="form-control" onchange="loadCentralDeleteFiles()">
+                            <option value="">-- Choose Day --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="centralDeleteFileGroup" style="display:none;">
+                        <label><i class="fas fa-file"></i> Select File to Delete:</label>
+                        <select id="centralDeleteFile" class="form-control">
+                            <option value="">-- Choose File --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="delete-warning" id="centralDeleteWarning" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p><strong>Warning:</strong> This action cannot be undone! The file will be permanently deleted from GitHub.</p>
+                    </div>
+                    
+                    <div class="upload-actions" id="centralDeleteActions" style="display:none;">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-delete" onclick="performCentralDelete()">
+                            <i class="fas fa-trash"></i> Delete File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Load days for central update
+async function loadCentralUpdateDays() {
+    const typeSelect = document.getElementById('centralUpdateType');
+    const type = typeSelect.value;
+    
+    if (!type) {
+        document.getElementById('centralUpdateDayGroup').style.display = 'none';
+        document.getElementById('centralUpdateFileGroup').style.display = 'none';
+        document.getElementById('centralUpdateNewFileGroup').style.display = 'none';
+        document.getElementById('centralUpdateActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load days');
+        
+        const items = await response.json();
+        const days = items.filter(item => item.type === 'dir' && item.name.startsWith('Day'));
+        
+        const daySelect = document.getElementById('centralUpdateDay');
+        daySelect.innerHTML = '<option value="">-- Choose Day --</option>';
+        days.forEach(day => {
+            daySelect.innerHTML += `<option value="${day.name}">${day.name}</option>`;
+        });
+        
+        document.getElementById('centralUpdateDayGroup').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading days:', error);
+        alert('Failed to load days');
+    }
+}
+
+// Load files for central update
+async function loadCentralUpdateFiles() {
+    const typeSelect = document.getElementById('centralUpdateType');
+    const daySelect = document.getElementById('centralUpdateDay');
+    const fileSelect = document.getElementById('centralUpdateFile');
+    
+    const type = typeSelect.value;
+    const day = daySelect.value;
+    
+    if (!day) {
+        document.getElementById('centralUpdateFileGroup').style.display = 'none';
+        document.getElementById('centralUpdateNewFileGroup').style.display = 'none';
+        document.getElementById('centralUpdateActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
+        files.forEach(file => {
+            if (file.type === 'file') {
+                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
+            }
+        });
+        
+        document.getElementById('centralUpdateFileGroup').style.display = 'block';
+        
+        fileSelect.onchange = () => {
+            if (fileSelect.value) {
+                document.getElementById('centralUpdateNewFileGroup').style.display = 'block';
+                document.getElementById('centralUpdateActions').style.display = 'flex';
+            } else {
+                document.getElementById('centralUpdateNewFileGroup').style.display = 'none';
+                document.getElementById('centralUpdateActions').style.display = 'none';
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files');
+    }
+}
+
+// Perform central update
+async function performCentralUpdate() {
+    const typeSelect = document.getElementById('centralUpdateType');
+    const daySelect = document.getElementById('centralUpdateDay');
+    const fileSelect = document.getElementById('centralUpdateFile');
+    const fileInput = document.getElementById('centralUpdateNewFile');
+    
+    const type = typeSelect.value;
+    const day = daySelect.value;
+    const oldFileName = fileSelect.value;
+    const newFile = fileInput.files[0];
+    
+    if (!type || !day || !oldFileName || !newFile) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    const token = getGitHubToken();
+    
+    showUploadProgress('Updating file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const path = `${folderPath}/${day}/${oldFileName}`;
+        const content = await readFileAsBase64(newFile);
+        
+        const uploadData = {
+            message: `Update ${oldFileName} in ${type.toUpperCase()} ${day}`,
+            content: content,
+            sha: sha,
+            branch: 'main'
+        };
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadData)
+        });
+        
+        if (response.ok) {
+            closeUploadDialog();
+            showToast('Success', 'File updated successfully!');
+        } else {
+            throw new Error('Update failed: ' + await response.text());
+        }
+        
+    } catch (error) {
+        console.error('Update error:', error);
+        alert('Failed to update file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Load days for central delete
+async function loadCentralDeleteDays() {
+    const typeSelect = document.getElementById('centralDeleteType');
+    const type = typeSelect.value;
+    
+    if (!type) {
+        document.getElementById('centralDeleteDayGroup').style.display = 'none';
+        document.getElementById('centralDeleteFileGroup').style.display = 'none';
+        document.getElementById('centralDeleteWarning').style.display = 'none';
+        document.getElementById('centralDeleteActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load days');
+        
+        const items = await response.json();
+        const days = items.filter(item => item.type === 'dir' && item.name.startsWith('Day'));
+        
+        const daySelect = document.getElementById('centralDeleteDay');
+        daySelect.innerHTML = '<option value="">-- Choose Day --</option>';
+        days.forEach(day => {
+            daySelect.innerHTML += `<option value="${day.name}">${day.name}</option>`;
+        });
+        
+        document.getElementById('centralDeleteDayGroup').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading days:', error);
+        alert('Failed to load days');
+    }
+}
+
+// Load files for central delete
+async function loadCentralDeleteFiles() {
+    const typeSelect = document.getElementById('centralDeleteType');
+    const daySelect = document.getElementById('centralDeleteDay');
+    const fileSelect = document.getElementById('centralDeleteFile');
+    
+    const type = typeSelect.value;
+    const day = daySelect.value;
+    
+    if (!day) {
+        document.getElementById('centralDeleteFileGroup').style.display = 'none';
+        document.getElementById('centralDeleteWarning').style.display = 'none';
+        document.getElementById('centralDeleteActions').style.display = 'none';
+        return;
+    }
+    
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const token = getGitHubToken();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
+        files.forEach(file => {
+            if (file.type === 'file') {
+                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
+            }
+        });
+        
+        document.getElementById('centralDeleteFileGroup').style.display = 'block';
+        
+        fileSelect.onchange = () => {
+            if (fileSelect.value) {
+                document.getElementById('centralDeleteWarning').style.display = 'block';
+                document.getElementById('centralDeleteActions').style.display = 'flex';
+            } else {
+                document.getElementById('centralDeleteWarning').style.display = 'none';
+                document.getElementById('centralDeleteActions').style.display = 'none';
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files');
+    }
+}
+
+// Perform central delete
+async function performCentralDelete() {
+    const typeSelect = document.getElementById('centralDeleteType');
+    const daySelect = document.getElementById('centralDeleteDay');
+    const fileSelect = document.getElementById('centralDeleteFile');
+    
+    const type = typeSelect.value;
+    const day = daySelect.value;
+    const fileName = fileSelect.value;
+    
+    if (!type || !day || !fileName) {
+        alert('Please select a file to delete');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete "${fileName}"?\n\nThis action cannot be undone!`)) {
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    const token = getGitHubToken();
+    
+    showUploadProgress('Deleting file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = type === 'cw' ? 'CW' : 'HW';
+        const path = `${folderPath}/${day}/${fileName}`;
+        
+        const deleteData = {
+            message: `Delete ${fileName} from ${type.toUpperCase()} ${day}`,
+            sha: sha,
+            branch: 'main'
+        };
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(deleteData)
+        });
+        
+        if (response.ok) {
+            closeUploadDialog();
+            showToast('Success', 'File deleted successfully!');
+        } else {
+            throw new Error('Delete failed: ' + await response.text());
+        }
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Make central functions globally accessible
+window.openCentralUpload = openCentralUpload;
+window.openCentralUpdate = openCentralUpdate;
+window.openCentralDelete = openCentralDelete;
+window.saveCentralToken = saveCentralToken;
+window.loadCentralUpdateDays = loadCentralUpdateDays;
+window.loadCentralUpdateFiles = loadCentralUpdateFiles;
+window.performCentralUpdate = performCentralUpdate;
+window.loadCentralDeleteDays = loadCentralDeleteDays;
+window.loadCentralDeleteFiles = loadCentralDeleteFiles;
+window.performCentralDelete = performCentralDelete;
+
+
 
 

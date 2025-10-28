@@ -364,6 +364,16 @@
                                         <span class="sw-tile-desc">Independent tasks</span>
                                     </button>
                                 </div>
+                                
+                                <div class="sw-quick-actions">
+                                    <button class="btn-sw-browse" onclick="openGitHubBrowser('Akhinoor14', 'SOLIDWORKS-Projects', 'SOLIDWORKS Projects')">
+                                        <i class="fas fa-folder-open"></i> Browse Files
+                                    </button>
+                                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/archive/refs/heads/main.zip" class="btn-sw-download">
+                                        <i class="fas fa-download"></i> Download ZIP
+                                    </a>
+                                </div>
+                                
                                 <div class="sw-tip-box" aria-label="Tip">
                                     <strong>Tip:</strong> Start with CW parts before attempting HW for smoother progression.
                                 </div>
@@ -379,6 +389,11 @@
                         <div class="sw-files-wrap" id="cw-files-wrap">
                             <!-- JS will inject CW Day 01-05 lists here -->
                         </div>
+                        <div class="sw-view-footer">
+                            <button class="sw-back sw-back-bottom" data-back="root" aria-label="Back to main view">
+                                <i class="fas fa-arrow-left"></i> Back to Overview
+                            </button>
+                        </div>
                     </div>
                     <div class="sw-view sw-hw" data-view="hw" hidden>
                         <div class="sw-view-header">
@@ -389,6 +404,11 @@
                         <div class="sw-files-wrap" id="hw-files-wrap">
                             <!-- JS will inject HW Day 01-05 lists here -->
                         </div>
+                        <div class="sw-view-footer">
+                            <button class="sw-back sw-back-bottom" data-back="root" aria-label="Back to main view">
+                                <i class="fas fa-arrow-left"></i> Back to Overview
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
@@ -396,49 +416,75 @@
 
             <!-- Auto Upload Section -->
             <div class="github-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.2); border-radius: 15px; margin: 30px 0;">
-                <h3 style="color: #667eea;">🚀 Auto Upload System</h3>
-                <p>Upload your SOLIDWORKS projects automatically to GitHub and update this website in real-time!</p>
-                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-                    <a href="upload-interface.html" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                        📤 Upload Projects
-                    </a>
-                    <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary">
-                        ❓ How it Works
+                <h3 style="color: #667eea;">🚀 Auto Upload & Management System</h3>
+                <p>Upload, update, or delete SOLIDWORKS projects on GitHub and sync with this website in real-time!</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px;">
+                    <button onclick="openCentralUpload('cw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff0000, #cc0000);">
+                        📤 Upload CW
+                    </button>
+                    <button onclick="openCentralUpload('hw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff3333, #ff0000);">
+                        📤 Upload HW
+                    </button>
+                    <button onclick="openCentralUpdate()" class="btn btn-secondary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        ✏️ Update Files
+                    </button>
+                    <button onclick="openCentralDelete()" class="btn btn-secondary" style="background: linear-gradient(135deg, #cc0000, #990000);">
+                        🗑️ Delete Files
+                    </button>
+                    <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary" style="background: linear-gradient(135deg, #555, #333);">
+                        ❓ Help
                     </button>
                 </div>
                 
                 <!-- Help Modal -->
                 <div id="upload-help" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
-                    <div style="background: white; max-width: 600px; margin: 50px auto; padding: 30px; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
-                        <h3 style="color: #667eea; margin-bottom: 20px;">🚀 How Auto Upload Works</h3>
+                    <div style="background: white; max-width: 700px; margin: 50px auto; padding: 30px; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🚀 SOLIDWORKS Project Management System</h3>
                         
                         <div style="text-align: left; line-height: 1.6;">
-                            <h4>📋 Step 1: Prepare Your Files</h4>
+                            <h4>� Upload New Files</h4>
                             <ul>
-                                <li>Assembly file (.SLDASM) - Required</li>
-                                <li>Part files (.SLDPRT) - One or more</li>
-                                <li>Screenshot (.PNG/.JPG) - Required</li>
-                                <li>Guide (.PDF) - Optional</li>
+                                <li>Click "Upload CW" or "Upload HW"</li>
+                                <li>Select day number (Day 01 - Day 30)</li>
+                                <li>Choose SOLIDWORKS files (.SLDPRT, .SLDASM, .SLDDRW)</li>
+                                <li>Files automatically upload to GitHub</li>
+                                <li>Website updates in real-time!</li>
                             </ul>
                             
-                            <h4>📤 Step 2: Upload Process</h4>
+                            <h4>❓ Upload Questions</h4>
                             <ul>
-                                <li>Select day number and project type (CW/HW)</li>
-                                <li>Drag & drop your files</li>
-                                <li>System automatically uploads to GitHub</li>
-                                <li>README files generated in your existing style</li>
+                                <li>Upload question PDFs or images</li>
+                                <li>Assign to specific day</li>
+                                <li>Custom file naming</li>
+                                <li>Supports PDF, PNG, JPG formats</li>
                             </ul>
                             
-                            <h4>🌐 Step 3: Automatic Updates</h4>
+                            <h4>✏️ Update Existing Files</h4>
                             <ul>
-                                <li>Website counters updated instantly</li>
-                                <li>New day buttons added to navigation</li>
-                                <li>Project cards created automatically</li>
-                                <li>Everything synced in real-time!</li>
+                                <li>Select day and file to update</li>
+                                <li>Upload new version</li>
+                                <li>Automatically replaces old version</li>
+                                <li>Website reflects changes instantly</li>
                             </ul>
                             
-                            <h4>🔐 Requirements</h4>
-                            <p>You'll need a GitHub Personal Access Token with repository access. The system will guide you through creating one.</p>
+                            <h4>🗑️ Delete Files</h4>
+                            <ul>
+                                <li>Remove unwanted files from repository</li>
+                                <li>Select day and file to delete</li>
+                                <li>Confirmation required for safety</li>
+                                <li>Changes sync immediately</li>
+                            </ul>
+                            
+                            <h4>🔐 GitHub Token Required</h4>
+                            <p>You need a GitHub Personal Access Token with 'repo' permission. The system will guide you through creating one on first use.</p>
+                            
+                            <h4>⚡ Auto-Update Features</h4>
+                            <ul>
+                                <li>30-second automatic GitHub sync</li>
+                                <li>Real-time website updates</li>
+                                <li>No manual refresh needed</li>
+                                <li>Instant notification on changes</li>
+                            </ul>
                         </div>
                         
                         <div style="text-align: center; margin-top: 25px;">
