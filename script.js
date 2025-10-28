@@ -51,6 +51,24 @@ function changeMainImage(imgSrc, thumbnail) {
 // GitHub Repository Browser System
 // ============================================
 
+// Token helpers for GitHub API
+const GITHUB_TOKEN_KEY = 'gh_pat';
+function getGitHubToken(){
+    try { return localStorage.getItem(GITHUB_TOKEN_KEY) || ''; } catch { return ''; }
+}
+function setGitHubToken(token){
+    try {
+        if (token) localStorage.setItem(GITHUB_TOKEN_KEY, token);
+        else localStorage.removeItem(GITHUB_TOKEN_KEY);
+    } catch {}
+}
+function getGitHubHeaders(){
+    const headers = { 'Accept': 'application/vnd.github.v3+json' };
+    const token = getGitHubToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return headers;
+}
+
 // Open GitHub repository browser modal
 function openGitHubBrowser(repoUrl, projectTitle) {
     console.log('📂 Opening GitHub browser for:', repoUrl);
@@ -107,6 +125,12 @@ function createGitHubBrowserModal(owner, repo, projectTitle) {
                     <button class="github-action-btn" onclick="window.open('https://github.com/${owner}/${repo}', '_blank')">
                         <i class="fas fa-external-link-alt"></i> Open in GitHub
                     </button>
+                    <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
+                        <input id="ghTokenInput" type="password" placeholder="GitHub Token (optional)" 
+                               style="padding:0.5rem 0.75rem; border-radius:8px; border:1px solid rgba(255,0,0,0.3); background: rgba(255,255,255,0.1); color:#fff; width:220px;" />
+                        <button class="github-action-btn" onclick="window.saveGitHubToken()" title="Save token for higher API limits">Save</button>
+                        <button class="github-action-btn" onclick="window.clearGitHubToken()" title="Clear saved token" style="background: linear-gradient(135deg, #666, #444);">Clear</button>
+                    </div>
                 </div>
             </div>
             
@@ -138,6 +162,33 @@ function createGitHubBrowserModal(owner, repo, projectTitle) {
             </div>
         </div>
     `;
+    // Initialize token controls
+    setTimeout(()=>{
+        const input = modal.querySelector('#ghTokenInput');
+        if (input) {
+            const hasToken = !!getGitHubToken();
+            input.placeholder = hasToken ? 'Token saved • enter to replace' : 'GitHub Token (optional)';
+        }
+    }, 0);
+    
+    // Expose token actions
+    window.saveGitHubToken = function(){
+        const input = document.getElementById('ghTokenInput');
+        if (!input) return;
+        const val = (input.value || '').trim();
+        if (val.length < 10) { alert('Invalid token'); return; }
+        setGitHubToken(val);
+        input.value = '';
+        input.placeholder = 'Token saved • enter to replace';
+        // Reload current path root to apply auth
+        loadRepoContents(owner, repo);
+    };
+    window.clearGitHubToken = function(){
+        setGitHubToken('');
+        const input = document.getElementById('ghTokenInput');
+        if (input) input.placeholder = 'GitHub Token (optional)';
+        loadRepoContents(owner, repo);
+    };
     return modal;
 }
 
@@ -154,13 +205,19 @@ async function loadRepoContents(owner, repo, path = '') {
         `;
         
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-            headers: {
-                'Accept': 'application/vnd.github.v3+json'
-            }
+            headers: getGitHubHeaders()
         });
         
         if (!response.ok) {
-            throw new Error('Failed to load repository');
+            // Provide a clearer message for rate limit
+            let msg = 'Failed to load repository';
+            if (response.status === 403) {
+                const remain = response.headers.get('x-ratelimit-remaining');
+                const reset = response.headers.get('x-ratelimit-reset');
+                msg = remain === '0' ? 'GitHub API rate limit exceeded' : 'Access forbidden by GitHub API';
+                console.warn('⏳ Rate limit info:', { remain, reset });
+            }
+            throw new Error(msg);
         }
         
         const contents = await response.json();
@@ -171,8 +228,12 @@ async function loadRepoContents(owner, repo, path = '') {
         fileTree.innerHTML = `
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to load repository</p>
-                <small>API rate limit or network error</small>
+                <p>${error.message}</p>
+                <small>Tip: Add a GitHub token to increase API limits</small>
+                <div style="margin-top: 1rem; display:flex; gap:0.5rem;">
+                    <button class="github-action-btn" onclick="loadRepoContents('${owner}','${repo}','${path}')">Retry</button>
+                    <button class="github-action-btn" onclick="document.getElementById('ghTokenInput')?.focus()" style="background: linear-gradient(135deg, #17a2b8, #007bff);">Add Token</button>
+                </div>
             </div>
         `;
     }
@@ -324,7 +385,9 @@ async function viewPDF(url, container) {
 // View Markdown files with proper rendering + relative asset fixups
 async function viewMarkdown(owner, repo, path, container) {
     try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+            headers: getGitHubHeaders()
+        });
         const data = await response.json();
         const content = atob(data.content || ''); // Decode base64
 
