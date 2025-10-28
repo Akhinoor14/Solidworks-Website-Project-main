@@ -2776,6 +2776,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     opacity: 0;
     transform: translateY(20px);
     position: relative;
+    display: block !important;
 }
 
 .project-card::before {
@@ -2796,15 +2797,16 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .project-card.visible {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto;
 }
 
 .project-card.hidden {
-    opacity: 0;
-    transform: translateY(20px);
+    opacity: 0 !important;
+    transform: translateY(20px) !important;
     pointer-events: none;
-    display: none;
+    /* Removed display:none to allow transitions */
 }
 
 .project-card:hover {

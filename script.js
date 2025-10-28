@@ -944,7 +944,10 @@ function createProjectCard(project) {
     }
     
     const card = document.createElement('div');
-    card.className = `project-card ${project.category} ${project.featured ? 'featured' : ''}`;
+    card.className = `project-card ${project.category} ${project.featured ? 'featured' : ''} visible`;
+    
+    // Set initial styles for animation
+    card.style.cssText = 'opacity: 1; transform: translateY(0); display: block;';
     
     console.log(`✅ Card created with classes: ${card.className}`);
     
@@ -1070,13 +1073,7 @@ function renderProjects(projectsToShow = sampleProjects) {
         console.log('🎴 Creating dynamic card for:', project.title);
         const card = createProjectCard(project);
         projectsGrid.appendChild(card);
-        
-        // Make card visible with stagger animation
-        setTimeout(() => { 
-            card.classList.remove('hidden');
-            card.classList.add('visible'); 
-            console.log('✅ Card made visible:', project.title);
-        }, index * 100);
+        console.log('✅ Card appended and visible:', project.title);
     });
     
     console.log('📊 Total cards in grid:', projectsGrid.children.length);
@@ -1141,9 +1138,18 @@ console.log('📦 Total sample projects:', sampleProjects.length);
 console.log('📋 Projects:', sampleProjects.map(p => `${p.title} (${p.category})`));
 
 if (projectsGrid) {
-    console.log('✅ Projects grid found, rendering...');
+    console.log('✅ Projects grid found:', projectsGrid);
+    console.log('📍 Grid current children:', projectsGrid.children.length);
+    console.log('🔍 Grid innerHTML length:', projectsGrid.innerHTML.length);
+    
     renderProjects();
-    console.log('🎬 Initial render complete');
+    
+    console.log('🎬 After render - Grid children:', projectsGrid.children.length);
+    console.log('🎬 After render - Children:', Array.from(projectsGrid.children).map(c => ({
+        id: c.id,
+        className: c.className,
+        title: c.querySelector('.project-title, .sw-card-title')?.textContent?.substring(0, 30)
+    })));
 } else {
     console.error('❌ Projects grid element not found! Check HTML for id="projects-grid"');
 }
