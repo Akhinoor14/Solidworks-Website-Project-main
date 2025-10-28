@@ -2088,7 +2088,18 @@ window.updateAllCountersGlobally = function(totalCW = 0, totalHW = 0, totalDays 
             metaCounters[2].textContent = totalProjects; // Total
         }
 
-        // 6. Update SW Intro text
+        // 6. Update About Section Stats
+        const aboutProjectsStat = document.querySelector('[data-about-stat="projects"]');
+        if (aboutProjectsStat) {
+            aboutProjectsStat.textContent = `${totalProjects}+`;
+        }
+        
+        const aboutDaysStat = document.querySelector('[data-about-stat="days"]');
+        if (aboutDaysStat) {
+            aboutDaysStat.textContent = `${totalDays}+`;
+        }
+
+        // 7. Update SW Intro text
         const swIntro = document.getElementById('sw-intro');
         if (swIntro) {
             swIntro.textContent = `${totalProjects} SOLIDWORKS projects across ${totalDays} days of structured learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.`;

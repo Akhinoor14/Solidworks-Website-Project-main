@@ -1793,11 +1793,31 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     text-align: center;
     box-shadow: var(--shadow);
     transition: var(--transition);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
 }
 
 .stat-number {
@@ -1805,11 +1825,16 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     font-weight: 700;
     color: var(--primary-color);
     margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .stat-label {
     color: var(--text-light);
     font-weight: 500;
+    font-size: 0.95rem;
 }
 
 /* Projects Section */
@@ -2664,6 +2689,27 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    /* About Section Responsive */
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .about-stats {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    
+    .stat-card {
+        min-width: 150px;
+        padding: 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    /* SOLIDWORKS Files */
     .sw-file-actions {
         flex-direction: column;
     }
