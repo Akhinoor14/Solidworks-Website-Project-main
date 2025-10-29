@@ -576,6 +576,142 @@ body {
         line-height: 1.7;
     }
 }
+
+/* ========================================
+   In-page CV Overlay Viewer (Red/Black)
+   ======================================== */
+.cv-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: stretch;
+    justify-content: center;
+}
+.cv-overlay.show { display: flex; }
+
+.cv-modal {
+    background: linear-gradient(135deg, #0a0a0a, #1a0000);
+    border: 2px solid rgba(255, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 60px rgba(255,0,0,0.05);
+    width: min(1200px, 96vw);
+    height: min(90vh, 900px);
+    margin: auto;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cv-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.25);
+}
+.cv-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 700;
+}
+.cv-title-icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(255,0,0,0.3);
+}
+
+.cv-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cv-action {
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+.cv-action:hover {
+    background: linear-gradient(135deg, #2a0000, #1a0000);
+    border-color: rgba(255, 0, 0, 0.6);
+}
+.cv-action.primary {
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    border: none;
+}
+.cv-action.primary:hover {
+    background: linear-gradient(135deg, #ff3333, #ff0000);
+}
+.cv-action.round {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+
+.cv-modal-body {
+    position: relative;
+    flex: 1;
+    background: #111;
+}
+.cv-iframe-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    background: #1a1a1a;
+    transform-origin: center center;
+}
+.cv-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+}
+.cv-zoom-controls {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.cv-zoom-level {
+    min-width: 60px;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .cv-modal { width: 96vw; height: 82vh; }
+    .cv-modal-header { padding: 10px 12px; }
+    .cv-action span { display: none; }
+}
 .markdown-body.md-narrow { max-width: 850px; margin: 0 auto; }
 .markdown-body.md-wrap pre code { white-space: pre-wrap !important; word-break: break-word; }
 

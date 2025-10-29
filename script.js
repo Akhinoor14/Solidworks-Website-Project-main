@@ -6344,37 +6344,132 @@ function initializeHomepageAnimations() {
     });
 }
 
-// Open CV Viewer in New Page
+// Open CV Viewer as In-Page Overlay
+let __cvZoom = 100;
 function openCVViewer() {
-    // Open CV viewer in new tab/window with optimal dimensions
-    const width = Math.min(1400, screen.width * 0.9);
-    const height = Math.min(900, screen.height * 0.9);
-    const left = (screen.width - width) / 2;
-    const top = (screen.height - height) / 2;
-    
-    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes,toolbar=no,menubar=no,location=no`;
-    
-    const cvWindow = window.open('./cv-viewer.html', 'CVViewer', features);
-    
-    if (!cvWindow) {
-        // Fallback if popup blocked
-        alert('⚠️ Please allow popups to view CV in new window.\n\nOpening in current tab...');
-        window.location.href = './cv-viewer.html';
-    } else {
-        cvWindow.focus();
-        
-        // Show success message
-        const btn = event.target.closest('.btn-view-cv');
-        if (btn) {
-            const originalText = btn.querySelector('.btn-text').textContent;
-            btn.querySelector('.btn-text').textContent = 'Opening... ✓';
-            
-            setTimeout(() => {
-                btn.querySelector('.btn-text').textContent = originalText;
-            }, 2000);
+    try {
+        // If overlay already exists, just show
+        let overlay = document.getElementById('cv-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'cv-overlay';
+            overlay.className = 'cv-overlay';
+            overlay.innerHTML = `
+                <div class="cv-modal" role="dialog" aria-label="CV Viewer" aria-modal="true">
+                    <div class="cv-modal-header">
+                        <div class="cv-modal-title">
+                            <div class="cv-title-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div>
+                                <div style="font-weight:700;">Curriculum Vitae</div>
+                                <div style="font-size:12px;opacity:.7;">Md Akhinoor Islam</div>
+                            </div>
+                        </div>
+                        <div class="cv-modal-actions">
+                            <button class="cv-action" onclick="window.cvPrint()"><i class="fas fa-print"></i><span>Print</span></button>
+                            <button class="cv-action primary" onclick="window.cvDownload()"><i class="fas fa-download"></i><span>Download</span></button>
+                            <button class="cv-action" onclick="window.cvToggleFullscreen()"><i class="fas fa-expand" id="cv-fullscreen-icon"></i><span>Fullscreen</span></button>
+                            <button class="cv-action round" onclick="window.closeCVViewer()" title="Close (Esc)"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="cv-modal-body">
+                        <div class="cv-iframe-wrap" id="cv-iframe-wrap">
+                            <iframe class="cv-iframe" id="cv-iframe" src="" title="CV PDF"></iframe>
+                        </div>
+                        <div class="cv-zoom-controls">
+                            <button class="cv-action round" onclick="window.cvZoomOut()" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                            <div class="cv-zoom-level" id="cv-zoom-level">100%</div>
+                            <button class="cv-action round" onclick="window.cvZoomIn()" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                            <button class="cv-action round" onclick="window.cvZoomReset()" title="Reset Zoom"><i class="fas fa-redo"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
         }
+
+        // Load PDF and show overlay
+        const pdfSrc = './CV/2313014 CV.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
+        const iframe = overlay.querySelector('#cv-iframe');
+        if (iframe && !iframe.src) iframe.src = pdfSrc;
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        __cvZoom = 100; updateCVZoom();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', __cvKeyHandler);
+
+        // Button feedback (if triggered by button)
+        const btn = event && event.target ? event.target.closest('.btn-view-cv') : null;
+        if (btn) {
+            const originalText = btn.querySelector('.btn-text')?.textContent || '';
+            if (originalText) {
+                btn.querySelector('.btn-text').textContent = 'Opening... ✓';
+                setTimeout(() => { btn.querySelector('.btn-text').textContent = originalText; }, 1500);
+            }
+        }
+    } catch (e) {
+        console.error('CV overlay error:', e);
+        // Fallback to direct open
+        window.open('./CV/2313014 CV.pdf', '_blank');
     }
 }
+
+function closeCVViewer() {
+    const overlay = document.getElementById('cv-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', __cvKeyHandler);
+    }
+}
+
+function cvPrint() {
+    const iframe = document.getElementById('cv-iframe');
+    try { iframe.contentWindow.print(); } catch { window.print(); }
+}
+function cvDownload() {
+    const a = document.createElement('a');
+    a.href = './CV/2313014 CV.pdf';
+    a.download = 'Md_Akhinoor_Islam_CV.pdf';
+    document.body.appendChild(a); a.click(); a.remove();
+}
+function cvToggleFullscreen() {
+    const modal = document.querySelector('.cv-modal');
+    if (!modal) return;
+    const icon = document.getElementById('cv-fullscreen-icon');
+    if (!document.fullscreenElement) {
+        modal.requestFullscreen?.().then(()=>{ if(icon) icon.className='fas fa-compress'; });
+    } else {
+        document.exitFullscreen?.().then(()=>{ if(icon) icon.className='fas fa-expand'; });
+    }
+}
+function cvZoomIn(){ __cvZoom = Math.min(200, __cvZoom + 10); updateCVZoom(); }
+function cvZoomOut(){ __cvZoom = Math.max(50, __cvZoom - 10); updateCVZoom(); }
+function cvZoomReset(){ __cvZoom = 100; updateCVZoom(); }
+function updateCVZoom(){
+    const wrap = document.getElementById('cv-iframe-wrap');
+    if (!wrap) return;
+    // Prefer CSS zoom for simplicity
+    wrap.style.zoom = __cvZoom + '%';
+    const level = document.getElementById('cv-zoom-level');
+    if (level) level.textContent = __cvZoom + '%';
+}
+function __cvKeyHandler(e){
+    if (e.key === 'Escape' && !document.fullscreenElement) return closeCVViewer();
+    if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='p'){ e.preventDefault(); return cvPrint(); }
+    if ((e.ctrlKey||e.metaKey) && (e.key==='+'||e.key==='=')){ e.preventDefault(); return cvZoomIn(); }
+    if ((e.ctrlKey||e.metaKey) && e.key==='-'){ e.preventDefault(); return cvZoomOut(); }
+    if ((e.ctrlKey||e.metaKey) && e.key==='0'){ e.preventDefault(); return cvZoomReset(); }
+}
+
+// Expose controls for inline onclick attributes
+window.closeCVViewer = closeCVViewer;
+window.cvPrint = cvPrint;
+window.cvDownload = cvDownload;
+window.cvToggleFullscreen = cvToggleFullscreen;
+window.cvZoomIn = cvZoomIn;
+window.cvZoomOut = cvZoomOut;
+window.cvZoomReset = cvZoomReset;
 
 // Download Resume Function
 function downloadResume() {
