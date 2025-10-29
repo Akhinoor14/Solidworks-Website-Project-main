@@ -209,6 +209,104 @@
         radial-gradient(360px 220px at 92% 86%, rgba(242, 194, 0, 0.06), transparent 60%);
 }
 
+/* Hero Typography */
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+.hero-title .title-line {
+    display: block;
+}
+.hero-title .word {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+.hero-title .highlight {
+    background: linear-gradient(135deg, #ff0000, #ff3333);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+}
+.hero-title .highlight-underline {
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff0000, #ff3333);
+    border-radius: 2px;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+.hero-subtitle .typing-text {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255,0,0,0.12), rgba(255,0,0,0.06));
+    padding: 0.35rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid rgba(255, 0, 0, 0.7);
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-right-color: transparent; }
+    50% { border-right-color: rgba(255, 0, 0, 0.7); }
+}
+
+/* Stop blinking after typing completes */
+.hero-subtitle .typing-text.typed {
+    border-right: none;
+    animation: none;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 2rem;
+}
+.hero-description .text-highlight {
+    color: #ff3333;
+    font-weight: 600;
+    position: relative;
+}
+.hero-description .text-highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 51, 51, 0.4);
+}
+
+/* Responsive hero text */
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.5rem; }
+    .hero-subtitle { font-size: 1.2rem; }
+    .hero-description { font-size: 1rem; }
+}
+
 :root {
     /* Professional Color Palette - Red, Black, White Theme */
     --primary-color: #ff0000;

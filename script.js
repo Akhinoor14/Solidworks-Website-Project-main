@@ -347,6 +347,21 @@ function displayFileTree(contents, owner, repo, currentPath) {
     }
 })();
 
+// ============================================
+// Typing Animation for Hero Subtitle
+// ============================================
+(function(){
+    window.addEventListener('DOMContentLoaded', () => {
+        const typingEl = document.querySelector('.hero-subtitle .typing-text');
+        if (!typingEl) return;
+        
+        // Mark as typed after animation completes (3.5s)
+        setTimeout(() => {
+            typingEl.classList.add('typed');
+        }, 3500);
+    });
+})();
+
 // Get appropriate icon for file type
 function getFileIcon(item) {
     if (item.type === 'dir') return 'fas fa-folder';
