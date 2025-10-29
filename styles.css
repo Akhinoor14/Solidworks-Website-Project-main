@@ -446,22 +446,25 @@ body {
 }
 .sw-quick-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
 }
 .sw-quick-btn {
     display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 0.9rem 1.1rem;
     background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
     border: 1px solid rgba(255,0,0,0.3);
     border-radius: 10px;
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     transition: all .25s ease;
+    position: relative;
+    overflow: hidden;
 }
 .sw-quick-btn:hover {
     background: linear-gradient(135deg, #2a0000, #1a0000);
@@ -471,13 +474,20 @@ body {
 }
 .sw-quick-btn i {
     color: #ef4444;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
 }
 .sw-quick-btn span {
-    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.sw-quick-btn small {
+    font-size: 0.7rem;
+    opacity: 0.75;
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
-/* Variants for specific quick buttons */
+/* Variants for specific quick buttons - Only CW and HW (2 buttons) */
 .sw-quick-btn:nth-child(1) { /* All Coursework */
     background: linear-gradient(135deg, #990000, #cc0000);
     border-color: rgba(255,0,0,0.4);
@@ -500,19 +510,6 @@ body {
 }
 .sw-quick-btn:nth-child(2) i {
     color: #ffffff;
-}
-
-.sw-quick-btn:nth-child(3) { /* 3D Models */
-    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-    border-color: rgba(255,0,0,0.35);
-}
-.sw-quick-btn:nth-child(3):hover {
-    background: linear-gradient(135deg, #2a0000, #1a0000);
-    border-color: rgba(255,0,0,0.5);
-    box-shadow: 0 6px 20px rgba(255,0,0,0.25);
-}
-.sw-quick-btn:nth-child(3) i {
-    color: #ef4444;
 }
 
 /* Dark mode support */
