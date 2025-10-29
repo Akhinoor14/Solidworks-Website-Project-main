@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Md Akhinoor Islam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Top Control Bar */
+        .cv-controls {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border-bottom: 2px solid rgba(255, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+        }
+
+        .cv-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cv-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .cv-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cv-title p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+
+        .cv-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Buttons */
+        .cv-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cv-btn-primary {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .cv-btn-primary:hover {
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .cv-btn-secondary {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            color: #ffffff;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .cv-btn-secondary:hover {
+            background: linear-gradient(135deg, #2a0000, #1a0000);
+            border-color: rgba(255, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .cv-btn-close {
+            background: linear-gradient(135deg, #cc0000, #990000);
+            color: #ffffff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .cv-btn-close:hover {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* PDF Viewer Container */
+        .pdf-container {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #ffffff;
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0a0a0a, #1a0000);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 0, 0, 0.2);
+            border-top-color: #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #cc0000, #990000);
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-btn:hover {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            transform: scale(1.1);
+        }
+
+        .zoom-level {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cv-controls {
+                height: 60px;
+                padding: 0 1rem;
+            }
+
+            .cv-title h1 {
+                font-size: 1.2rem;
+            }
+
+            .cv-title p {
+                display: none;
+            }
+
+            .cv-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .cv-btn span:not(.btn-icon) {
+                display: none;
+            }
+
+            .zoom-controls {
+                bottom: 20px;
+                right: 20px;
+                padding: 8px;
+            }
+
+            .zoom-btn {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Error State */
+        .error-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 70px);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-icon {
+            font-size: 5rem;
+            color: #ff0000;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-message {
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Control Bar -->
+    <div class="cv-controls">
+        <div class="cv-title">
+            <div class="cv-icon">
+                <i class="fas fa-file-pdf"></i>
+            </div>
+            <div>
+                <h1>Curriculum Vitae</h1>
+                <p>Md Akhinoor Islam - Energy Science & Engineering</p>
+            </div>
+        </div>
+
+        <div class="cv-actions">
+            <button class="cv-btn cv-btn-secondary" onclick="printCV()">
+                <i class="fas fa-print"></i>
+                <span>Print</span>
+            </button>
+                <a href="./CV/2313014 CV.pdf" download="Md_Akhinoor_Islam_CV.pdf" class="cv-btn cv-btn-primary">
+                <i class="fas fa-download"></i>
+                <span>Download</span>
+            </a>
+            <button class="cv-btn cv-btn-secondary" onclick="toggleFullscreen()">
+                <i class="fas fa-expand" id="fullscreen-icon"></i>
+                <span id="fullscreen-text">Fullscreen</span>
+            </button>
+            <button class="cv-btn cv-btn-close" onclick="closeCVViewer()" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Loading CV...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="error-state">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h2 class="error-message">Unable to Load CV</h2>
+        <p class="error-description">The PDF file could not be loaded. Please try downloading instead.</p>
+            <a href="./CV/2313014 CV.pdf" download="Md_Akhinoor_Islam_CV.pdf" class="cv-btn cv-btn-primary">
+            <i class="fas fa-download"></i>
+            Download CV
+        </a>
+    </div>
+
+    <!-- PDF Viewer Container -->
+    <div class="pdf-container" id="pdf-container">
+        <iframe 
+            id="pdf-viewer" 
+            class="pdf-viewer" 
+                src="./CV/2313014 CV.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH"
+            onload="onPDFLoad()"
+            onerror="onPDFError()"
+        ></iframe>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+            <i class="fas fa-search-minus"></i>
+        </button>
+        <div class="zoom-level" id="zoom-level">100%</div>
+        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+            <i class="fas fa-search-plus"></i>
+        </button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">
+            <i class="fas fa-redo"></i>
+        </button>
+    </div>
+
+    <script>
+        let currentZoom = 100;
+
+        // PDF Load Success
+        function onPDFLoad() {
+            setTimeout(() => {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }, 500);
+        }
+
+        // PDF Load Error
+        function onPDFError() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('pdf-container').style.display = 'none';
+            document.getElementById('error-state').style.display = 'flex';
+        }
+
+        // Print CV
+        function printCV() {
+            const iframe = document.getElementById('pdf-viewer');
+            try {
+                iframe.contentWindow.print();
+            } catch (error) {
+                window.print();
+            }
+        }
+
+        // Toggle Fullscreen
+        function toggleFullscreen() {
+            const elem = document.documentElement;
+            const icon = document.getElementById('fullscreen-icon');
+            const text = document.getElementById('fullscreen-text');
+
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().then(() => {
+                    icon.className = 'fas fa-compress';
+                    text.textContent = 'Exit Fullscreen';
+                }).catch(err => {
+                    console.error('Fullscreen error:', err);
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    icon.className = 'fas fa-expand';
+                    text.textContent = 'Fullscreen';
+                });
+            }
+        }
+
+        // Close CV Viewer
+        function closeCVViewer() {
+            if (window.opener) {
+                window.close();
+            } else {
+                window.location.href = './index.html';
+            }
+        }
+
+        // Zoom Functions
+        function zoomIn() {
+            currentZoom += 10;
+            if (currentZoom > 200) currentZoom = 200;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            currentZoom -= 10;
+            if (currentZoom < 50) currentZoom = 50;
+            updateZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 100;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const container = document.getElementById('pdf-container');
+            container.style.zoom = currentZoom + '%';
+            document.getElementById('zoom-level').textContent = currentZoom + '%';
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Escape to close
+            if (e.key === 'Escape' && !document.fullscreenElement) {
+                closeCVViewer();
+            }
+            
+            // Ctrl/Cmd + P to print
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                printCV();
+            }
+            
+            // Ctrl/Cmd + Plus to zoom in
+            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '=')) {
+                e.preventDefault();
+                zoomIn();
+            }
+            
+            // Ctrl/Cmd + Minus to zoom out
+            if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+                e.preventDefault();
+                zoomOut();
+            }
+            
+            // Ctrl/Cmd + 0 to reset zoom
+            if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+                e.preventDefault();
+                resetZoom();
+            }
+            
+            // F11 for fullscreen
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        // Show notification on load
+        console.log('🚀 CV Viewer Ready!');
+        console.log('📋 Keyboard Shortcuts:');
+        console.log('  - Escape: Close viewer');
+        console.log('  - Ctrl+P: Print');
+        console.log('  - Ctrl + / -: Zoom');
+        console.log('  - F11: Fullscreen');
+    </script>
+</body>
+</html>

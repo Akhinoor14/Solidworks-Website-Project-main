@@ -6344,6 +6344,38 @@ function initializeHomepageAnimations() {
     });
 }
 
+// Open CV Viewer in New Page
+function openCVViewer() {
+    // Open CV viewer in new tab/window with optimal dimensions
+    const width = Math.min(1400, screen.width * 0.9);
+    const height = Math.min(900, screen.height * 0.9);
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+    
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes,toolbar=no,menubar=no,location=no`;
+    
+    const cvWindow = window.open('./cv-viewer.html', 'CVViewer', features);
+    
+    if (!cvWindow) {
+        // Fallback if popup blocked
+        alert('⚠️ Please allow popups to view CV in new window.\n\nOpening in current tab...');
+        window.location.href = './cv-viewer.html';
+    } else {
+        cvWindow.focus();
+        
+        // Show success message
+        const btn = event.target.closest('.btn-view-cv');
+        if (btn) {
+            const originalText = btn.querySelector('.btn-text').textContent;
+            btn.querySelector('.btn-text').textContent = 'Opening... ✓';
+            
+            setTimeout(() => {
+                btn.querySelector('.btn-text').textContent = originalText;
+            }, 2000);
+        }
+    }
+}
+
 // Download Resume Function
 function downloadResume() {
     // Download the actual PDF CV file
@@ -7853,6 +7885,27 @@ window.performCentralUpdate = performCentralUpdate;
 window.loadCentralDeleteDays = loadCentralDeleteDays;
 window.loadCentralDeleteFiles = loadCentralDeleteFiles;
 window.performCentralDelete = performCentralDelete;
+
+
+
+
+
+// ==============================
+// Mobile navbar toggle behavior
+// ==============================
+try {
+    document.addEventListener('DOMContentLoaded', () => {
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+            });
+        }
+    });
+} catch (e) {
+    console.warn('Navbar toggle init failed:', e.message);
+}
 
 
 
