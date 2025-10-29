@@ -1559,9 +1559,12 @@ function isInterestingSwFile(name) {
 
 // Render Solo Projects (Project 1, Project 2 structure with upload date/time)
 async function renderSoloProjects(items, contentDiv, headers, owner, repo) {
+    console.log(`🎨 Rendering Solo Projects...`);
     const projectFolders = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+    console.log(`📁 Found ${projectFolders.length} project folders:`, projectFolders.map(p => p.name));
     
     if (projectFolders.length === 0) {
+        console.log(`⚠️ No project folders found, showing empty state`);
         contentDiv.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-folder-open"></i>
@@ -1676,11 +1679,16 @@ async function loadSolidworksContent(type) {
     try {
         const headers = getGitHubHeaders();
         const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        console.log(`🔍 Loading Solo Projects from: ${url}`);
         const response = await fetch(url, { headers });
         
-        if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+        if (!response.ok) {
+            console.error(`❌ GitHub API error: ${response.status} ${response.statusText}`);
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
         
         const items = await response.json();
+        console.log(`📦 Found ${items.length} items in ${path}:`, items.map(i => i.name));
         
         // Solo Projects: Different structure (Project 1, Project 2, etc.)
         if (type === 'solo') {
