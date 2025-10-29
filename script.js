@@ -341,6 +341,180 @@ function getFileIcon(item) {
     return iconMap[ext] || 'fas fa-file';
 }
 
+// ============================================
+// Generic GitHub Repo Auto-Update Cards
+// ============================================
+
+function initAutoRepoCards() {
+    const cards = document.querySelectorAll('.repo-auto-card');
+    if (!cards.length) return;
+    cards.forEach(initAutoRepoCard);
+}
+
+function initAutoRepoCard(card) {
+    const owner = card.getAttribute('data-owner');
+    const repo = card.getAttribute('data-repo');
+    const path = card.getAttribute('data-path') || '';
+
+    // Wire quick actions
+    const openBtn = card.querySelector('[data-action="open"]');
+    const browseBtn = card.querySelector('[data-action="browse"]');
+    if (openBtn) openBtn.href = `https://github.com/${owner}/${repo}`;
+    if (browseBtn) {
+        browseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openGitHubBrowser(owner, repo, `${repo}`);
+        });
+    }
+
+    // Initial load and then start polling
+    loadRepoCardData(card, { owner, repo, path });
+    startRepoPolling(card, { owner, repo, path });
+}
+
+async function loadRepoCardData(card, cfg) {
+    const { owner, repo, path } = cfg;
+    const headers = getGitHubHeaders();
+    const titleEl = card.querySelector('[data-title]');
+    const descEl = card.querySelector('[data-desc]');
+    const statsEl = card.querySelector('[data-stats]');
+    const listEl = card.querySelector('[data-list]');
+
+    try {
+        // Repo info: update title/desc
+        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+        if (repoRes.ok) {
+            const repoInfo = await repoRes.json();
+            if (titleEl) titleEl.textContent = repoInfo.name || titleEl.textContent;
+            if (descEl) descEl.textContent = repoInfo.description || descEl.textContent;
+        }
+
+    // Contents listing
+    const pathPart = path ? `/${encodeURIComponent(path).replace(/%2F/g,'/')}` : '';
+    const contentsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents${pathPart}`, { headers });
+        if (!contentsRes.ok) throw new Error('Failed to load repository contents');
+        const contents = await contentsRes.json();
+
+        // Render list: folders first then files (.md, .pdf, images, code)
+        const sorted = contents.slice().sort((a,b)=>{
+            if (a.type !== b.type) return a.type === 'dir' ? -1 : 1;
+            return a.name.localeCompare(b.name);
+        });
+
+        let html = '';
+        sorted.forEach(item => {
+            const isDir = item.type === 'dir';
+            const icon = isDir ? 'fas fa-folder' : getFileIcon({ name: item.name, type: 'file' });
+            const badge = isDir ? 'DIR' : (item.name.split('.').pop() || '').toUpperCase();
+            const ghUrl = item.html_url;
+            const name = item.name;
+            html += `
+                <div class="sw-file-item">
+                    <div class="sw-file-header">
+                        <i class="${icon}"></i>
+                        <span class="sw-file-name">${name}</span>
+                        <span class="sw-file-badge">${badge}</span>
+                    </div>
+                    <div class="sw-file-actions">
+                        <a href="${ghUrl}" target="_blank" class="sw-action-btn sw-btn-page" title="Open on GitHub">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+
+        listEl.innerHTML = html || '<div class="empty-state"><i class="fas fa-folder-open"></i><p>No files found</p></div>';
+
+        // Try to find README (case-insensitive) in contents and render a short preview
+        const readmeEl = card.querySelector('[data-readme]');
+        if (readmeEl) {
+            const readmeItem = contents.find(c => /^readme(\.|$)/i.test(c.name));
+            if (readmeItem) {
+                // compute path for file
+                const readmePath = (path ? `${path}/` : '') + readmeItem.name;
+                // Clear loading spinner
+                readmeEl.innerHTML = '';
+                try {
+                    // Prefer using viewMarkdown if available
+                    if (typeof viewMarkdown === 'function') {
+                        const container = document.createElement('div');
+                        container.className = 'readme-container';
+                        readmeEl.appendChild(container);
+                        viewMarkdown(owner, repo, readmePath, container).catch(async () => {
+                            // fallback: fetch raw and render
+                            const rawRes = await fetch(readmeItem.download_url);
+                            const md = await rawRes.text();
+                            container.innerHTML = markdownToHTML(md, { owner, repo, baseDir: readmePath.replace(/[^/]+$/, '') });
+                        });
+                    } else {
+                        // fallback: fetch raw and render
+                        const rawRes = await fetch(readmeItem.download_url);
+                        const md = await rawRes.text();
+                        readmeEl.innerHTML = markdownToHTML(md, { owner, repo, baseDir: readmePath.replace(/[^/]+$/, '') });
+                    }
+
+                    // Add small actions: Open README full in browser modal or GitHub
+                    const actions = document.createElement('div');
+                    actions.style.marginTop = '0.5rem';
+                    actions.innerHTML = `
+                        <button class="github-action-btn" style="margin-right:8px;" onclick="openGitHubBrowser('${owner}','${repo}','${repo}')">Browse</button>
+                        <a class="github-action-btn" target="_blank" href="https://github.com/${owner}/${repo}/blob/main/${encodeURIComponent(readmePath).replace(/%2F/g,'/')}">Open README on GitHub</a>
+                    `;
+                    readmeEl.appendChild(actions);
+                } catch (e) {
+                    readmeEl.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load README</p></div>';
+                }
+            } else {
+                // no README found
+                readmeEl.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No README found</p></div>';
+            }
+        }
+
+        // Stats: counts and last update
+        const commitsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?${path?`path=${encodeURIComponent(path)}&`:''}per_page=1`, { headers });
+        let last = 'Unknown';
+        if (commitsRes.ok) {
+            const commits = await commitsRes.json();
+            if (Array.isArray(commits) && commits.length) {
+                last = new Date(commits[0].commit.author.date).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+                // save sha for polling
+                card.__lastSha = commits[0].sha;
+            }
+        }
+        const fileCount = contents.filter(c => c.type === 'file').length;
+        const dirCount = contents.filter(c => c.type === 'dir').length;
+        if (statsEl) statsEl.innerHTML = `Last updated: <strong>${last}</strong> • <strong>${dirCount}</strong> folders • <strong>${fileCount}</strong> files`;
+    } catch (err) {
+        console.error('Repo card load error:', err);
+        if (listEl) listEl.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load contents</p></div>';
+    }
+}
+
+function startRepoPolling(card, cfg) {
+    const { owner, repo, path } = cfg;
+    const headers = getGitHubHeaders();
+    if (card.__pollTimer) clearInterval(card.__pollTimer);
+    card.__pollTimer = setInterval(async () => {
+        try {
+            const commitsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?${path?`path=${encodeURIComponent(path)}&`:''}per_page=1`, { headers });
+            if (!commitsRes.ok) return;
+            const commits = await commitsRes.json();
+            if (!Array.isArray(commits) || !commits.length) return;
+            const sha = commits[0].sha;
+            if (card.__lastSha && sha !== card.__lastSha) {
+                await loadRepoCardData(card, cfg);
+                if (typeof showToast === 'function') showToast('Updated', `${repo} content refreshed automatically`, 'success');
+            } else {
+                card.__lastSha = sha; // initialize if missing
+            }
+        } catch (e) {
+            // silent fail to avoid spam
+        }
+    }, 30000);
+}
+
 // View file content
 async function viewFile(owner, repo, path, name, downloadUrl) {
     const viewerHeader = document.getElementById('viewerHeader');
@@ -1287,6 +1461,7 @@ function showFileUploadForm(type, mode = 'new') {
 // Show question upload form
 function showQuestionUploadForm(type) {
     const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+    const typeUpper = type.toUpperCase();
     
     const dialog = document.createElement('div');
     dialog.id = 'uploadDialog';
@@ -1304,22 +1479,31 @@ function showQuestionUploadForm(type) {
                 <div class="upload-form">
                     <div class="form-group">
                         <label><i class="fas fa-calendar"></i> Select Day:</label>
-                        <select id="questionDaySelect" class="form-control">
+                        <select id="questionDaySelect" class="form-control" onchange="updateQuestionFileName('${type}')">
                             <option value="">-- Choose Day --</option>
                             ${Array.from({length: 30}, (_, i) => `<option value="Day ${String(i+1).padStart(2, '0')}">Day ${String(i+1).padStart(2, '0')}</option>`).join('')}
                         </select>
                     </div>
                     
                     <div class="form-group">
+                        <label><i class="fas fa-hashtag"></i> ${typeUpper} Number:</label>
+                        <select id="questionWorkNumber" class="form-control" onchange="updateQuestionFileName('${type}')">
+                            <option value="">-- Choose ${typeUpper} Number --</option>
+                            ${Array.from({length: 10}, (_, i) => `<option value="${typeUpper}${i+1}">${typeUpper}${i+1}</option>`).join('')}
+                        </select>
+                        <small>Select which ${typeUpper} this question is for (creates subfolder if needed)</small>
+                    </div>
+                    
+                    <div class="form-group">
                         <label><i class="fas fa-file-pdf"></i> Select Question File:</label>
-                        <input type="file" id="questionFileInput" class="form-control" accept=".pdf,.png,.jpg,.jpeg" />
+                        <input type="file" id="questionFileInput" class="form-control" accept=".pdf,.png,.jpg,.jpeg" onchange="updateQuestionFileName('${type}')" />
                         <small>Accepted: PDF, PNG, JPG (Question images/PDFs)</small>
                     </div>
                     
                     <div class="form-group">
                         <label><i class="fas fa-tag"></i> File Name:</label>
-                        <input type="text" id="questionFileName" class="form-control" placeholder="e.g., Question.pdf or Q1.png" />
-                        <small>This will be the name in GitHub</small>
+                        <input type="text" id="questionFileName" class="form-control" placeholder="Auto-generated based on Day and ${typeUpper}" value="" />
+                        <small>Auto-generated: Day_XX_${typeUpper}X_Question.ext (you can edit if needed)</small>
                     </div>
                     
                     <div class="upload-actions">
@@ -1337,6 +1521,107 @@ function showQuestionUploadForm(type) {
     
     document.body.appendChild(dialog);
     setTimeout(() => dialog.classList.add('show'), 10);
+}
+
+// Auto-generate question file name based on Day, CW/HW number, and file extension
+function updateQuestionFileName(type) {
+    const daySelect = document.getElementById('questionDaySelect');
+    const workNumberSelect = document.getElementById('questionWorkNumber');
+    const fileInput = document.getElementById('questionFileInput');
+    const fileNameInput = document.getElementById('questionFileName');
+    
+    const day = daySelect.value;
+    const workNumber = workNumberSelect.value;
+    const file = fileInput.files[0];
+    
+    if (day && workNumber) {
+        // Get file extension from uploaded file or default to .pdf
+        let extension = '.pdf';
+        if (file) {
+            const fileName = file.name;
+            const lastDot = fileName.lastIndexOf('.');
+            if (lastDot > -1) {
+                extension = fileName.substring(lastDot);
+            }
+        }
+        
+        // Format: Day_01_CW1_Question.pdf
+        const dayFormatted = day.replace(' ', '_');
+        const generatedName = `${dayFormatted}_${workNumber}_Question${extension}`;
+        fileNameInput.value = generatedName;
+    }
+}
+
+// Make function globally accessible
+window.updateQuestionFileName = updateQuestionFileName;
+
+// Fetch statistics for CW/HW folders (day count, file count, last update)
+async function fetchSolidworksStatistics(type) {
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const folderPath = type === 'cw' ? 'CW' : 'HW';
+    const headers = getGitHubHeaders();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, { headers });
+        if (!response.ok) return null;
+        
+        const items = await response.json();
+        const days = items.filter(item => item.type === 'dir' && /^Day\s*\d+/i.test(item.name));
+        
+        let totalFiles = 0;
+        let latestDate = null;
+        
+        // Fetch commits to get last update date
+        const commitsResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?path=${folderPath}&per_page=1`, { headers });
+        if (commitsResponse.ok) {
+            const commits = await commitsResponse.json();
+            if (commits.length > 0) {
+                latestDate = new Date(commits[0].commit.author.date);
+            }
+        }
+        
+        // Count total files across all days
+        for (const day of days) {
+            const dayResponse = await fetch(day.url, { headers });
+            if (dayResponse.ok) {
+                const dayFiles = await dayResponse.json();
+                totalFiles += dayFiles.filter(f => f.type === 'file' && isInterestingSwFile(f.name)).length;
+            }
+        }
+        
+        return {
+            dayCount: days.length,
+            fileCount: totalFiles,
+            lastUpdate: latestDate ? latestDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'
+        };
+        
+    } catch (error) {
+        console.error(`Error fetching ${type} statistics:`, error);
+        return null;
+    }
+}
+
+// Update mode buttons with statistics
+async function updateModeButtonStats() {
+    const cwBtn = document.querySelector('.sw-mode-btn[data-target="cw"]');
+    const hwBtn = document.querySelector('.sw-mode-btn[data-target="hw"]');
+    
+    if (cwBtn) {
+        const cwStats = await fetchSolidworksStatistics('cw');
+        if (cwStats) {
+            cwBtn.innerHTML = `Class Work <span class="sw-stats-badge">${cwStats.dayCount} days • ${cwStats.fileCount} files</span>`;
+            cwBtn.title = `Last updated: ${cwStats.lastUpdate}`;
+        }
+    }
+    
+    if (hwBtn) {
+        const hwStats = await fetchSolidworksStatistics('hw');
+        if (hwStats) {
+            hwBtn.innerHTML = `Home Work <span class="sw-stats-badge">${hwStats.dayCount} days • ${hwStats.fileCount} files</span>`;
+            hwBtn.title = `Last updated: ${hwStats.lastUpdate}`;
+        }
+    }
 }
 
 // Perform file upload
@@ -1455,25 +1740,27 @@ async function performFileUpload(type) {
 // Perform question upload
 async function performQuestionUpload(type) {
     const daySelect = document.getElementById('questionDaySelect');
+    const workNumberSelect = document.getElementById('questionWorkNumber');
     const fileInput = document.getElementById('questionFileInput');
     const fileNameInput = document.getElementById('questionFileName');
     
     const day = daySelect.value;
+    const workNumber = workNumberSelect.value;
     const file = fileInput.files[0];
-    const fileName = fileNameInput.value.trim();
+    const fileName = fileNameInput.value.trim() || 'Question.pdf';
     
     if (!day) {
         alert('Please select a day');
         return;
     }
     
-    if (!file) {
-        alert('Please select a question file');
+    if (!workNumber) {
+        alert(`Please select ${type.toUpperCase()} number`);
         return;
     }
     
-    if (!fileName) {
-        alert('Please enter a file name');
+    if (!file) {
+        alert('Please select a question file');
         return;
     }
     
@@ -1489,7 +1776,8 @@ async function performQuestionUpload(type) {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
         const folderPath = type === 'cw' ? 'CW' : 'HW';
-        const path = `${folderPath}/${day}/${fileName}`;
+        // Upload to subfolder: CW/Day 01/CW1/Question.pdf
+        const path = `${folderPath}/${day}/${workNumber}/${fileName}`;
         const content = await readFileAsBase64(file);
         
         // Check if exists
@@ -1509,7 +1797,7 @@ async function performQuestionUpload(type) {
         
         // Upload
         const uploadData = {
-            message: `Upload question for ${type.toUpperCase()} ${day}`,
+            message: `Upload question for ${type.toUpperCase()} ${day}/${workNumber}`,
             content: content,
             branch: 'main'
         };
@@ -1530,7 +1818,7 @@ async function performQuestionUpload(type) {
         
         if (uploadResponse.ok) {
             closeUploadDialog();
-            showToast('Success', 'Question uploaded successfully!');
+            showToast('Success', `Question uploaded to ${day}/${workNumber}!`);
             setTimeout(() => refreshSolidworksContent(type), 1500);
         } else {
             throw new Error('Upload failed: ' + await uploadResponse.text());
@@ -2030,6 +2318,43 @@ window.closeSolidworksWindow = closeSolidworksWindow;
 window.refreshSolidworksContent = refreshSolidworksContent;
 window.uploadToSolidworks = uploadToSolidworks;
 
+// Scroll to central upload card (Auto-Update System)
+window.scrollToUploadCard = function() {
+    // Prefer the dedicated Auto-Update card by id
+    let uploadCard = document.getElementById('auto-update-card');
+    if (!uploadCard) {
+        // Fallback: find by style signature
+        uploadCard = document.querySelector('.project-card[style*="rgba(102, 126, 234"]');
+    }
+    
+    if (uploadCard) {
+        uploadCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add highlight animation
+        uploadCard.style.transition = 'transform 0.3s, box-shadow 0.3s';
+        uploadCard.style.transform = 'scale(1.02)';
+        uploadCard.style.boxShadow = '0 0 30px rgba(102, 126, 234, 0.5)';
+        
+        setTimeout(() => {
+            uploadCard.style.transform = 'scale(1)';
+            uploadCard.style.boxShadow = '';
+        }, 1000);
+        
+        if (typeof showToast === 'function') {
+            showToast('Navigation', 'Scrolled to Auto-Update System', 'info');
+        }
+    } else {
+        // Fallback: scroll to the section outside grid
+        const uploadSection = document.querySelector('.github-section');
+        if (uploadSection) {
+            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (typeof showToast === 'function') {
+                showToast('Navigation', 'Scrolled to Upload Section', 'info');
+            }
+        }
+    }
+};
+
 // Debug helper: Test colorful cards with mock data
 window.testColorfulCards = function() {
     console.log('🧪 Testing colorful subfolder cards...');
@@ -2139,6 +2464,8 @@ function escapeHtml(text) {
 // Modal interactivity for project details
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Content Loaded');
+    // Initialize auto-updating GitHub repo cards (Electronics, Arduino, Portfolio)
+    try { initAutoRepoCards(); } catch(e) { console.warn('Auto repo cards init failed', e); }
     
     // Embedded SOLIDWORKS Beginner Projects navigation
     (function initSolidworksEmbedded(){
@@ -2469,6 +2796,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('📝 Calling injectDayProjects...');
         injectDayProjects();
         console.log('✅ Day projects injected');
+        
+            // Update mode buttons with statistics
+            console.log('📊 Fetching statistics for CW/HW...');
+            updateModeButtonStats().then(() => {
+                console.log('✅ Statistics updated');
+            }).catch(err => {
+                console.error('⚠️ Failed to update statistics:', err);
+            });
 
         function showView(name){
             console.log('🔄 Switching to view:', name);
@@ -2518,9 +2853,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if(back) showView(back);
         }));
         
-        modeBtns.forEach(mb => mb.addEventListener('click', ()=>{
+            modeBtns.forEach(mb => mb.addEventListener('click', (e)=>{
             const target = mb.getAttribute('data-target');
             console.log('🔘 Mode button clicked, target:', target);
+            
+                // For CW/HW, open in new window instead of inline view
+                if(target === 'cw' || target === 'hw') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚀 Opening SOLIDWORKS window from mode button:', target);
+                    openSolidworksWindow(target);
+                    return false;
+                }
+            
             if(target) showView(target);
         }));
         // Keyboard support: ESC to go back if not root

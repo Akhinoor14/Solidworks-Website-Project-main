@@ -372,6 +372,9 @@
                                     <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/archive/refs/heads/main.zip" class="btn-sw-download">
                                         <i class="fas fa-download"></i> Download ZIP
                                     </a>
+                                        <button class="btn-sw-upload" onclick="scrollToUploadCard()" title="Go to File Upload & Management">
+                                            <i class="fas fa-cloud-upload-alt"></i> Central Upload
+                                        </button>
                                 </div>
                                 
                                 <div class="sw-tip-box" aria-label="Tip">
@@ -413,8 +416,80 @@
                 </div>
                 <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
 
+                <!-- Electronic Components Guide (Auto-updating from GitHub) -->
+                <div class="project-card desktop visible repo-auto-card" id="card-electronics" data-owner="Akhinoor14" data-repo="Electronic-Components-Guide" data-path="" data-section="electronics">
+                    <header class="sw-header">
+                        <div class="sw-header-icon"><i class="fas fa-microchip"></i></div>
+                        <div class="sw-header-text">
+                            <h3 class="sw-card-title" data-title>Electronic Components Guide</h3>
+                            <p class="sw-intro" data-desc>Auto-updating list of components and notes from GitHub.</p>
+                        </div>
+                    </header>
+                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
+                    <div class="sw-quick-actions">
+                        <button class="btn-sw-browse" data-action="browse"><i class="fas fa-folder-open"></i> Browse Files</button>
+                        <a class="btn-sw-download" data-action="open"><i class="fas fa-external-link-alt"></i> Open Repo</a>
+                        <button class="btn-sw-upload" onclick="scrollToUploadCard()"><i class="fas fa-cloud-upload-alt"></i> Central Upload</button>
+                    </div>
+                    <div class="sw-tip-box" data-stats>Fetching latest stats…</div>
+                    <div class="sw-readme-preview" data-readme style="margin-top:0.75rem;">
+                        <div class="loading-spinner small"><i class="fas fa-spinner fa-spin"></i> Loading README…</div>
+                    </div>
+                    <div class="sw-files-wrap" data-list>
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading components…</div>
+                    </div>
+                </div>
+
+                <!-- Arduino UNO Projects with Tinkercad (Auto-updating) -->
+                <div class="project-card desktop visible repo-auto-card" id="card-arduino" data-owner="Akhinoor14" data-repo="Arduino-UNO-Tinkercad-Projects" data-path="" data-section="arduino">
+                    <header class="sw-header">
+                        <div class="sw-header-icon"><i class="fas fa-microchip"></i></div>
+                        <div class="sw-header-text">
+                            <h3 class="sw-card-title" data-title>Arduino UNO Projects (Tinkercad)</h3>
+                            <p class="sw-intro" data-desc>Auto-updating list of Arduino projects and simulations.</p>
+                        </div>
+                    </header>
+                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
+                    <div class="sw-quick-actions">
+                        <button class="btn-sw-browse" data-action="browse"><i class="fas fa-folder-open"></i> Browse Files</button>
+                        <a class="btn-sw-download" data-action="open"><i class="fas fa-external-link-alt"></i> Open Repo</a>
+                        <button class="btn-sw-upload" onclick="scrollToUploadCard()"><i class="fas fa-cloud-upload-alt"></i> Central Upload</button>
+                    </div>
+                    <div class="sw-tip-box" data-stats>Fetching latest stats…</div>
+                    <div class="sw-readme-preview" data-readme style="margin-top:0.75rem;">
+                        <div class="loading-spinner small"><i class="fas fa-spinner fa-spin"></i> Loading README…</div>
+                    </div>
+                    <div class="sw-files-wrap" data-list>
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading projects…</div>
+                    </div>
+                </div>
+
+                <!-- Interactive Engineering Portfolio Website (Auto-updating) -->
+                <div class="project-card desktop visible repo-auto-card" id="card-portfolio" data-owner="Akhinoor14" data-repo="Interactive-Portfolio-Website" data-path="" data-section="portfolio">
+                    <header class="sw-header">
+                        <div class="sw-header-icon"><i class="fas fa-globe"></i></div>
+                        <div class="sw-header-text">
+                            <h3 class="sw-card-title" data-title>Interactive Engineering Portfolio Website</h3>
+                            <p class="sw-intro" data-desc>Auto-updating portfolio site content and pages.</p>
+                        </div>
+                    </header>
+                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
+                    <div class="sw-quick-actions">
+                        <button class="btn-sw-browse" data-action="browse"><i class="fas fa-folder-open"></i> Browse Files</button>
+                        <a class="btn-sw-download" data-action="open"><i class="fas fa-external-link-alt"></i> Open Repo</a>
+                        <button class="btn-sw-upload" onclick="scrollToUploadCard()"><i class="fas fa-cloud-upload-alt"></i> Central Upload</button>
+                    </div>
+                    <div class="sw-tip-box" data-stats>Fetching latest stats…</div>
+                    <div class="sw-readme-preview" data-readme style="margin-top:0.75rem;">
+                        <div class="loading-spinner small"><i class="fas fa-spinner fa-spin"></i> Loading README…</div>
+                    </div>
+                    <div class="sw-files-wrap" data-list>
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading pages…</div>
+                    </div>
+                </div>
+
                 <!-- Auto Upload & Management Card (Embedded in Projects Grid) -->
-                <div class="project-card desktop visible" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.3);">
+                <div id="auto-update-card" class="project-card desktop visible" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.3);">
                     <header class="sw-header">
                         <div class="sw-header-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="fas fa-sync-alt"></i></div>
                         <div class="sw-header-text">

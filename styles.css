@@ -374,6 +374,25 @@ body {
 .sw-mode-btn { appearance:none; border:none; background:transparent; padding:.55rem 1rem; border-radius:10px; font-size:.7rem; font-weight:600; letter-spacing:.6px; cursor:pointer; color:rgba(255,255,255,0.7); position:relative; transition:background .3s,color .3s; }
 .sw-mode-btn[aria-current="true"], .sw-mode-btn:hover { background:rgba(255,0,0,0.2); color:#ffffff; box-shadow:0 2px 6px -2px rgba(255,0,0,.4); }
 .sw-mode-btn:focus-visible { outline:2px solid #ff0000; outline-offset:2px; }
+
+/* Statistics badge in mode buttons */
+.sw-stats-badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(255, 0, 0, 0.25);
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+}
+.dark .sw-stats-badge {
+    background: rgba(255, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 0, 0, 0.4);
+}
+
 .dark .sw-mode-switch { background:rgba(30,0,0,.5); border-color:rgba(255,0,0,.2); }
 .dark .sw-mode-btn { color:rgba(255,255,255,0.7); }
 .dark .sw-mode-btn[aria-current="true"], .dark .sw-mode-btn:hover { background:rgba(255,0,0,0.2); color:#ffffff; box-shadow:0 2px 6px -2px rgba(255,0,0,.4); }
@@ -393,6 +412,13 @@ body {
 .sw-root-panels { display:flex; flex-direction:column; gap:1rem; }
 .sw-tip-box { background:linear-gradient(135deg,rgba(30,0,0,.7),rgba(20,0,0,.5)); padding:.9rem 1rem; border:1px solid rgba(255,0,0,.4); border-radius:12px; font-size:.8rem; line-height:1.5; color:#ffffff; box-shadow:0 2px 8px rgba(255,0,0,.2); font-weight: 500; }
 .dark .sw-tip-box { background:linear-gradient(135deg,rgba(30,0,0,.7),rgba(20,0,0,.5)); border-color:rgba(255,0,0,.4); color:#ffffff; box-shadow:0 2px 8px rgba(255,0,0,.2); }
+
+/* README preview inside repo cards */
+.sw-readme-preview { background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.9); max-height: 180px; overflow: auto; }
+.readme-container h1, .readme-container h2, .readme-container h3 { color: #fff; margin: 0 0 0.25rem; }
+.readme-container p { color: rgba(255,255,255,0.85); margin: 0 0 0.5rem; font-size: 0.9rem; }
+.sw-readme-preview .github-action-btn { margin-top: 0.5rem; margin-right: 6px; }
+.loading-spinner.small { font-size: 0.9rem; padding: 0.25rem 0; color: rgba(255,255,255,0.8); }
 
 /* SOLIDWORKS Quick Actions */
 .sw-quick-actions {
@@ -445,6 +471,36 @@ body {
 
 .btn-sw-browse:active,
 .btn-sw-download:active {
+    transform: translateY(0);
+}
+
+/* Central Upload Button */
+.btn-sw-upload {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(118, 75, 162, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #ffffff;
+}
+
+.btn-sw-upload:hover {
+    background: linear-gradient(135deg, #7c8ff0, #8b5ab8);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-sw-upload:active {
     transform: translateY(0);
 }
 
