@@ -476,6 +476,8 @@ function getFileIcon(item) {
         const tocHtml = buildMarkdownTOC(content);
         if (tocHtml) {
             tocBox.innerHTML = `<div class="md-toc-title">Contents</div>${tocHtml}`;
+            // Keep TOC open by default so users can see its usefulness
+            // tocBox.classList.remove('hidden'); // Already visible by default
         } else {
             tocBox.classList.add('hidden');
         }
@@ -509,31 +511,56 @@ function getFileIcon(item) {
             });
         };
 
-        // Fullscreen management - simpler approach without DOM manipulation
+        // Fullscreen management - use browser's native fullscreen API
         const enterFs = () => {
             if (inFs) return;
-            // Add fullscreen class to wrapper
+            
+            // Request native browser fullscreen
+            if (wrapperEl.requestFullscreen) {
+                wrapperEl.requestFullscreen();
+            } else if (wrapperEl.webkitRequestFullscreen) {
+                wrapperEl.webkitRequestFullscreen(); // Safari
+            } else if (wrapperEl.mozRequestFullScreen) {
+                wrapperEl.mozRequestFullScreen(); // Firefox
+            } else if (wrapperEl.msRequestFullscreen) {
+                wrapperEl.msRequestFullscreen(); // IE/Edge
+            }
+            
+            // Add fullscreen class for styling
             wrapperEl.classList.add('md-fs');
-            // Add class to body to prevent background scrolling
-            document.body.style.overflow = 'hidden';
             if (progress) progress.hidden = false;
             inFs = true;
+            
             // ESC to exit
             escHandler = (e)=>{ if (e.key === 'Escape') exitFs(); };
             document.addEventListener('keydown', escHandler);
+            
             // Scroll listeners - in fullscreen, wrapperEl is the scroll container
             wrapperEl.addEventListener('scroll', onScrollFs);
             wrapperEl.addEventListener('scroll', spyFs);
+            
             // Initial update
             setTimeout(() => {
                 onScrollFs(); 
                 spyFs();
             }, 100);
         };
+        
         const exitFs = () => {
             if (!inFs) return;
+            
+            // Exit native fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            
             wrapperEl.classList.remove('md-fs');
-            document.body.style.overflow = '';
             if (progress) progress.hidden = true;
             inFs = false;
             document.removeEventListener('keydown', escHandler);
@@ -541,6 +568,32 @@ function getFileIcon(item) {
             wrapperEl.removeEventListener('scroll', onScrollFs);
             wrapperEl.removeEventListener('scroll', spyFs);
         };
+        
+        // Listen for fullscreen changes (when user exits via ESC or F11)
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && inFs) {
+                // User exited fullscreen, update state
+                wrapperEl.classList.remove('md-fs');
+                if (progress) progress.hidden = true;
+                inFs = false;
+                document.removeEventListener('keydown', escHandler);
+                escHandler = null;
+                wrapperEl.removeEventListener('scroll', onScrollFs);
+                wrapperEl.removeEventListener('scroll', spyFs);
+            }
+        });
+        // Safari support
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (!document.webkitFullscreenElement && inFs) {
+                wrapperEl.classList.remove('md-fs');
+                if (progress) progress.hidden = true;
+                inFs = false;
+                document.removeEventListener('keydown', escHandler);
+                escHandler = null;
+                wrapperEl.removeEventListener('scroll', onScrollFs);
+                wrapperEl.removeEventListener('scroll', spyFs);
+            }
+        });
         
         // Fullscreen scroll handlers
         const onScrollFs = () => {
@@ -752,7 +805,7 @@ function getFileIcon(item) {
                     <span class="md-info" data-role="readtime" title="Estimated reading time" style="margin-left:auto; opacity:.9"></span>
                 </div>
                 <div class="md-progress" hidden><div class="md-progress-bar"></div></div>
-                <div class="md-toc hidden"></div>
+                <div class="md-toc"></div>
                 <div class="md-help-panel hidden">
                     <div class="md-help-header">
                         <h3>📖 Reading Controls & Shortcuts</h3>
