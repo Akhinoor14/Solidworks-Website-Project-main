@@ -6876,7 +6876,3 @@ window.performCentralUpdate = performCentralUpdate;
 window.loadCentralDeleteDays = loadCentralDeleteDays;
 window.loadCentralDeleteFiles = loadCentralDeleteFiles;
 window.performCentralDelete = performCentralDelete;
-
-
-
-
