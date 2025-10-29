@@ -3871,7 +3871,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // update mode buttons aria-current
                 modeBtns.forEach(btn => {
                     const target = btn.getAttribute('data-target');
-                    if(target === name || (name!== 'cw' && name !== 'hw' && target==='root')){
+                    if(target === name || (name !== 'cw' && name !== 'hw' && name !== 'solo' && target==='root')){
                         btn.setAttribute('aria-current','true');
                         console.log('✅ Active button:', target);
                     } else {
@@ -3884,8 +3884,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const target = t.getAttribute('data-target');
             console.log('🎯 Tile clicked, target:', target);
             
-            // For CW/HW, open in new window instead of inline view
-            if(target === 'cw' || target === 'hw') {
+            // For CW/HW/Solo, open in new window instead of inline view
+            if(target === 'cw' || target === 'hw' || target === 'solo') {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('🚀 Opening SOLIDWORKS window for:', target);
@@ -3906,8 +3906,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const target = mb.getAttribute('data-target');
             console.log('🔘 Mode button clicked, target:', target);
             
-                // For CW/HW, open in new window instead of inline view
-                if(target === 'cw' || target === 'hw') {
+                // For CW/HW/Solo, open in new window instead of inline view
+                if(target === 'cw' || target === 'hw' || target === 'solo') {
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('🚀 Opening SOLIDWORKS window from mode button:', target);
