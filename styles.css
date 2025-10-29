@@ -152,8 +152,7 @@ body {
     cursor: pointer;
 }
 
-/* Quick links chips */
-.sw-quick-links { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+/* Quick links chips - LEGACY (kept for backward compatibility with old chip-style links) */
 .sw-chip { --chip-bg:#eef2ff; --chip-color:#1e3a8a; display:inline-block; padding:6px 12px; font-size:0.7rem; letter-spacing:.5px; text-decoration:none; font-weight:600; border-radius:20px; background:var(--chip-bg); color:var(--chip-color); position:relative; transition:background .25s, transform .15s, color .25s; }
 .sw-chip:hover { background:#dbeafe; transform:translateY(-2px); }
 .sw-chip:active { transform:translateY(0); }
@@ -5152,57 +5151,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     transform: translateY(-1px);
 }
 
-/* Quick links section */
-.sw-quick-links {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-}
-
-.sw-quick-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin: 0 0 1rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.sw-quick-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.sw-quick-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: white;
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.sw-quick-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.sw-quick-btn i {
-    font-size: 1.1rem;
-}
-
 /* 3D Model Viewer Modal */
 .model-viewer-modal {
     position: fixed;
@@ -5280,22 +5228,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 [data-theme="dark"] .sw-file-actions {
     background: rgba(255,255,255,0.05);
     border-top-color: rgba(255,255,255,0.1);
-}
-
-[data-theme="dark"] .sw-quick-links {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    border-color: #374151;
-}
-
-[data-theme="dark"] .sw-quick-btn {
-    background: #374151;
-    color: #e5e7eb;
-}
-
-[data-theme="dark"] .sw-quick-btn:hover {
-    background: #4b5563;
-    border-color: #818cf8;
-    color: #a5b4fc;
 }
 
 [data-theme="dark"] .model-viewer-content {
