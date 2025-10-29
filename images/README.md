@@ -149,3 +149,41 @@ The portfolio includes:
 
 **Engineering Portfolio by Md Akhinoor Islam**  
 *Energy Science and Engineering Student, KUET*
+
+---
+
+## 🔖 Logos & Wordmark (Brand Assets)
+
+Primary logo (recommended):
+- `images/logo.svg` — engineering icon designed for dark UI with white strokes and a red baseline. Use this in the navbar and small brand placements.
+
+Optional wordmark lockups (A M typography):
+- `images/logo-wordmark.svg` — for dark backgrounds (white strokes + red accent)
+- `images/logo-wordmark-light.svg` — for light backgrounds (near-black strokes + red accent)
+
+### Usage Examples
+
+Navbar brand:
+```html
+<a href="index.html" class="brand">
+   <img src="images/logo.svg" alt="Site logo" class="brand-logo" />
+   <span>Home</span>
+   <!-- underline effect is handled by CSS on .nav-logo a -->
+   <!-- Tip: .brand-logo is sized via CSS; you can remove width/height attributes -->
+   <!-- Optional: swap with wordmark for larger hero/header displays -->
+</a>
+```
+
+Hero/footer with wordmark (dark UI):
+```html
+<img src="images/logo-wordmark.svg" alt="AM wordmark" class="brand-wordmark" />
+```
+
+Hero/footer with wordmark (light UI):
+```html
+<img src="images/logo-wordmark-light.svg" alt="AM wordmark (light)" class="brand-wordmark" />
+```
+
+Accessibility tips:
+- Always include informative `alt` text (e.g., "Site logo", "AM wordmark").
+- Keep sufficient contrast; prefer the light variant on very light backgrounds.

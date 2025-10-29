@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Engineering Logo">
+  <defs>
+    <linearGradient id="gRed" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF2A2A"/>
+      <stop offset="100%" stop-color="#FF5656"/>
+    </linearGradient>
+  </defs>
+  <!-- Background plate (subtle) -->
+  <rect x="8" y="8" width="112" height="112" rx="18" ry="18" fill="#0B0B0B" stroke="#1A1A1A" stroke-width="2"/>
+
+  <!-- Center core (precision circle) -->
+  <circle cx="64" cy="64" r="14" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+
+  <!-- Measurement axes (engineering feel) -->
+  <g stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.95">
+    <line x1="64" y1="28" x2="64" y2="44"/>
+    <line x1="64" y1="84" x2="64" y2="100"/>
+    <line x1="28" y1="64" x2="44" y2="64"/>
+    <line x1="84" y1="64" x2="100" y2="64"/>
+  </g>
+
+  <!-- Compass/drafting cue -->
+  <g stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round">
+    <line x1="44" y1="44" x2="56" y2="56"/>
+    <line x1="84" y1="84" x2="72" y2="72"/>
+  </g>
+
+  <!-- Red architectural baseline -->
+  <path d="M24 104 H104" stroke="url(#gRed)" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Small grid ticks for blueprint vibe -->
+  <g stroke="#2A2A2A" stroke-width="1">
+    <path d="M16 80 H112" opacity="0.5"/>
+    <path d="M16 48 H112" opacity="0.35"/>
+    <path d="M48 16 V112" opacity="0.35"/>
+    <path d="M80 16 V112" opacity="0.5"/>
+  </g>
+</svg>
