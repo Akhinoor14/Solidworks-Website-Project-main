@@ -419,14 +419,263 @@ body {
 .readme-container p { color: rgba(255,255,255,0.85); margin: 0 0 0.5rem; font-size: 0.9rem; }
 .sw-readme-preview .github-action-btn { margin-top: 0.5rem; margin-right: 6px; }
 .loading-spinner.small { font-size: 0.9rem; padding: 0.25rem 0; color: rgba(255,255,255,0.8); }
+/* Simplify toolbar in compact README preview cards */
+.sw-readme-preview .md-reader-toolbar, .sw-readme-preview .md-toc { display: none !important; }
+.sw-readme-preview .markdown-body { font-size: 0.9rem; }
 
 /* Markdown content styling and code block copy */
-.markdown-body { line-height: 1.6; font-size: 0.95rem; color: #e6e8f0; font-family: Inter, "Nirmala UI", "Noto Sans Bengali", "Hind Siliguri", "SolaimanLipi", "Noto Serif Bengali", "Vrinda", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-.markdown-body h1, .markdown-body h2, .markdown-body h3 { margin: 0.6rem 0 0.4rem; }
+.markdown-body { 
+    line-height: 1.8; 
+    font-size: var(--md-font-size, 0.95rem); 
+    color: #e6e8f0; 
+    font-family: Inter, "Nirmala UI", "Noto Sans Bengali", "Hind Siliguri", "SolaimanLipi", "Noto Serif Bengali", "Vrinda", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; 
+}
+.markdown-body.md-narrow { max-width: 820px; margin: 0 auto; }
+.markdown-body h1 { font-size: 1.6rem; margin: 0.2rem 0 0.6rem; }
+.markdown-body h2 { font-size: 1.35rem; margin: 1.2rem 0 0.4rem; }
+.markdown-body h3 { font-size: 1.15rem; margin: 1rem 0 0.3rem; }
+.markdown-body p { margin: 0.6rem 0 0.9rem; }
+.markdown-body ul, .markdown-body ol { margin: 0.4rem 0 1rem 1.4rem; }
+.markdown-body li { margin: 0.2rem 0; }
+.markdown-body blockquote { margin: 0.8rem 0; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.04); border-left: 4px solid #ff6666; border-radius: 6px; color: rgba(255,255,255,0.9); }
+.markdown-body hr { border: 0; border-top: 1px solid rgba(255,255,255,0.12); margin: 1.2rem 0; }
+.markdown-body a { color: #93c5fd; text-decoration: none; }
+.markdown-body a:hover { text-decoration: underline; }
+.markdown-body img { display: block; max-width: 100%; margin: 0.6rem auto; border-radius: 8px; }
 .markdown-body pre { background: #0f0f13; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.75rem; overflow: auto; }
+.markdown-body.md-wrap pre code { white-space: pre-wrap; word-break: break-word; }
 .markdown-body code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.9rem; }
 .md-copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; }
 .md-copy-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* KaTeX math rendering tweaks */
+.markdown-body .katex { color: inherit; }
+.markdown-body .katex-display { 
+    overflow-x: auto; 
+    padding: 0.2rem 0.3rem; 
+    margin: 0.6rem 0 0.8rem; 
+    text-align: center; 
+    font-size: 1.05em; 
+}
+
+/* Reader wrapper and toolbar */
+.md-reader { position: relative; }
+.md-reader-toolbar { 
+    position: sticky;
+    top: 0; z-index: 2;
+    display: flex; align-items: center; gap: 8px; 
+    margin-bottom: 8px; 
+    padding: 6px; 
+    background: rgba(10,10,10,0.6); 
+    border: 1px solid rgba(255,255,255,0.08); 
+    border-radius: 10px; 
+    backdrop-filter: blur(6px);
+}
+.md-reader .md-btn { 
+    background: rgba(255,255,255,0.08); 
+    color: #fff; 
+    border: 1px solid rgba(255,255,255,0.15); 
+    border-radius: 8px; 
+    padding: 6px 10px; 
+    font-size: 0.8rem; 
+    cursor: pointer; 
+}
+.md-reader .md-btn:hover { background: rgba(255,255,255,0.14); }
+.md-reader .md-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.12); display: inline-block; }
+
+/* Progress bar (visible in fullscreen) */
+.md-progress { position: sticky; top: 44px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; z-index: 2; }
+.md-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff3333, #ff9900); }
+
+/* TOC */
+.md-toc { 
+    margin: 6px 0 10px; 
+    padding: 8px 10px; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    background: rgba(255,255,255,0.04); 
+    border-radius: 8px; 
+}
+.md-toc.hidden { display: none; }
+.md-toc-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; color: #fff; }
+.md-toc-list { list-style: none; margin: 0; padding: 0; }
+.md-toc-list li { margin: 4px 0; }
+.md-toc-list .toc-l1 { margin-left: 10px; }
+.md-toc-list .toc-l2 { margin-left: 20px; }
+.md-toc-list a { color: #c7d2fe; text-decoration: none; }
+.md-toc-list a:hover { text-decoration: underline; }
+.md-toc-list a.active { color: #fff; font-weight: 700; }
+
+/* Optional light theme for markdown content */
+.md-reader.md-light .md-reader-toolbar { 
+    background: rgba(255,255,255,0.7); 
+    border-color: rgba(0,0,0,0.08);
+}
+.md-reader.md-light .md-btn { 
+    background: rgba(0,0,0,0.04); 
+    color: #111; 
+    border-color: rgba(0,0,0,0.12);
+}
+.md-reader.md-light .markdown-body { 
+    color: #111827; 
+}
+.md-reader.md-light .markdown-body a { color: #1d4ed8; }
+.md-reader.md-light .markdown-body blockquote { background: rgba(0,0,0,0.04); color: #111827; border-left-color: #ef4444; }
+.md-reader.md-light .markdown-body pre { background: #f3f4f6; border-color: #e5e7eb; }
+
+/* Help Panel */
+.md-help-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 30, 30, 0.98);
+    backdrop-filter: blur(20px);
+    color: #e6edf3;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 0;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: auto;
+    z-index: 10000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transition: opacity 0.2s, transform 0.2s;
+}
+.md-help-panel.hidden {
+    display: none;
+}
+.md-help-header {
+    position: sticky;
+    top: 0;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+.md-help-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+}
+.md-help-close {
+    background: none;
+    border: none;
+    color: #9da5b4;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+.md-help-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+.md-help-content {
+    padding: 1.5rem;
+}
+.md-help-section {
+    margin-bottom: 2rem;
+}
+.md-help-section:last-child {
+    margin-bottom: 0;
+}
+.md-help-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #7ee787;
+}
+.md-shortcut-list {
+    display: grid;
+    gap: 0.75rem;
+}
+.md-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+.md-shortcut kbd {
+    display: inline-block;
+    background: linear-gradient(180deg, #2d333b 0%, #22272e 100%);
+    color: #e6edf3;
+    border: 1px solid #444c56;
+    border-radius: 5px;
+    padding: 0.25rem 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    min-width: 40px;
+    text-align: center;
+}
+.md-shortcut span {
+    color: #c9d1d9;
+    font-size: 0.95rem;
+}
+.md-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.md-feature-list li {
+    padding: 0.5rem 0;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.md-feature-list li strong {
+    color: #79c0ff;
+    font-weight: 600;
+}
+
+/* Light theme for help panel */
+.md-reader.md-light .md-help-panel {
+    background: rgba(255, 255, 255, 0.98);
+    color: #24292f;
+    border-color: rgba(0,0,0,0.1);
+}
+.md-reader.md-light .md-help-header {
+    background: rgba(245, 245, 245, 0.95);
+    border-bottom-color: rgba(0,0,0,0.1);
+}
+.md-reader.md-light .md-help-header h3 {
+    color: #24292f;
+}
+.md-reader.md-light .md-help-section h4 {
+    color: #0969da;
+}
+.md-reader.md-light .md-shortcut kbd {
+    background: linear-gradient(180deg, #f6f8fa 0%, #e1e4e8 100%);
+    color: #24292f;
+    border-color: #d0d7de;
+}
+.md-reader.md-light .md-shortcut span,
+.md-reader.md-light .md-feature-list li {
+    color: #57606a;
+}
+.md-reader.md-light .md-feature-list li strong {
+    color: #0969da;
+}
+
+/* Fullscreen reader */
+.md-reader.md-fs { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #0a0a0a, #1a0000); padding: 12px 16px; overflow: auto; }
+.md-reader.md-fs .md-reader-toolbar { position: sticky; top: 8px; background: rgba(10,10,10,0.7); }
+.md-reader.md-fs .markdown-body { max-width: min(980px, 92vw); margin: 8px auto 40px; }
+.md-reader.md-fs .md-progress { top: 56px; }
 
 /* Tables in Markdown */
 .markdown-body table { border-collapse: collapse; width: 100%; margin: 0.6rem 0; }

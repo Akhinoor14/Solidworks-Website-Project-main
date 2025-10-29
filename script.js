@@ -368,6 +368,12 @@ function getFileIcon(item) {
             await loadScript('https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js');
             await loadCss('https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css');
         }
+        // Load KaTeX + auto-render for math if absent
+        if (typeof window.katex === 'undefined') {
+            await loadCss('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css');
+            await loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js');
+            await loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js');
+        }
     }
 
     function computeRepoUrls(owner, repo, fullPath) {
@@ -426,6 +432,151 @@ function getFileIcon(item) {
         });
     }
 
+    function buildMarkdownTOC(mdRoot) {
+        const headings = Array.from(mdRoot.querySelectorAll('h1, h2, h3'));
+        if (headings.length < 2) return '';
+        const items = headings.map(h => {
+            const id = h.id || (h.textContent || '').trim().toLowerCase().replace(/[^a-z0-9\u0980-\u09FF\s-]/gi,'').replace(/\s+/g,'-');
+            if (!h.id) h.id = id;
+            const level = h.tagName.toLowerCase();
+            const indent = level === 'h1' ? 0 : level === 'h2' ? 1 : 2;
+            return `<li class="toc-l${indent}"><a href="#${id}">${h.textContent || ''}</a></li>`;
+        }).join('');
+        return `<ul class="md-toc-list">${items}</ul>`;
+    }
+
+    function setupReaderUI(wrapperEl) {
+        const content = wrapperEl.querySelector('.md-content');
+        const tocBox = wrapperEl.querySelector('.md-toc');
+        const toolbar = wrapperEl.querySelector('.md-reader-toolbar');
+        const progress = wrapperEl.querySelector('.md-progress');
+        const progressBar = wrapperEl.querySelector('.md-progress-bar');
+        if (!content || !toolbar) return;
+
+        // Defaults
+        const PREF_KEY = 'mdReaderPrefs';
+        const saved = (()=>{ try { return JSON.parse(localStorage.getItem(PREF_KEY)||'{}'); } catch { return {}; } })();
+        let fontSize = typeof saved.fontSize === 'number' ? saved.fontSize : 0.95; // rem
+        let narrow = typeof saved.narrow === 'boolean' ? saved.narrow : true;
+        let wrap = typeof saved.wrap === 'boolean' ? saved.wrap : false;
+        let light = typeof saved.light === 'boolean' ? saved.light : false;
+        let inFs = false;
+        let placeholder = null;
+        let escHandler = null;
+
+        const apply = () => {
+            content.style.setProperty('--md-font-size', fontSize + 'rem');
+            content.classList.toggle('md-narrow', narrow);
+            content.classList.toggle('md-wrap', wrap);
+            wrapperEl.classList.toggle('md-light', light);
+            try { localStorage.setItem(PREF_KEY, JSON.stringify({ fontSize, narrow, wrap, light })); } catch {}
+        };
+        apply();
+
+        // Build TOC
+        const tocHtml = buildMarkdownTOC(content);
+        if (tocHtml) {
+            tocBox.innerHTML = `<div class="md-toc-title">Contents</div>${tocHtml}`;
+        } else {
+            tocBox.classList.add('hidden');
+        }
+
+        // Estimate reading time
+        const text = content.textContent || '';
+        const words = (text.match(/\S+/g) || []).length;
+        const minutes = Math.max(1, Math.ceil(words / 180));
+        const timeEl = toolbar.querySelector('[data-role="readtime"]');
+        if (timeEl) timeEl.textContent = `${minutes} min read`;
+
+        // Scroll progress + TOC scrollspy
+        const onScroll = () => {
+            if (!progress || !progressBar) return;
+            const total = content.scrollHeight - content.clientHeight;
+            const y = content.scrollTop;
+            const pct = total > 0 ? Math.min(100, Math.max(0, (y/total)*100)) : 0;
+            progressBar.style.width = pct + '%';
+        };
+        const spy = () => {
+            const heads = Array.from(content.querySelectorAll('h1,h2,h3'));
+            if (!heads.length) return;
+            let activeId = heads[0].id;
+            const threshold = content.scrollTop + 100;
+            for (const h of heads) {
+                if (h.offsetTop <= threshold) activeId = h.id;
+                else break;
+            }
+            tocBox.querySelectorAll('a').forEach(a=>{
+                a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+            });
+        };
+
+        // Fullscreen management
+        const enterFs = () => {
+            if (inFs) return;
+            placeholder = document.createComment('md-reader-placeholder');
+            wrapperEl.parentNode.insertBefore(placeholder, wrapperEl);
+            document.body.appendChild(wrapperEl);
+            wrapperEl.classList.add('md-fs');
+            if (progress) progress.hidden = false;
+            inFs = true;
+            // ESC to exit
+            escHandler = (e)=>{ if (e.key === 'Escape') exitFs(); };
+            document.addEventListener('keydown', escHandler);
+            // Scroll listeners
+            content.addEventListener('scroll', onScroll);
+            content.addEventListener('scroll', spy);
+            // Initial update
+            onScroll(); spy();
+        };
+        const exitFs = () => {
+            if (!inFs) return;
+            wrapperEl.classList.remove('md-fs');
+            if (placeholder && placeholder.parentNode) {
+                placeholder.parentNode.insertBefore(wrapperEl, placeholder);
+                placeholder.remove();
+                placeholder = null;
+            }
+            if (progress) progress.hidden = true;
+            inFs = false;
+            document.removeEventListener('keydown', escHandler);
+            escHandler = null;
+            content.removeEventListener('scroll', onScroll);
+            content.removeEventListener('scroll', spy);
+        };
+
+        toolbar.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-act]');
+            if (!btn) return;
+            const act = btn.getAttribute('data-act');
+            if (act === 'font-inc') { fontSize = Math.min(1.4, fontSize + 0.05); apply(); }
+            else if (act === 'font-dec') { fontSize = Math.max(0.8, fontSize - 0.05); apply(); }
+            else if (act === 'width') { narrow = !narrow; apply(); }
+            else if (act === 'wrap') { wrap = !wrap; apply(); }
+            else if (act === 'theme') { light = !light; apply(); }
+            else if (act === 'toc') { tocBox.classList.toggle('hidden'); }
+            else if (act === 'help') { wrapperEl.querySelector('.md-help-panel').classList.toggle('hidden'); }
+            else if (act === 'fs') { inFs ? exitFs() : enterFs(); }
+        });
+
+        // Keyboard shortcuts
+        wrapperEl.addEventListener('keydown', (e) => {
+            if (e.target && ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+            if (e.key === '+' || e.key === '=') { fontSize = Math.min(1.4, fontSize + 0.05); apply(); }
+            else if (e.key === '-') { fontSize = Math.max(0.8, fontSize - 0.05); apply(); }
+            else if (e.key.toLowerCase() === 'w') { narrow = !narrow; apply(); }
+            else if (e.key.toLowerCase() === 'r') { wrap = !wrap; apply(); }
+            else if (e.key.toLowerCase() === 't') { light = !light; apply(); }
+            else if (e.key.toLowerCase() === 'f') { inFs ? exitFs() : enterFs(); }
+        });
+
+        // If user clicks a TOC link, close TOC in small view
+        tocBox.addEventListener('click', (e)=>{
+            const a = e.target.closest('a');
+            if (!a) return;
+            if (!inFs) tocBox.classList.add('hidden');
+        });
+    }
+
     async function renderMarkdownInto(container, markdownText, { owner, repo, path="" } = {}) {
         // Prefer marked + hljs
         try { await ensureMarkdownDeps(); } catch {}
@@ -447,8 +598,89 @@ function getFileIcon(item) {
                 });
             } catch {}
             const html = window.marked.parse(markdownText || '');
-            container.innerHTML = `<div class="markdown-body">${html}</div>`;
-            postProcessMarkdown(container, owner, repo, path || 'README.md');
+            container.innerHTML = `
+                <div class="md-reader">
+                    <div class="md-reader-toolbar">
+                        <button class="md-btn" data-act="toc" title="Toggle table of contents">TOC</button>
+                        <span class="md-sep"></span>
+                        <button class="md-btn" data-act="font-dec" title="Smaller text">A-</button>
+                        <button class="md-btn" data-act="font-inc" title="Larger text">A+</button>
+                        <span class="md-sep"></span>
+                        <button class="md-btn" data-act="width" title="Toggle width">Width</button>
+                        <button class="md-btn" data-act="wrap" title="Wrap code">Wrap</button>
+                        <button class="md-btn" data-act="theme" title="Toggle light theme">Theme</button>
+                        <span class="md-sep"></span>
+                        <button class="md-btn" data-act="fs" title="Fullscreen (F key)">Fullscreen</button>
+                        <button class="md-btn md-help-btn" data-act="help" title="Keyboard shortcuts">
+                            <i class="fas fa-keyboard"></i>
+                        </button>
+                        <span class="md-info" data-role="readtime" title="Estimated reading time" style="margin-left:auto; opacity:.9"></span>
+                    </div>
+                    <div class="md-progress" hidden><div class="md-progress-bar"></div></div>
+                    <div class="md-toc hidden"></div>
+                    <div class="md-help-panel hidden">
+                        <div class="md-help-header">
+                            <h3>📖 Reading Controls & Shortcuts</h3>
+                            <button class="md-help-close" data-act="help">×</button>
+                        </div>
+                        <div class="md-help-content">
+                            <div class="md-help-section">
+                                <h4>⌨️ Keyboard Shortcuts</h4>
+                                <div class="md-shortcut-list">
+                                    <div class="md-shortcut"><kbd>F</kbd><span>Toggle Fullscreen</span></div>
+                                    <div class="md-shortcut"><kbd>T</kbd><span>Toggle Light/Dark Theme</span></div>
+                                    <div class="md-shortcut"><kbd>W</kbd><span>Toggle Narrow/Full Width</span></div>
+                                    <div class="md-shortcut"><kbd>R</kbd><span>Toggle Code Wrap</span></div>
+                                    <div class="md-shortcut"><kbd>+</kbd> or <kbd>=</kbd><span>Increase Font Size</span></div>
+                                    <div class="md-shortcut"><kbd>-</kbd><span>Decrease Font Size</span></div>
+                                    <div class="md-shortcut"><kbd>ESC</kbd><span>Exit Fullscreen</span></div>
+                                </div>
+                            </div>
+                            <div class="md-help-section">
+                                <h4>🖱️ Toolbar Features</h4>
+                                <ul class="md-feature-list">
+                                    <li><strong>TOC:</strong> Table of contents for quick navigation</li>
+                                    <li><strong>A- / A+:</strong> Adjust reading font size</li>
+                                    <li><strong>Width:</strong> Switch between narrow (focused) and full width</li>
+                                    <li><strong>Wrap:</strong> Wrap long code lines for better readability</li>
+                                    <li><strong>Theme:</strong> Toggle light/dark mode for content</li>
+                                    <li><strong>Fullscreen:</strong> Immersive reading mode with progress bar</li>
+                                </ul>
+                            </div>
+                            <div class="md-help-section">
+                                <h4>💡 Tips</h4>
+                                <ul class="md-feature-list">
+                                    <li>Your preferences (font size, width, theme) are saved automatically</li>
+                                    <li>In fullscreen, scroll progress is shown at the top</li>
+                                    <li>TOC highlights your current section while reading</li>
+                                    <li>Click code blocks to copy them instantly</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="markdown-body md-content">${html}</div>
+                </div>`;
+            const mdScope = container.querySelector('.md-reader');
+            const mdContent = container.querySelector('.md-content');
+            postProcessMarkdown(mdContent, owner, repo, path || 'README.md');
+            // Render math (KaTeX) if available
+            try {
+                if (typeof window.renderMathInElement === 'function') {
+                    window.renderMathInElement(mdContent, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false },
+                            { left: '\\(', right: '\\)', display: false },
+                            { left: '\\[', right: '\\]', display: true }
+                        ],
+                        throwOnError: false,
+                        ignoredTags: ['script','noscript','style','textarea','pre','code'],
+                        ignoredClasses: ['no-math']
+                    });
+                }
+            } catch {}
+            // Setup reader toolbar and TOC
+            setupReaderUI(mdScope);
             return;
         }
         // Fallback: minimal converter preserving code blocks
@@ -478,8 +710,87 @@ function getFileIcon(item) {
             const langClass = b.lang ? `language-${b.lang}` : '';
             return `<pre><code class="${langClass}">${code}</code></pre>`;
         });
-        container.innerHTML = `<div class="markdown-body">${html}</div>`;
-        postProcessMarkdown(container, owner, repo, path || 'README.md');
+        container.innerHTML = `
+            <div class="md-reader">
+                <div class="md-reader-toolbar">
+                    <button class="md-btn" data-act="toc" title="Toggle table of contents">TOC</button>
+                    <span class="md-sep"></span>
+                    <button class="md-btn" data-act="font-dec" title="Smaller text">A-</button>
+                    <button class="md-btn" data-act="font-inc" title="Larger text">A+</button>
+                    <span class="md-sep"></span>
+                    <button class="md-btn" data-act="width" title="Toggle width">Width</button>
+                    <button class="md-btn" data-act="wrap" title="Wrap code">Wrap</button>
+                    <button class="md-btn" data-act="theme" title="Toggle light theme">Theme</button>
+                    <span class="md-sep"></span>
+                    <button class="md-btn" data-act="fs" title="Fullscreen (F key)">Fullscreen</button>
+                    <button class="md-btn md-help-btn" data-act="help" title="Keyboard shortcuts">
+                        <i class="fas fa-keyboard"></i>
+                    </button>
+                    <span class="md-info" data-role="readtime" title="Estimated reading time" style="margin-left:auto; opacity:.9"></span>
+                </div>
+                <div class="md-progress" hidden><div class="md-progress-bar"></div></div>
+                <div class="md-toc hidden"></div>
+                <div class="md-help-panel hidden">
+                    <div class="md-help-header">
+                        <h3>📖 Reading Controls & Shortcuts</h3>
+                        <button class="md-help-close" data-act="help">×</button>
+                    </div>
+                    <div class="md-help-content">
+                        <div class="md-help-section">
+                            <h4>⌨️ Keyboard Shortcuts</h4>
+                            <div class="md-shortcut-list">
+                                <div class="md-shortcut"><kbd>F</kbd><span>Toggle Fullscreen</span></div>
+                                <div class="md-shortcut"><kbd>T</kbd><span>Toggle Light/Dark Theme</span></div>
+                                <div class="md-shortcut"><kbd>W</kbd><span>Toggle Narrow/Full Width</span></div>
+                                <div class="md-shortcut"><kbd>R</kbd><span>Toggle Code Wrap</span></div>
+                                <div class="md-shortcut"><kbd>+</kbd> or <kbd>=</kbd><span>Increase Font Size</span></div>
+                                <div class="md-shortcut"><kbd>-</kbd><span>Decrease Font Size</span></div>
+                                <div class="md-shortcut"><kbd>ESC</kbd><span>Exit Fullscreen</span></div>
+                            </div>
+                        </div>
+                        <div class="md-help-section">
+                            <h4>🖱️ Toolbar Features</h4>
+                            <ul class="md-feature-list">
+                                <li><strong>TOC:</strong> Table of contents for quick navigation</li>
+                                <li><strong>A- / A+:</strong> Adjust reading font size</li>
+                                <li><strong>Width:</strong> Switch between narrow (focused) and full width</li>
+                                <li><strong>Wrap:</strong> Wrap long code lines for better readability</li>
+                                <li><strong>Theme:</strong> Toggle light/dark mode for content</li>
+                                <li><strong>Fullscreen:</strong> Immersive reading mode with progress bar</li>
+                            </ul>
+                        </div>
+                        <div class="md-help-section">
+                            <h4>💡 Tips</h4>
+                            <ul class="md-feature-list">
+                                <li>Your preferences (font size, width, theme) are saved automatically</li>
+                                <li>In fullscreen, scroll progress is shown at the top</li>
+                                <li>TOC highlights your current section while reading</li>
+                                <li>Click code blocks to copy them instantly</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="markdown-body md-content">${html}</div>
+            </div>`;
+        const mdScope = container.querySelector('.md-reader');
+        const mdContent = container.querySelector('.md-content');
+        postProcessMarkdown(mdContent, owner, repo, path || 'README.md');
+        try {
+            if (typeof window.renderMathInElement === 'function') {
+                window.renderMathInElement(mdContent, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false,
+                    ignoredTags: ['script','noscript','style','textarea','pre','code'],
+                    ignoredClasses: ['no-math']
+                });
+            }
+        } catch {}
+        setupReaderUI(mdScope);
     }
 
     // Global helpers for any code path expecting these names
@@ -813,69 +1124,9 @@ window.useNativePdf = function(encodedUrl, containerId){
     } catch {}
 };
 
-// View Markdown files with proper rendering + relative asset fixups (uses marked.js if available)
+// View Markdown files with proper rendering + relative asset fixups (uses enhanced pipeline)
 async function viewMarkdown(owner, repo, path, container) {
-    try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-            headers: getGitHubHeaders()
-        });
-        const data = await response.json();
-        const content = atob(data.content || ''); // Decode base64
-
-        const baseDir = path.split('/').slice(0, -1).join('/');
-
-        let html = '';
-        if (window.marked) {
-            // Configure marked renderer for relative URLs and syntax highlighting
-            const renderer = new marked.Renderer();
-            const isAbs = (u) => /^(https?:)?\/\//i.test(u) || u.startsWith('data:') || u.startsWith('#');
-            const resolve = (u, type='link') => {
-                if (!u || isAbs(u)) return u;
-                const resolved = u.startsWith('/') ? u.replace(/^\/+/, '') : [baseDir, u].filter(Boolean).join('/');
-                if (type === 'image') return `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${resolved}`;
-                return `https://github.com/${owner}/${repo}/blob/HEAD/${resolved}`;
-            };
-            renderer.link = (href, title, text) => {
-                const fixed = resolve(href || '', 'link');
-                const t = title ? ` title="${title}"` : '';
-                return `<a href="${fixed}" target="_blank" rel="noopener"${t}>${text}</a>`;
-            };
-            renderer.image = (href, title, text) => {
-                const fixed = resolve(href || '', 'image');
-                const t = title ? ` title="${title}"` : '';
-                return `<img src="${fixed}" alt="${text || ''}"${t}/>`;
-            };
-            if (window.hljs) {
-                marked.setOptions({
-                    highlight: (code, lang) => {
-                        try {
-                            if (lang && hljs.getLanguage(lang)) {
-                                return hljs.highlight(code, { language: lang }).value;
-                            }
-                        } catch {}
-                        return hljs.highlightAuto(code).value;
-                    }
-                });
-            }
-            html = marked.parse(content, { renderer });
-        } else {
-            // Fallback minimal converter
-            html = markdownToHTML(content, { owner, repo, baseDir });
-        }
-
-        container.innerHTML = `
-            <div class="markdown-viewer">
-                ${html}
-            </div>
-        `;
-
-        // Run highlight.js if present
-        if (window.hljs) {
-            try { hljs.highlightAll(); } catch {}
-        }
-    } catch (error) {
-        throw new Error('Failed to load README');
-    }
+    return window.viewMarkdown(owner, repo, path, container);
 }
 
 // Basic Markdown to HTML converter
