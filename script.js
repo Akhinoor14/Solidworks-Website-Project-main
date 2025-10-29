@@ -484,6 +484,21 @@ function getFileIcon(item) {
 
     // Global helpers for any code path expecting these names
     window.viewMarkdown = async function(owner, repo, path, container) {
+        function decodeBase64Utf8(b64){
+            try {
+                const bin = atob(String(b64).replace(/\n/g, ''));
+                const len = bin.length;
+                const bytes = new Uint8Array(len);
+                for (let i=0;i<len;i++) bytes[i] = bin.charCodeAt(i);
+                if (typeof TextDecoder !== 'undefined') {
+                    return new TextDecoder('utf-8').decode(bytes);
+                }
+                // Fallback for very old browsers
+                return decodeURIComponent(escape(bin));
+            } catch(e) {
+                return '';
+            }
+        }
         try {
             // Prefer raw URL via GitHub API contents endpoint to avoid HTML pages
             const headers = getGitHubHeaders();
@@ -492,7 +507,7 @@ function getFileIcon(item) {
                 const data = await res.json();
                 let text = '';
                 if (data.content && data.encoding === 'base64') {
-                    try { text = atob(data.content.replace(/\n/g,'')); } catch { text = ''; }
+                    text = decodeBase64Utf8(data.content);
                 } else if (data.download_url) {
                     const raw = await fetch(data.download_url);
                     text = await raw.text();
