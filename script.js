@@ -522,11 +522,11 @@ function getFileIcon(item) {
             // ESC to exit
             escHandler = (e)=>{ if (e.key === 'Escape') exitFs(); };
             document.addEventListener('keydown', escHandler);
-            // Scroll listeners
-            content.addEventListener('scroll', onScroll);
-            content.addEventListener('scroll', spy);
+            // Scroll listeners - in fullscreen, wrapperEl is the scroll container
+            wrapperEl.addEventListener('scroll', onScrollFs);
+            wrapperEl.addEventListener('scroll', spyFs);
             // Initial update
-            onScroll(); spy();
+            onScrollFs(); spyFs();
         };
         const exitFs = () => {
             if (!inFs) return;
@@ -540,8 +540,30 @@ function getFileIcon(item) {
             inFs = false;
             document.removeEventListener('keydown', escHandler);
             escHandler = null;
-            content.removeEventListener('scroll', onScroll);
-            content.removeEventListener('scroll', spy);
+            wrapperEl.removeEventListener('scroll', onScrollFs);
+            wrapperEl.removeEventListener('scroll', spyFs);
+        };
+        
+        // Fullscreen scroll handlers
+        const onScrollFs = () => {
+            if (!progress || !progressBar) return;
+            const total = wrapperEl.scrollHeight - wrapperEl.clientHeight;
+            const y = wrapperEl.scrollTop;
+            const pct = total > 0 ? Math.min(100, Math.max(0, (y/total)*100)) : 0;
+            progressBar.style.width = pct + '%';
+        };
+        const spyFs = () => {
+            const heads = Array.from(content.querySelectorAll('h1,h2,h3'));
+            if (!heads.length) return;
+            let activeId = heads[0].id;
+            const threshold = wrapperEl.scrollTop + 100;
+            for (const h of heads) {
+                if (h.offsetTop <= threshold) activeId = h.id;
+                else break;
+            }
+            tocBox.querySelectorAll('a').forEach(a=>{
+                a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+            });
         };
 
         toolbar.addEventListener('click', (e) => {
