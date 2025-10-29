@@ -341,6 +341,176 @@ function getFileIcon(item) {
     return iconMap[ext] || 'fas fa-file';
 }
 
+    // ============================================
+    // Robust Markdown rendering (marked.js + highlight.js)
+    // Used by GitHub browser and auto-repo cards
+    // ============================================
+
+    async function ensureMarkdownDeps() {
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = src; s.async = true; s.onload = resolve; s.onerror = reject;
+            document.head.appendChild(s);
+        });
+        const loadCss = (href) => new Promise((resolve, reject) => {
+            if (document.querySelector(`link[data-md-css="${href}"]`)) return resolve();
+            const l = document.createElement('link');
+            l.rel = 'stylesheet'; l.href = href; l.setAttribute('data-md-css', href);
+            l.onload = resolve; l.onerror = reject; document.head.appendChild(l);
+        });
+
+        // Load marked if absent
+        if (typeof window.marked === 'undefined') {
+            await loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+        }
+        // Load highlight.js (common languages) + theme if absent
+        if (typeof window.hljs === 'undefined') {
+            await loadScript('https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js');
+            await loadCss('https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css');
+        }
+    }
+
+    function computeRepoUrls(owner, repo, fullPath) {
+        const norm = (fullPath || '').replace(/\\/g, '/');
+        const baseDir = norm.includes('/') ? norm.split('/').slice(0, -1).join('/') + '/' : '';
+        const rawBase = `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${baseDir}`;
+        const blobBase = `https://github.com/${owner}/${repo}/blob/HEAD/${baseDir}`;
+        return { baseDir, rawBase, blobBase };
+    }
+
+    function postProcessMarkdown(container, owner, repo, fullPath) {
+        const { rawBase, blobBase } = computeRepoUrls(owner, repo, fullPath);
+        // fix relative images
+        container.querySelectorAll('img').forEach(img => {
+            const src = img.getAttribute('src') || '';
+            if (!/^(https?:)?\/\//i.test(src) && !src.startsWith('data:') && !src.startsWith('#')) {
+                img.src = rawBase + src.replace(/^\.\//,'');
+            }
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.maxWidth = '100%';
+        });
+        // fix relative links
+        container.querySelectorAll('a').forEach(a => {
+            const href = a.getAttribute('href') || '';
+            if (href.startsWith('#') || /^mailto:/i.test(href)) return;
+            if (!/^(https?:)?\/\//i.test(href) && !href.startsWith('data:')) {
+                a.href = blobBase + href.replace(/^\.\//,'');
+                a.target = '_blank';
+                a.rel = 'noopener';
+            }
+        });
+        // code highlighting
+        if (window.hljs) {
+            container.querySelectorAll('pre code').forEach(block => {
+                try { window.hljs.highlightElement(block); } catch {}
+            });
+        }
+        // add copy buttons for code blocks
+        container.querySelectorAll('pre').forEach(pre => {
+            if (pre.querySelector('.md-copy-btn')) return;
+            const btn = document.createElement('button');
+            btn.className = 'md-copy-btn';
+            btn.textContent = 'Copy';
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const code = pre.querySelector('code');
+                try {
+                    await navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
+                    btn.textContent = 'Copied!';
+                    setTimeout(()=> btn.textContent = 'Copy', 1200);
+                } catch {}
+            });
+            pre.style.position = 'relative';
+            pre.appendChild(btn);
+        });
+    }
+
+    async function renderMarkdownInto(container, markdownText, { owner, repo, path="" } = {}) {
+        // Prefer marked + hljs
+        try { await ensureMarkdownDeps(); } catch {}
+        if (window.marked) {
+            try {
+                window.marked.setOptions({
+                    gfm: true,
+                    breaks: true,
+                    mangle: false,
+                    headerIds: true,
+                    highlight: (code, lang) => {
+                        if (window.hljs && lang && window.hljs.getLanguage(lang)) {
+                            return window.hljs.highlight(code, { language: lang }).value;
+                        } else if (window.hljs) {
+                            return window.hljs.highlightAuto(code).value;
+                        }
+                        return code;
+                    }
+                });
+            } catch {}
+            const html = window.marked.parse(markdownText || '');
+            container.innerHTML = `<div class="markdown-body">${html}</div>`;
+            postProcessMarkdown(container, owner, repo, path || 'README.md');
+            return;
+        }
+        // Fallback: minimal converter preserving code blocks
+        const safe = (s)=> s.replace(/[&<>]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+        // preserve fenced blocks
+        const blocks = [];
+        const replaced = (markdownText||'').replace(/```(\w+)?\n([\s\S]*?)```/g, (m, lang, code)=>{
+            const id = blocks.push({ lang: lang||'', code }) - 1;
+            return `@@BLOCK_${id}@@`;
+        });
+        let html = replaced
+            .replace(/^### (.*)$/gim, '<h3>$1</h3>')
+            .replace(/^## (.*)$/gim, '<h2>$1</h2>')
+            .replace(/^# (.*)$/gim, '<h1>$1</h1>')
+            .replace(/^> (.*)$/gim, '<blockquote>$1</blockquote>')
+            .replace(/^\s*[-*] (.*)$/gim, '<li>$1</li>')
+            .replace(/(?:<li>.*?<\/li>\s*)+/gims, (b)=>`<ul>${b}</ul>`)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src)=>`<img alt="${safe(alt)}" src="${safe(src)}" />`)
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, href)=>`<a href="${safe(href)}" target="_blank" rel="noopener">${text}</a>`)
+            .replace(/(^|\n)([^<\n][^\n]*)/g, (m, pre, line)=> /^(\s*<)/.test(line) ? m : `${pre}<p>${line}</p>`);
+        html = html.replace(/@@BLOCK_(\d+)@@/g, (m, i)=>{
+            const b = blocks[Number(i)];
+            const code = safe(b.code);
+            const langClass = b.lang ? `language-${b.lang}` : '';
+            return `<pre><code class="${langClass}">${code}</code></pre>`;
+        });
+        container.innerHTML = `<div class="markdown-body">${html}</div>`;
+        postProcessMarkdown(container, owner, repo, path || 'README.md');
+    }
+
+    // Global helpers for any code path expecting these names
+    window.viewMarkdown = async function(owner, repo, path, container) {
+        try {
+            // Prefer raw URL via GitHub API contents endpoint to avoid HTML pages
+            const headers = getGitHubHeaders();
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`, { headers });
+            if (res.ok) {
+                const data = await res.json();
+                let text = '';
+                if (data.content && data.encoding === 'base64') {
+                    try { text = atob(data.content.replace(/\n/g,'')); } catch { text = ''; }
+                } else if (data.download_url) {
+                    const raw = await fetch(data.download_url);
+                    text = await raw.text();
+                }
+                await renderMarkdownInto(container, text, { owner, repo, path });
+                return;
+            }
+            // fallback: try raw URL pattern
+            const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${encodeURIComponent(path).replace(/%2F/g,'/')}`;
+            const raw = await fetch(rawUrl);
+            const text = await raw.text();
+            await renderMarkdownInto(container, text, { owner, repo, path });
+        } catch (err) {
+            container.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load Markdown</p></div>';
+            console.error('viewMarkdown error:', err);
+        }
+    };
+
 // ============================================
 // Generic GitHub Repo Auto-Update Cards
 // ============================================

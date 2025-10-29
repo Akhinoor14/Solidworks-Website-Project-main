@@ -420,6 +420,14 @@ body {
 .sw-readme-preview .github-action-btn { margin-top: 0.5rem; margin-right: 6px; }
 .loading-spinner.small { font-size: 0.9rem; padding: 0.25rem 0; color: rgba(255,255,255,0.8); }
 
+/* Markdown content styling and code block copy */
+.markdown-body { line-height: 1.6; font-size: 0.95rem; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3 { margin: 0.6rem 0 0.4rem; }
+.markdown-body pre { background: #0f0f13; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.75rem; overflow: auto; }
+.markdown-body code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.9rem; }
+.md-copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; }
+.md-copy-btn:hover { background: rgba(255,255,255,0.18); }
+
 /* SOLIDWORKS Quick Actions */
 .sw-quick-actions {
     display: flex;
