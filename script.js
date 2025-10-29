@@ -3548,9 +3548,8 @@ document.addEventListener('DOMContentLoaded', function() {
         async function loadDynamicCWHWFiles() {
             const cwFilesWrap = document.getElementById('cw-files-wrap');
             const hwFilesWrap = document.getElementById('hw-files-wrap');
-            const soloFilesWrap = document.getElementById('solo-files-wrap');
             
-            if (!cwFilesWrap && !hwFilesWrap && !soloFilesWrap) return;
+            if (!cwFilesWrap && !hwFilesWrap) return;
             
             const owner = 'Akhinoor14';
             const repo = 'SOLIDWORKS-Projects';
@@ -3571,23 +3570,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     hwFilesWrap.innerHTML = renderDayFiles(hwData, 'hw');
                 }
                 
-                // Load Solo Projects
-                if (soloFilesWrap) {
-                    soloFilesWrap.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading Solo Projects...</div>';
-                    const soloData = await loadSoloProjectFiles(owner, repo, 'Solo-Projects', headers);
-                    soloFilesWrap.innerHTML = renderSoloProjectFiles(soloData);
-                }
-                
             } catch (error) {
-                console.error('Error loading CW/HW/Solo files:', error);
+                console.error('Error loading CW/HW files:', error);
                 if (cwFilesWrap) {
                     cwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load CW files</p></div>';
                 }
                 if (hwFilesWrap) {
                     hwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load HW files</p></div>';
-                }
-                if (soloFilesWrap) {
-                    soloFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load Solo Projects</p></div>';
                 }
             }
         }
