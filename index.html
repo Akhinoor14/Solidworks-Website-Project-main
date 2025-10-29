@@ -161,12 +161,12 @@
 
                         <!-- Enhanced Buttons -->
                         <div class="hero-buttons animate-on-load">
-                            <a href="#projects" class="btn btn-primary btn-glow">
+                            <a href="projects.html" class="btn btn-primary btn-glow">
                                 <span class="btn-text">View Projects</span>
                                 <span class="btn-icon">🚀</span>
                                 <div class="btn-hover-effect"></div>
                             </a>
-                            <a href="#contact" class="btn btn-secondary btn-modern">
+                            <a href="contact.html" class="btn btn-secondary btn-modern">
                                 <span class="btn-text">Let's Connect</span>
                                 <span class="btn-icon">💬</span>
                                 <div class="btn-ripple"></div>
@@ -232,8 +232,21 @@
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Md Akhinoor Islam. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/Akhinoor14" class="social-link" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/mdakhinoorislam/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.facebook.com/mdakhinoorislam" class="social-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://wa.me/qr/6LUI5SF346NCP1" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auto-Update Systems -->
+    <script src="github-projects-detector.js"></script>
         <div class="about-decorations">
             <div class="about-shape about-shape-1"></div>
             <div class="about-shape about-shape-2"></div>
@@ -324,51 +337,35 @@
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
-            <h2 class="section-title">My Projects</h2>
-            <p class="section-subtitle">A collection of projects I've worked on</p>
-            
-            <div class="project-filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="web">Web</button>
-                <button class="filter-btn" data-filter="mobile">Mobile</button>
-                <button class="filter-btn" data-filter="desktop">Desktop</button>
+            <p>&copy; 2025 Md Akhinoor Islam. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/Akhinoor14" class="social-link" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/mdakhinoorislam/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.facebook.com/mdakhinoorislam" class="social-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://wa.me/qr/6LUI5SF346NCP1" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
+        </div>
+    </footer>
 
-            <div class="projects-grid" id="projects-grid">
-                <!-- Projects will be loaded dynamically by JavaScript -->
-                <!-- SOLIDWORKS Beginner Projects Card (Embedded Navigation) -->
-                <div class="project-card solidworks-featured desktop visible" id="solidworks-beginner-card" aria-labelledby="sw-heading" aria-describedby="sw-intro" role="group">
-                    <header class="sw-header">
-                        <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
-                        <div class="sw-header-text">
-                            <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
-                            <p id="sw-intro" class="sw-intro">Structured SOLIDWORKS learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.</p>
-                        </div>
-                    </header>
-                    <nav class="sw-mode-switch" aria-label="Section selector">
-                        <button class="sw-mode-btn" data-target="root" aria-current="true">Overview</button>
-                        <button class="sw-mode-btn" data-target="cw">Class Work</button>
-                        <button class="sw-mode-btn" data-target="hw">Home Work</button>
-                        <button class="sw-mode-btn" data-target="solo">Solo Projects</button>
-                    </nav>
-                    <div class="sw-divider" role="separator" aria-hidden="true"></div>
-                    <div class="sw-view sw-root" data-view="root" aria-label="Overview section">
-                        <div class="sw-root-layout">
-                            <div class="sw-root-info">
-                                <p class="sw-lede">Select a section to explore assignment folders or jump directly via quick links below. Each set focuses on parametric modeling, constraints, and clean feature design.</p>
-                                <ul class="sw-focus-points" aria-label="Skill focus areas">
-                                    <li>Sketch discipline & constraints</li>
-                                    <li>Feature ordering & intent</li>
-                                    <li>Clean parametric dimensions</li>
-                                    <li>Assembly readiness</li>
-                                </ul>
-                               
-                                <!-- Quick Access Links -->
-                                <div class="sw-quick-links">
-                                    <h4 class="sw-quick-title">🚀 Quick Access</h4>
+    <!-- Auto-Update Systems -->
+    <script src="github-projects-detector.js"></script>
+    <script src="auto-refresh.js"></script>
+    <script src="realtime-github-sync.js"></script>
+    <!-- <script src="github-sync.js"></script> Temporarily disabled to fix duplicate variable error -->
+    <script src="script.js?v=20251020133251"></script>
+    
+    <!-- Sync Notification System -->
+    <script>
+        // Enhanced notification system
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existing = document.querySelectorAll('.sync-notification');
+            existing.forEach(n => n.remove());
+            
+            // Get appropriate icon
                                     <div class="sw-quick-buttons">
                                         <a class="sw-quick-btn" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">
                                             <i class="fas fa-chalkboard-teacher"></i>
@@ -982,4 +979,4 @@
     }
     </style>
 </body>
-    <!-- Removed legacy duplicate SOLIDWORKS list & modal -->
+</html>
