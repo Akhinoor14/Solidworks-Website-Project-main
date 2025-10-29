@@ -5860,7 +5860,7 @@ function initEmbeddedProjectCard(cardId, sectionDefs) {
     }
     tiles.forEach(t => t.addEventListener('click', (e) => {
         const target = t.getAttribute('data-target');
-        if (target === 'cw' || target === 'hw') {
+        if (target === 'cw' || target === 'hw' || target === 'solo') {
             e.preventDefault();
             e.stopPropagation();
             openSolidworksWindow(target);
@@ -5875,7 +5875,11 @@ function initEmbeddedProjectCard(cardId, sectionDefs) {
     }));
     modeBtns.forEach(mb => mb.addEventListener('click', () => {
         const target = mb.getAttribute('data-target');
-        if (target) showView(target);
+        if (target === 'cw' || target === 'hw' || target === 'solo') {
+            openSolidworksWindow(target);
+        } else if (target) {
+            showView(target);
+        }
     }));
     card.addEventListener('keydown', e => {
         if (e.key === 'Escape' && current !== sectionDefs[0].view) {
