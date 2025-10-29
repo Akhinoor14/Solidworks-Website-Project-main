@@ -1446,20 +1446,24 @@ function viewGenericFile(name, url, container) {
     `;
 }
 
-// Open SOLIDWORKS CW/HW in full-page window
+// Open SOLIDWORKS CW/HW/Solo in full-page window
 function openSolidworksWindow(type) {
     const titles = {
         'cw': 'Class Work (CW)',
-        'hw': 'Home Work (HW)'
+        'hw': 'Home Work (HW)',
+        'solo': 'Solo Projects'
     };
     const folderPaths = {
         'cw': 'CW',
-        'hw': 'HW'
+        'hw': 'HW',
+        'solo': 'Solo-Projects'
     };
     
     const modal = document.createElement('div');
     modal.id = `solidworks${type.toUpperCase()}Modal`;
     modal.className = 'project-modal solidworks-window';
+    const repoUrl = `https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${folderPaths[type]}`;
+    
     modal.innerHTML = `
         <div class="modal-content sw-window-content">
             <button class="close-modal" onclick="closeSolidworksWindow('${type}')" title="Close (ESC)">
@@ -1473,7 +1477,7 @@ function openSolidworksWindow(type) {
                     <span class="sw-path">SOLIDWORKS-Projects/${folderPaths[type]}</span>
                 </div>
                 <div class="sw-window-actions">
-                    <button class="sw-action-btn" onclick="window.open('https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/${folderPaths[type]}', '_blank')">
+                    <button class="sw-action-btn" onclick="window.open('${repoUrl}', '_blank')">
                         <i class="fab fa-github"></i> Open in GitHub
                     </button>
                     <button class="sw-action-btn" onclick="uploadToSolidworks('${type}')">
@@ -1553,24 +1557,138 @@ function isInterestingSwFile(name) {
     return ['sldprt','sldasm','slddrw','pdf','png','jpg','jpeg','stl','step'].includes(ext);
 }
 
+// Render Solo Projects (Project 1, Project 2 structure with upload date/time)
+async function renderSoloProjects(items, contentDiv, headers, owner, repo) {
+    const projectFolders = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+    
+    if (projectFolders.length === 0) {
+        contentDiv.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <p>No Solo Projects found</p>
+                <small style="opacity:0.7; margin-top:8px;">Upload your first project to get started!</small>
+            </div>
+        `;
+        return;
+    }
+    
+    // Sort projects by number
+    projectFolders.sort((a, b) => {
+        const numA = parseInt(a.name.replace(/Project\s*/i, ''));
+        const numB = parseInt(b.name.replace(/Project\s*/i, ''));
+        return numA - numB;
+    });
+    
+    let html = '<div class="solo-projects-container">';
+    
+    for (const project of projectFolders) {
+        const projectNum = project.name.replace(/Project\s*/i, '').trim();
+        
+        // Fetch project files
+        const projectResponse = await fetch(project.url, { headers });
+        if (!projectResponse.ok) continue;
+        const projectFiles = await projectResponse.json();
+        const files = projectFiles.filter(f => f.type === 'file' && isInterestingSwFile(f.name));
+        
+        // Get latest commit for upload date/time
+        const commitsUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=Solo-Projects/${project.name}&per_page=1`;
+        const commitsResponse = await fetch(commitsUrl, { headers });
+        let uploadDate = 'Unknown';
+        if (commitsResponse.ok) {
+            const commits = await commitsResponse.json();
+            if (commits.length > 0) {
+                const date = new Date(commits[0].commit.committer.date);
+                uploadDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+        
+        html += `
+            <div class="solo-project-card">
+                <div class="solo-project-header">
+                    <div class="solo-project-title-section">
+                        <i class="fas fa-cube" style="color: rgba(255,255,255,0.8); font-size: 1.5rem;"></i>
+                        <h4 class="solo-project-title">Project ${projectNum}</h4>
+                    </div>
+                    <div class="solo-project-meta">
+                        <span class="solo-upload-date">
+                            <i class="far fa-clock"></i> ${uploadDate}
+                        </span>
+                        <span class="solo-file-count">
+                            <i class="fas fa-file"></i> ${files.length} file${files.length !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                </div>
+                <div class="solo-project-files">
+        `;
+        
+        if (files.length > 0) {
+            files.forEach(file => {
+                const ext = fileExt(file.name).toUpperCase();
+                const fileName = file.name;
+                const baseName = fileName.replace(/\.[^/.]+$/, '');
+                
+                html += `
+                    <div class="solo-file-item">
+                        <div class="solo-file-info">
+                            <span class="solo-file-ext">${ext}</span>
+                            <span class="solo-file-name" title="${fileName}">${baseName}</span>
+                        </div>
+                        <div class="solo-file-actions">
+                            <a href="${file.download_url}" download="${fileName}" class="solo-file-btn" title="Download">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <a href="${file.html_url}" target="_blank" class="solo-file-btn" title="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            html += `<p class="solo-no-files">No files in this project</p>`;
+        }
+        
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    contentDiv.innerHTML = html;
+}
+
 // Load SOLIDWORKS content from GitHub
 async function loadSolidworksContent(type) {
     const owner = 'Akhinoor14';
     const repo = 'SOLIDWORKS-Projects';
-    const folderPaths = { 'cw': 'CW', 'hw': 'HW' };
+    const folderPaths = { 'cw': 'CW', 'hw': 'HW', 'solo': 'Solo-Projects' };
     const path = folderPaths[type];
     
     const contentDiv = document.getElementById(`sw${type.toUpperCase()}Content`);
     
     try {
         const headers = getGitHubHeaders();
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { headers });
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        const response = await fetch(url, { headers });
         
         if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
         
         const items = await response.json();
         
-        // Group files by day and subfolders
+        // Solo Projects: Different structure (Project 1, Project 2, etc.)
+        if (type === 'solo') {
+            await renderSoloProjects(items, contentDiv, headers, owner, repo);
+            return;
+        }
+        
+        // Group files by day and subfolders (for CW/HW)
         const dayGroups = {};
         for (const item of items) {
             if (item.type === 'dir' && /^Day\s*\d+/i.test(item.name)) {
@@ -1795,7 +1913,8 @@ async function uploadToSolidworks(type) {
 function showUploadDialog(type, mode = 'upload') {
     const titles = {
         'cw': 'Class Work (CW)',
-        'hw': 'Home Work (HW)'
+        'hw': 'Home Work (HW)',
+        'solo': 'Solo Projects'
     };
     
     const modeText = mode === 'needToken' ? 'GitHub Token Required' : `Upload to ${titles[type]}`;
@@ -1837,6 +1956,34 @@ function showUploadDialog(type, mode = 'upload') {
                                 <i class="fas fa-save"></i> Save & Continue
                             </button>
                         </div>
+                    </div>
+                </div>
+            ` : type === 'solo' ? `
+                <div class="upload-body">
+                    <div class="upload-options">
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'newProject')">
+                            <i class="fas fa-folder-plus"></i>
+                            <span>New Project</span>
+                            <small>Create a new project folder and upload files</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'addToProject')">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add to Existing Project</span>
+                            <small>Upload files to an existing project</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'update')">
+                            <i class="fas fa-edit"></i>
+                            <span>Update File</span>
+                            <small>Replace or modify an existing file</small>
+                        </button>
+                        
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'delete')">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Delete File</span>
+                            <small>Remove a file from a project</small>
+                        </button>
                     </div>
                 </div>
             ` : `
@@ -1911,6 +2058,10 @@ function selectUploadMode(type, mode) {
             showFileUploadForm(type, 'new');
         } else if (mode === 'question') {
             showQuestionUploadForm(type);
+        } else if (mode === 'newProject') {
+            showSoloProjectUploadForm(type, 'new');
+        } else if (mode === 'addToProject') {
+            showSoloProjectUploadForm(type, 'add');
         } else if (mode === 'update') {
             showFileUpdateForm(type);
         } else if (mode === 'delete') {
@@ -1921,7 +2072,7 @@ function selectUploadMode(type, mode) {
 
 // Show file upload form
 function showFileUploadForm(type, mode = 'new') {
-    const titles = { 'cw': 'Class Work', 'hw': 'Home Work' };
+    const titles = { 'cw': 'Class Work', 'hw': 'Home Work', 'solo': 'Solo Projects' };
     
     const dialog = document.createElement('div');
     dialog.id = 'uploadDialog';
@@ -2090,6 +2241,132 @@ function updateQuestionFileName(type) {
 
 // Make function globally accessible
 window.updateQuestionFileName = updateQuestionFileName;
+
+// Show Solo Project upload form
+function showSoloProjectUploadForm(type, mode = 'new') {
+    const isNewProject = mode === 'new';
+    
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-${isNewProject ? 'folder-plus' : 'plus-circle'}"></i> ${isNewProject ? 'Create New Solo Project' : 'Add to Solo Project'}</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> ${isNewProject ? 'New Project Name:' : 'Select Project:'}</label>
+                        ${isNewProject ? `
+                            <input type="text" id="soloProjectName" class="form-control" placeholder="e.g., Project 1" />
+                            <small>Project folder will be created automatically</small>
+                        ` : `
+                            <select id="soloProjectSelect" class="form-control">
+                                <option value="">Loading projects...</option>
+                            </select>
+                            <small>Select an existing project folder</small>
+                        `}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-file"></i> Select Files:</label>
+                        <input type="file" id="soloFileInput" class="form-control" multiple accept=".SLDPRT,.SLDASM,.SLDDRW,.sldprt,.sldasm,.slddrw,.pdf,.png,.jpg,.jpeg,.stl,.step" />
+                        <small>Accepted: SOLIDWORKS files (.SLDPRT, .SLDASM, .SLDDRW), PDFs, Images, STL, STEP</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> Commit Message (optional):</label>
+                        <input type="text" id="soloCommitMsg" class="form-control" placeholder="e.g., Added mechanical arm assembly" />
+                    </div>
+                    
+                    <div class="upload-preview" id="soloUploadPreview"></div>
+                    
+                    <div class="upload-actions">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-upload" onclick="performSoloProjectUpload('${type}', '${mode}')">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload Files
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+    
+    // Load existing projects if adding to existing
+    if (!isNewProject) {
+        loadSoloProjectsForSelect();
+    }
+    
+    // File preview
+    document.getElementById('soloFileInput').addEventListener('change', (e) => {
+        const files = e.target.files;
+        const preview = document.getElementById('soloUploadPreview');
+        
+        if (files.length === 0) {
+            preview.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="preview-title">Selected Files:</div><ul class="file-preview-list">';
+        for (let file of files) {
+            html += `<li><i class="fas fa-file"></i> ${file.name} <span style="opacity:0.7;">(${(file.size / 1024).toFixed(1)} KB)</span></li>`;
+        }
+        html += '</ul>';
+        preview.innerHTML = html;
+    });
+}
+
+// Load existing solo projects for dropdown
+async function loadSoloProjectsForSelect() {
+    const select = document.getElementById('soloProjectSelect');
+    if (!select) return;
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const headers = getGitHubHeaders();
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Solo-Projects`, { headers });
+        
+        if (!response.ok) {
+            select.innerHTML = '<option value="">No projects found</option>';
+            return;
+        }
+        
+        const items = await response.json();
+        const projects = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+        
+        if (projects.length === 0) {
+            select.innerHTML = '<option value="">No projects found</option>';
+            return;
+        }
+        
+        projects.sort((a, b) => {
+            const numA = parseInt(a.name.replace(/Project\s*/i, ''));
+            const numB = parseInt(b.name.replace(/Project\s*/i, ''));
+            return numA - numB;
+        });
+        
+        let html = '<option value="">-- Choose Project --</option>';
+        projects.forEach(project => {
+            html += `<option value="${project.name}">${project.name}</option>`;
+        });
+        select.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        select.innerHTML = '<option value="">Error loading projects</option>';
+    }
+}
 
 // Fetch statistics for CW/HW folders (day count, file count, last update)
 async function fetchSolidworksStatistics(type) {
@@ -2268,6 +2545,136 @@ async function performFileUpload(type) {
         
     } catch (error) {
         console.error('Upload error:', error);
+        alert('Upload failed: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Perform Solo Project upload
+async function performSoloProjectUpload(type, mode) {
+    const isNewProject = mode === 'new';
+    const projectName = isNewProject 
+        ? document.getElementById('soloProjectName').value.trim()
+        : document.getElementById('soloProjectSelect').value;
+    const fileInput = document.getElementById('soloFileInput');
+    const commitMsg = document.getElementById('soloCommitMsg');
+    
+    const files = fileInput.files;
+    const message = commitMsg.value.trim() || `Upload files to ${projectName}`;
+    
+    if (!projectName) {
+        alert(isNewProject ? 'Please enter a project name' : 'Please select a project');
+        return;
+    }
+    
+    if (files.length === 0) {
+        alert('Please select at least one file');
+        return;
+    }
+    
+    const token = getGitHubToken();
+    if (!token) {
+        alert('GitHub token not found. Please set it first.');
+        return;
+    }
+    
+    // Show progress
+    showUploadProgress('Uploading to Solo Project...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const basePath = 'Solo-Projects';
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        for (let file of files) {
+            try {
+                // Read file content
+                const content = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result.split(',')[1]); // Base64 content
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                
+                // Upload path: Solo-Projects/Project X/filename
+                const uploadPath = `${basePath}/${projectName}/${file.name}`;
+                
+                // Check if file exists (for overwrite detection)
+                let sha = null;
+                try {
+                    const checkResponse = await fetch(
+                        `https://api.github.com/repos/${owner}/${repo}/contents/${uploadPath}`,
+                        {
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    );
+                    if (checkResponse.ok) {
+                        const existingFile = await checkResponse.json();
+                        sha = existingFile.sha;
+                    }
+                } catch (e) {
+                    // File doesn't exist, which is fine
+                }
+                
+                // Upload file
+                const uploadData = {
+                    message: `${message} - ${file.name}`,
+                    content: content,
+                    branch: 'main'
+                };
+                
+                if (sha) {
+                    uploadData.sha = sha; // Include SHA for updates
+                }
+                
+                const uploadResponse = await fetch(
+                    `https://api.github.com/repos/${owner}/${repo}/contents/${uploadPath}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(uploadData)
+                    }
+                );
+                
+                if (uploadResponse.ok) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    console.error(`Failed to upload ${file.name}:`, await uploadResponse.text());
+                }
+            } catch (error) {
+                failCount++;
+                console.error(`Error uploading ${file.name}:`, error);
+            }
+        }
+        
+        closeUploadDialog();
+        
+        if (successCount > 0) {
+            showToast('Success', `${successCount} file(s) uploaded to ${projectName}!`);
+            
+            // Refresh the Solo Projects window
+            setTimeout(() => {
+                refreshSolidworksContent(type);
+            }, 1500);
+        }
+        
+        if (failCount > 0) {
+            alert(`${failCount} file(s) failed to upload. Check console for details.`);
+        }
+        
+    } catch (error) {
+        console.error('Solo upload error:', error);
         alert('Upload failed: ' + error.message);
         closeUploadDialog();
     }
