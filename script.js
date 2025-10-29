@@ -126,6 +126,8 @@ function closeGitHubBrowser() {
             modal.remove();
             // Restore body scroll
             document.body.style.overflow = '';
+            // Reset viewer history/state
+            try { window._viewerHistory = []; window._currentViewer = null; } catch {}
         }, 300);
     }
 }
@@ -1112,17 +1114,38 @@ function startRepoPolling(card, cfg) {
 }
 
 // View file content
-async function viewFile(owner, repo, path, name, downloadUrl) {
+// Simple viewer history
+window._viewerHistory = window._viewerHistory || [];
+window._currentViewer = window._currentViewer || null;
+window.goBackInViewer = function(){
+    const prev = window._viewerHistory.pop();
+    if (!prev) return;
+    window._suppressHistory = true;
+    viewFile(prev.owner, prev.repo, prev.path, prev.name, prev.downloadUrl, { skipHistory: true });
+    window._currentViewer = prev;
+};
+
+async function viewFile(owner, repo, path, name, downloadUrl, opts = {}) {
     const viewerHeader = document.getElementById('viewerHeader');
     const fileContent = document.getElementById('fileContent');
+
+    // Push previous state to history unless suppressed
+    if (!opts.skipHistory && window._currentViewer) {
+        window._viewerHistory.push({ ...window._currentViewer });
+    }
+    window._currentViewer = { owner, repo, path, name, downloadUrl };
+    const canGoBack = window._viewerHistory.length > 0;
     
     // Update header
     const ext = name.split('.').pop().toLowerCase();
     const icon = getFileIcon({ name, type: 'file' });
     viewerHeader.innerHTML = `
-        <i class="${icon}"></i>
-        <span>${name}</span>
-        <a href="${downloadUrl}" download class="download-btn" title="Download">
+        <button class="github-action-btn" onclick="goBackInViewer()" ${canGoBack ? '' : 'disabled'} title="Back to previous file">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <i class="${icon}" style="margin-left:8px;"></i>
+        <span style="flex:1; margin-left:6px;">${name}</span>
+        <a href="${downloadUrl}" download class="download-btn" title="Download" style="margin-left:auto;">
             <i class="fas fa-download"></i>
         </a>
     `;
@@ -6433,9 +6456,10 @@ function addProjectSearch() {
     });
 }
 
-// Initialize search functionality
+// Initialize search functionality and auto repo cards
 document.addEventListener('DOMContentLoaded', () => {
-    addProjectSearch();
+    try { addProjectSearch(); } catch {}
+    try { initAutoRepoCards(); } catch {}
 });
 
 // Helper function to create project modal (used by openProjectModal)
