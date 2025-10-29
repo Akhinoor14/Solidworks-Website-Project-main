@@ -8102,5 +8102,64 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     .scroll-indicator { display: none; }
 }
 
+/* ===============================
+   Sync Notification System
+   =============================== */
+.sync-notification {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    min-width: 240px;
+    max-width: calc(100% - 40px);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100000;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.sync-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sync-notification.success {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.sync-notification.error {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+}
+
+.sync-notification.warning {
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: #222;
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+.sync-notification.info {
+    background: linear-gradient(135deg, #17a2b8, #007bff);
+    border: 1px solid rgba(23, 162, 184, 0.5);
+}
+
+/* Mobile notification adjustments */
+@media (max-width: 768px) {
+    .sync-notification {
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: calc(100% - 20px);
+        font-size: 0.9rem;
+    }
+}
 
 

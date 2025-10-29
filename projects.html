@@ -36,7 +36,125 @@
         </div>
 
         <div class="projects-grid" id="projects-grid">
-          <!-- Embedded SOLIDWORKS card and other repo cards copied from index will auto-populate via script.js if enabled -->
+          <!-- SOLIDWORKS Beginner Projects Card (Embedded Navigation) -->
+          <div class="project-card solidworks-featured desktop visible" id="solidworks-beginner-card" aria-labelledby="sw-heading" aria-describedby="sw-intro" role="group">
+            <header class="sw-header">
+              <div class="sw-header-icon"><i class="fas fa-cube"></i></div>
+              <div class="sw-header-text">
+                <h3 id="sw-heading" class="sw-card-title">SOLIDWORKS Beginner Projects <span class="sw-badge-new">Beta</span></h3>
+                <p id="sw-intro" class="sw-intro">Structured SOLIDWORKS learning with downloads, previews, and real-world engineering applications to build strong CAD fundamentals.</p>
+              </div>
+            </header>
+            <nav class="sw-mode-switch" aria-label="Section selector">
+              <button class="sw-mode-btn" data-target="root" aria-current="true">Overview</button>
+              <button class="sw-mode-btn" data-target="cw">Class Work</button>
+              <button class="sw-mode-btn" data-target="hw">Home Work</button>
+              <button class="sw-mode-btn" data-target="solo">Solo Projects</button>
+            </nav>
+            <div class="sw-divider" role="separator" aria-hidden="true"></div>
+            <div class="sw-view sw-root" data-view="root" aria-label="Overview section">
+              <div class="sw-root-layout">
+                <div class="sw-root-info">
+                  <p class="sw-lede">Select a section to explore assignment folders or jump directly via quick links below. Each set focuses on parametric modeling, constraints, and clean feature design.</p>
+                  <ul class="sw-focus-points" aria-label="Skill focus areas">
+                    <li>Sketch discipline & constraints</li>
+                    <li>Feature ordering & intent</li>
+                    <li>Clean parametric dimensions</li>
+                    <li>Assembly readiness</li>
+                  </ul>
+                  
+                  <!-- Quick Access Links -->
+                  <div class="sw-quick-links">
+                    <h4 class="sw-quick-title">🚀 Quick Access</h4>
+                    <div class="sw-quick-buttons">
+                      <a class="sw-quick-btn" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>All Coursework</span>
+                        <small>View CW projects on GitHub</small>
+                      </a>
+                      <a class="sw-quick-btn" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">
+                        <i class="fas fa-home"></i>
+                        <span>All Homework</span>
+                        <small>View HW projects on GitHub</small>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="sw-ext-actions">
+                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-primary" target="_blank"><i class="fab fa-github"></i> Repository</a>
+                  </div>
+                </div>
+                <div class="sw-root-panels">
+                  <div class="sw-section-buttons" role="list" aria-label="Primary sections">
+                    <button class="sw-tile" data-target="cw" role="listitem" aria-label="Open Class Work section">
+                      <span class="sw-tile-icon">📂</span>
+                      <span class="sw-tile-title">Class Work (CW)</span>
+                      <span class="sw-tile-desc">Guided practice parts</span>
+                    </button>
+                    <button class="sw-tile" data-target="hw" role="listitem" aria-label="Open Home Work section">
+                      <span class="sw-tile-icon">🏠</span>
+                      <span class="sw-tile-title">Home Work (HW)</span>
+                      <span class="sw-tile-desc">Independent tasks</span>
+                    </button>
+                    <button class="sw-tile" data-target="solo" role="listitem" aria-label="Open Solo Projects section">
+                      <span class="sw-tile-icon">⚡</span>
+                      <span class="sw-tile-title">Solo Projects</span>
+                      <span class="sw-tile-desc">Personal projects</span>
+                    </button>
+                  </div>
+                  
+                  <div class="sw-quick-actions">
+                    <button class="btn-sw-browse" onclick="openGitHubBrowser('Akhinoor14', 'SOLIDWORKS-Projects', 'SOLIDWORKS Projects')">
+                      <i class="fas fa-folder-open"></i> Browse Files
+                    </button>
+                    <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/archive/refs/heads/main.zip" class="btn-sw-download">
+                      <i class="fas fa-download"></i> Download ZIP
+                    </a>
+                    <button class="btn-sw-upload" onclick="scrollToUploadCard()" title="Go to File Upload & Management">
+                      <i class="fas fa-cloud-upload-alt"></i> Central Upload
+                    </button>
+                  </div>
+                  
+                  <div class="sw-tip-box" aria-label="Tip">
+                    <strong>Tip:</strong> Start with CW parts before attempting HW for smoother progression.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sw-view sw-cw" data-view="cw" hidden>
+              <div class="sw-view-header">
+                <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
+                <h4>Class Work (CW)</h4>
+                <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW" target="_blank">Open Folder</a>
+              </div>
+              <div class="sw-files-wrap" id="cw-files-wrap">
+                <!-- JS will inject CW Day 01-05 lists here -->
+              </div>
+              <div class="sw-view-footer">
+                <button class="sw-back sw-back-bottom" data-back="root" aria-label="Back to main view">
+                  <i class="fas fa-arrow-left"></i> Back to Overview
+                </button>
+              </div>
+            </div>
+            <div class="sw-view sw-hw" data-view="hw" hidden>
+              <div class="sw-view-header">
+                <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
+                <h4>Home Work (HW)</h4>
+                <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW" target="_blank">Open Folder</a>
+              </div>
+              <div class="sw-files-wrap" id="hw-files-wrap">
+                <!-- JS will inject HW Day 01-05 lists here -->
+              </div>
+              <div class="sw-view-footer">
+                <button class="sw-back sw-back-bottom" data-back="root" aria-label="Back to main view">
+                  <i class="fas fa-arrow-left"></i> Back to Overview
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
+
+          <!-- Electronic Components Guide (Auto-updating from GitHub) -->
           <div class="project-card desktop visible repo-auto-card" id="card-electronics" data-owner="Akhinoor14" data-repo="Electronic-Components-Guide" data-path="" data-section="electronics">
             <header class="sw-header">
               <div class="sw-header-icon"><i class="fas fa-microchip"></i></div>
@@ -105,6 +223,129 @@
               <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading pages…</div>
             </div>
           </div>
+
+          <!-- Auto Upload & Management Card (Embedded in Projects Grid) -->
+          <div id="auto-update-card" class="project-card desktop visible" style="background: linear-gradient(135deg, #0a0a0a, #1a0000); border: 2px solid rgba(255, 0, 0, 0.3); box-shadow: inset 0 0 60px rgba(255,0,0,0.05);">
+            <header class="sw-header">
+              <div class="sw-header-icon" style="background: linear-gradient(135deg, #ff0000, #cc0000);"><i class="fas fa-sync-alt"></i></div>
+              <div class="sw-header-text">
+                <h3 class="sw-card-title" style="color: #ffffff;">🚀 Auto-Update System <span class="sw-badge-new">Live</span></h3>
+                <p class="sw-intro">Upload, update, or delete SOLIDWORKS projects on GitHub and sync with this website in real-time!</p>
+              </div>
+            </header>
+            <div class="sw-divider" role="separator" aria-hidden="true"></div>
+            <div class="sw-quick-actions" style="padding: 1.5rem;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                <button onclick="openCentralUpload('cw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff0000, #cc0000); padding: 0.8rem 1rem;">
+                  <i class="fas fa-upload"></i> Upload CW
+                </button>
+                <button onclick="openCentralUpload('hw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff3333, #ff0000); padding: 0.8rem 1rem;">
+                  <i class="fas fa-upload"></i> Upload HW
+                </button>
+                <button onclick="openCentralUpdate()" class="btn btn-secondary" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border: 1px solid rgba(255,0,0,0.35); color: #fff; padding: 0.8rem 1rem;">
+                  <i class="fas fa-edit"></i> Update Files
+                </button>
+                <button onclick="openCentralDelete()" class="btn btn-secondary" style="background: linear-gradient(135deg, #cc0000, #990000); padding: 0.8rem 1rem;">
+                  <i class="fas fa-trash-alt"></i> Delete Files
+                </button>
+                <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border: 1px solid rgba(255,0,0,0.25); color:#fff; padding: 0.8rem 1rem;">
+                  <i class="fas fa-question-circle"></i> Help
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- End Auto Upload Card (Inside Grid) -->
+        </div>
+
+        <!-- Auto Upload Section (Outside Grid - Below SOLIDWORKS Card) -->
+        <div class="github-section" style="background: linear-gradient(135deg, #0a0a0a, #1a0000); border: 2px solid rgba(255, 0, 0, 0.3); border-radius: 15px; margin: 30px 0; box-shadow: inset 0 0 60px rgba(255,0,0,0.05);">
+          <h3 style="color: #ffffff;">🚀 Auto Upload & Management System</h3>
+          <p>Upload, update, or delete SOLIDWORKS projects on GitHub and sync with this website in real-time!</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px;">
+            <button onclick="openCentralUpload('cw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff0000, #cc0000);">
+              📤 Upload CW
+            </button>
+            <button onclick="openCentralUpload('hw')" class="btn btn-primary" style="background: linear-gradient(135deg, #ff3333, #ff0000);">
+              📤 Upload HW
+            </button>
+            <button onclick="openCentralUpdate()" class="btn btn-secondary" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border: 1px solid rgba(255,0,0,0.35); color:#fff;">
+              ✏️ Update Files
+            </button>
+            <button onclick="openCentralDelete()" class="btn btn-secondary" style="background: linear-gradient(135deg, #cc0000, #990000);">
+              🗑️ Delete Files
+            </button>
+            <button onclick="document.getElementById('upload-help').style.display='block'" class="btn btn-secondary" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border: 1px solid rgba(255,0,0,0.25); color:#fff;">
+              ❓ Help
+            </button>
+          </div>
+          
+          <!-- Help Modal -->
+          <div id="upload-help" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
+            <div style="background: white; max-width: 700px; margin: 50px auto; padding: 30px; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
+              <h3 style="color: #cc0000; margin-bottom: 20px;">🚀 SOLIDWORKS Project Management System</h3>
+              
+              <div style="text-align: left; line-height: 1.6;">
+                <h4>📤 Upload New Files</h4>
+                <ul>
+                  <li>Click "Upload CW" or "Upload HW"</li>
+                  <li>Select day number (Day 01 - Day 30)</li>
+                  <li>Choose SOLIDWORKS files (.SLDPRT, .SLDASM, .SLDDRW)</li>
+                  <li>Files automatically upload to GitHub</li>
+                  <li>Website updates in real-time!</li>
+                </ul>
+                
+                <h4>❓ Upload Questions</h4>
+                <ul>
+                  <li>Upload question PDFs or images</li>
+                  <li>Assign to specific day</li>
+                  <li>Custom file naming</li>
+                  <li>Supports PDF, PNG, JPG formats</li>
+                </ul>
+                
+                <h4>✏️ Update Existing Files</h4>
+                <ul>
+                  <li>Select day and file to update</li>
+                  <li>Upload new version</li>
+                  <li>Automatically replaces old version</li>
+                  <li>Website reflects changes instantly</li>
+                </ul>
+                
+                <h4>🗑️ Delete Files</h4>
+                <ul>
+                  <li>Remove unwanted files from repository</li>
+                  <li>Select day and file to delete</li>
+                  <li>Confirmation required for safety</li>
+                  <li>Changes sync immediately</li>
+                </ul>
+                
+                <h4>🔐 GitHub Token Required</h4>
+                <p>You need a GitHub Personal Access Token with 'repo' permission. The system will guide you through creating one on first use.</p>
+                
+                <h4>⚡ Auto-Update Features</h4>
+                <ul>
+                  <li>30-second automatic GitHub sync</li>
+                  <li>Real-time website updates</li>
+                  <li>No manual refresh needed</li>
+                  <li>Instant notification on changes</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; margin-top: 25px;">
+                <button onclick="document.getElementById('upload-help').style.display='none'" class="btn btn-primary">Got it!</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="github-section">
+          <h3>Want to see more?</h3>
+          <p>Check out my GitHub profile for all my repositories and SOLIDWORKS projects</p>
+          <a href="https://github.com/Akhinoor14" class="btn btn-primary" target="_blank">
+            <i class="fab fa-github"></i> Visit GitHub
+          </a>
+          <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" class="btn btn-secondary" target="_blank">
+            <i class="fab fa-github"></i> SOLIDWORKS Projects
+          </a>
         </div>
       </div>
     </section>
@@ -121,5 +362,125 @@
   <script src="auto-refresh.js" defer></script>
   <script src="realtime-github-sync.js" defer></script>
   <script src="script.js?v=20251020133251" defer></script>
+  
+  <!-- Sync Notification System -->
+  <script>
+    // Enhanced notification system
+    function showNotification(message, type = 'success') {
+      // Remove existing notifications
+      const existing = document.querySelectorAll('.sync-notification');
+      existing.forEach(n => n.remove());
+      
+      // Get appropriate icon
+      const icons = {
+        success: '✅',
+        error: '❌', 
+        warning: '⚠️',
+        info: '🔄'
+      };
+      
+      // Create new notification
+      const notification = document.createElement('div');
+      notification.className = `sync-notification ${type}`;
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.2em;">${icons[type] || '📢'}</span>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Show notification
+      setTimeout(() => notification.classList.add('show'), 100);
+      
+      // Auto-hide after duration based on type
+      const duration = type === 'info' ? 3000 : 5000;
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+      }, duration);
+    }
+    
+    // Initialize GitHub Sync System
+    let githubSync;
+    
+    // Debug function for testing
+    window.testSync = async () => {
+      console.log('🧪 Testing sync system...');
+      
+      // Test 1: Check if GitHubAutoSync is loaded
+      console.log('📊 GitHubAutoSync available:', typeof GitHubAutoSync !== 'undefined');
+      
+      // Test 2: Check if instance is created
+      console.log('📊 githubSync instance:', !!githubSync);
+      
+      // Test 3: Test GitHub API connection
+      try {
+        const response = await fetch('https://api.github.com/repos/Akhinoor14/SOLIDWORKS-Projects');
+        console.log('📊 GitHub API response:', response.status, response.ok);
+      } catch (error) {
+        console.log('📊 GitHub API error:', error.message);
+      }
+    };
+
+    // Cross-tab communication for upload notifications
+    function setupCrossTabCommunication() {
+      try {
+        const channel = new BroadcastChannel('websiteUpdates');
+        
+        channel.addEventListener('message', (event) => {
+          console.log('📡 Received cross-tab message:', event.data);
+          
+          if (event.data.type === 'UPLOAD_COMPLETED') {
+            showNotification('🆕 New upload detected! Refreshing...', 'info');
+            
+            // Force refresh after 2 seconds
+            setTimeout(() => location.reload(), 2000);
+          }
+        });
+        
+        console.log('✅ Cross-tab communication setup successful');
+        
+      } catch (error) {
+        console.log('⚠️ Cross-tab communication not supported:', error.message);
+      }
+    }
+
+    // Check localStorage for refresh signals
+    function checkForRefreshSignals() {
+      const triggerRefresh = localStorage.getItem('triggerRefresh');
+      const newUploadCompleted = localStorage.getItem('newUploadCompleted');
+      
+      if (newUploadCompleted === 'true') {
+        console.log('🔄 Upload completion signal detected');
+        showNotification('🆕 New upload detected! Refreshing website...', 'success');
+        
+        // Clear the signal
+        localStorage.removeItem('newUploadCompleted');
+        localStorage.removeItem('triggerRefresh');
+        
+        // Force refresh
+        setTimeout(() => {
+          if (window.realTimeSync) {
+            window.realTimeSync.forceSync();
+          } else {
+            location.reload();
+          }
+        }, 2000);
+      }
+    }
+
+    // Auto-sync notification on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup cross-tab communication
+      setupCrossTabCommunication();
+      
+      // Check for upload signals
+      checkForRefreshSignals();
+      
+      console.log('✅ Projects page initialization complete');
+    });
+  </script>
 </body>
 </html>
