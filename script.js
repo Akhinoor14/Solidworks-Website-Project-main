@@ -314,6 +314,39 @@ function displayFileTree(contents, owner, repo, currentPath) {
     fileTree.innerHTML = html;
 }
 
+// ============================================
+// CV Viewer shims (ensure buttons work globally)
+// ============================================
+(function(){
+    // Open CV viewer overlay if available; fallback to dedicated page
+    if (typeof window.openCVViewer !== 'function') {
+        window.openCVViewer = function(){
+            try {
+                // If overlay is not present, open the dedicated viewer page
+                window.open('cv-viewer.html', '_blank');
+            } catch(err) {
+                console.warn('openCVViewer fallback error:', err);
+                window.location.href = 'cv-viewer.html';
+            }
+        };
+    }
+    // Download resume mapping
+    if (typeof window.downloadResume !== 'function') {
+        window.downloadResume = function(){
+            try {
+                if (typeof window.cvDownload === 'function') return window.cvDownload();
+                const a = document.createElement('a');
+                a.href = './CV/2313014%20CV.pdf';
+                a.download = 'Md_Akhinoor_Islam_CV.pdf';
+                document.body.appendChild(a); a.click(); a.remove();
+            } catch(err) {
+                console.warn('downloadResume fallback error:', err);
+                window.open('./CV/2313014%20CV.pdf', '_blank');
+            }
+        };
+    }
+})();
+
 // Get appropriate icon for file type
 function getFileIcon(item) {
     if (item.type === 'dir') return 'fas fa-folder';
