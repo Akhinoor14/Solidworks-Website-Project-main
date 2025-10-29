@@ -8,86 +8,744 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    body { background: linear-gradient(135deg, #0a0a0a, #1a0000); }
-    .portal-wrapper{ min-height:100vh; display:flex; flex-direction:column; position:relative; }
-    .portal-header{ padding:48px 20px; text-align:center; position:relative; }
-    .portal-header.bp-grid-overlay{ border-bottom:1px solid rgba(255,0,0,0.25); }
-    .portal-title{ color:#fff; font-size:2.4rem; margin-bottom:8px; letter-spacing:.5px; }
-    .portal-subtitle{ color:#ff6666; opacity:0.9; }
+    /* Reset & Base */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      background: #050505; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Portal Wrapper with Dynamic Background */
+    .portal-wrapper{ 
+      min-height:100vh; display:flex; flex-direction:column; position:relative;
+      background: radial-gradient(ellipse at 20% 30%, rgba(255,0,0,0.08), transparent 50%),
+                  radial-gradient(ellipse at 80% 70%, rgba(255,50,50,0.06), transparent 50%),
+                  linear-gradient(135deg, #0a0a0a, #050505);
+    }
+    
+    /* Engineering Header with Dimension Lines */
+    .portal-header{ 
+      padding:80px 20px 60px; text-align:center; position:relative; overflow:hidden;
+      border-bottom:2px solid rgba(255,0,0,0.15);
+    }
+    .portal-header::before, .portal-header::after {
+      content:''; position:absolute; background:rgba(255,0,0,0.2);
+    }
+    .portal-header::before { /* Horizontal dimension line */
+      left:5%; right:5%; height:1px; top:30px;
+    }
+    .portal-header::after { /* Vertical centerline */
+      width:1px; left:50%; top:0; bottom:0; opacity:0.3;
+    }
+    
+    .portal-title{ 
+      color:#fff; font-size:3rem; margin-bottom:12px; letter-spacing:1.2px; 
+      font-weight:700; text-transform:uppercase;
+      background: linear-gradient(135deg, #fff, #ff9999);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position:relative; z-index:2;
+    }
+    .portal-subtitle{ 
+      color:#ff6666; opacity:0.9; font-size:1.1rem; letter-spacing:0.8px;
+      text-transform:uppercase; font-weight:500;
+    }
+    
+    /* Card Grid with Perspective */
     .portal-grid{ 
-      display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap:18px; padding:24px; max-width:1100px; margin:0 auto 40px; width:100%; position:relative;
+      display:grid; 
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap:28px; padding:40px 24px; max-width:1200px; margin:0 auto 40px; width:100%; 
+      position:relative; perspective:1200px;
     }
+    
+    /* Engineering Card Design */
     .portal-card{
-      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-      border: 1px solid rgba(255,0,0,0.3);
-      border-radius: 16px; padding: 24px; text-decoration:none; color:#fff;
-      display:flex; align-items:center; gap:16px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      overflow:hidden;
+      background: linear-gradient(135deg, rgba(26,26,26,0.95), rgba(10,10,10,0.98));
+      border: 1.5px solid rgba(255,0,0,0.25);
+      border-radius: 20px; padding: 32px 28px; text-decoration:none; color:#fff;
+      display:flex; flex-direction:column; gap:20px; 
+      transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 8px 32px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        inset 0 -1px 0 rgba(255,0,0,0.1);
+      overflow:visible; position:relative;
+      backdrop-filter: blur(10px);
+      transform-style: preserve-3d;
     }
-    .portal-card:hover{ transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.6); border-color: rgba(255,0,0,0.5); }
-    .portal-icon{ width:56px; height:56px; display:grid; place-items:center; border-radius:12px;
-      background: linear-gradient(135deg, #ff0000, #cc0000); font-size:1.4rem; box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    
+    /* Corner Brackets (Engineering Callout Style) */
+    .portal-card::before, .portal-card::after,
+    .portal-card .bracket-tl, .portal-card .bracket-br {
+      content:''; position:absolute; width:24px; height:24px;
+      border:1.5px solid rgba(255,0,0,0.4); transition: all .3s ease;
     }
-    .portal-info h3{ margin:0 0 6px 0; font-size:1.2rem; letter-spacing:.3px; }
-    .portal-info p{ margin:0; color:#ddd; font-size:0.95rem; opacity:0.85; }
-    .portal-footer{ text-align:center; color:#aaa; padding:10px 0 30px; font-size:0.9rem; }
-    .portal-topbar{ display:flex; justify-content:space-between; align-items:center; padding:12px 20px; position:relative; }
-    .portal-brand{ color:#fff; font-weight:700; text-decoration:none; letter-spacing:0.5px; }
-    .portal-actions a{ color:#ff9999; text-decoration:none; margin-left:12px; }
+    .portal-card::before { top:12px; left:12px; border-right:0; border-bottom:0; }
+    .portal-card::after { bottom:12px; right:12px; border-left:0; border-top:0; }
+    .portal-card .bracket-tl { top:12px; right:12px; border-left:0; border-bottom:0; }
+    .portal-card .bracket-br { bottom:12px; left:12px; border-right:0; border-top:0; }
+    
+    .portal-card:hover::before, .portal-card:hover::after,
+    .portal-card:hover .bracket-tl, .portal-card:hover .bracket-br {
+      border-color: rgba(255,0,0,0.8); width:32px; height:32px;
+    }
+    
+    /* Card Hover State */
+    .portal-card:hover{ 
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 20px 60px rgba(255,0,0,0.2),
+        0 8px 32px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      border-color: rgba(255,0,0,0.6);
+    }
+    
+    /* Icon Container with Technical Details */
+    .portal-icon-wrapper {
+      display:flex; align-items:center; gap:20px; position:relative;
+    }
+    .portal-icon{ 
+      width:72px; height:72px; display:grid; place-items:center; border-radius:16px;
+      background: linear-gradient(135deg, #ff0000, #cc0000);
+      font-size:1.8rem; 
+      box-shadow: 
+        0 8px 24px rgba(255,0,0,0.3),
+        inset 0 2px 8px rgba(255,255,255,0.2),
+        inset 0 -2px 8px rgba(0,0,0,0.4);
+      position:relative; overflow:hidden;
+    }
+    .portal-icon::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    .portal-card:hover .portal-icon::after {
+      transform: translateX(100%);
+    }
+    
+    /* Card Typography */
+    .portal-info { flex:1; }
+    .portal-info h3{ 
+      margin:0 0 8px 0; font-size:1.4rem; letter-spacing:.5px; 
+      font-weight:700; color:#fff;
+      text-shadow: 0 2px 8px rgba(255,0,0,0.3);
+    }
+    .portal-info p{ 
+      margin:0; color:#bbb; font-size:0.95rem; line-height:1.5;
+      font-weight:400; letter-spacing:0.3px;
+    }
+    
+    /* Technical Annotations */
+    .portal-card .card-meta {
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:0.75rem; color:#888; letter-spacing:0.5px; text-transform:uppercase;
+      margin-top:auto; padding-top:16px; border-top:1px solid rgba(255,0,0,0.1);
+    }
+    
+    /* Footer */
+    .portal-footer{ 
+      text-align:center; color:#666; padding:20px 0 40px; font-size:0.9rem;
+      letter-spacing:0.5px; position:relative; z-index:2;
+    }
+    
+    /* Topbar */
+    .portal-topbar{ 
+      display:flex; justify-content:space-between; align-items:center; 
+      padding:20px 24px; position:relative; z-index:10;
+      border-bottom:1px solid rgba(255,0,0,0.1);
+    }
+    .portal-brand{ 
+      color:#fff; font-weight:700; text-decoration:none; letter-spacing:1px;
+      font-size:1.1rem; text-transform:uppercase;
+    }
+    .portal-actions { display:flex; gap:20px; }
+    .portal-actions a{ 
+      color:#ff6666; text-decoration:none; font-size:0.9rem; 
+      letter-spacing:0.5px; transition: color .2s ease;
+    }
+    .portal-actions a:hover { color:#ff3333; }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .portal-title { font-size:2rem; }
+      .portal-grid { grid-template-columns: 1fr; padding:20px 16px; gap:20px; }
+      .portal-card { padding:24px 20px; }
+      .portal-header { padding:60px 16px 40px; }
+      .info-panel { grid-column: span 1 !important; }
+    }
+    
+    /* Live Stats */
+    .stat-item {
+      text-align:center;
+    }
+    .stat-value {
+      font-size:1.6rem; font-weight:700; color:#ff3333;
+      font-family:'Courier New', monospace; letter-spacing:1px;
+    }
+    .stat-label {
+      font-size:0.7rem; color:#888; margin-top:4px; letter-spacing:0.8px;
+      text-transform:uppercase;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.6; transform:scale(1.3); }
+    }
+    
+    /* Info Panel */
+    .info-panel {
+      background: linear-gradient(135deg, rgba(26,26,26,0.6), rgba(10,10,10,0.8));
+      border: 1px solid rgba(255,0,0,0.2);
+      border-radius: 16px; padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+    .info-card {
+      display:flex; align-items:center; gap:12px;
+      padding:12px; background:rgba(0,0,0,0.4); border-radius:10px;
+      border:1px solid rgba(255,0,0,0.1);
+      transition: all .2s ease;
+    }
+    .info-card:hover {
+      background:rgba(255,0,0,0.05);
+      border-color:rgba(255,0,0,0.3);
+    }
+    .info-icon {
+      width:36px; height:36px; display:grid; place-items:center;
+      background:linear-gradient(135deg, rgba(255,0,0,0.2), rgba(255,0,0,0.1));
+      border-radius:8px; color:#ff6666; font-size:1rem;
+    }
+    .quick-link {
+      width:28px; height:28px; display:inline-grid; place-items:center;
+      background:rgba(255,0,0,0.1); border-radius:6px; color:#ff6666;
+      text-decoration:none; transition: all .2s ease; font-size:0.9rem;
+    }
+    .quick-link:hover {
+      background:rgba(255,0,0,0.3); color:#ff3333; transform:translateY(-2px);
+    }
+    
+    /* Activity Timeline */
+    .activity-item {
+      display:flex; gap:16px; padding:12px 16px;
+      background:linear-gradient(135deg, rgba(26,26,26,0.4), rgba(10,10,10,0.6));
+      border-left:2px solid rgba(255,0,0,0.3);
+      border-radius:8px; transition: all .2s ease;
+    }
+    .activity-item:hover {
+      background:linear-gradient(135deg, rgba(26,26,26,0.6), rgba(10,10,10,0.8));
+      border-left-color:rgba(255,0,0,0.6);
+      transform:translateX(4px);
+    }
+    .activity-time {
+      font-size:0.75rem; color:#888; min-width:90px;
+      font-family:'Courier New', monospace; letter-spacing:0.3px;
+    }
+    .activity-content {
+      display:flex; align-items:center; gap:10px; color:#ccc; font-size:0.9rem;
+    }
+    .activity-content i {
+      font-size:1rem;
+    }
+    .activity-content strong {
+      color:#fff; font-weight:600;
+    }
   </style>
 </head>
 <body>
-<div class="portal-wrapper">
+<div class="portal-wrapper bp-iso-grid">
+  <canvas id="portal-bg" style="position:absolute; inset:0; width:100%; height:100%; z-index:0; opacity:0.4;"></canvas>
+  <div class="noise-overlay"></div>
+  
   <div class="portal-topbar">
-    <a class="portal-brand" href="portal.html">Portfolio Portal</a>
+    <a class="portal-brand" href="portal.html">⚙ ENGINEERING PORTAL</a>
     <div class="portal-actions">
-      <a href="home.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="projects.html">Projects</a>
-      <a href="contact.html">Contact</a>
+      <a href="home.html">HOME</a>
+      <a href="about.html">ABOUT</a>
+      <a href="projects.html">PROJECTS</a>
+      <a href="contact.html">CONTACT</a>
     </div>
   </div>
 
-  <header class="portal-header bp-grid-overlay">
-    <h1 class="portal-title">Choose a section</h1>
-    <p class="portal-subtitle">Navigate to the dedicated interfaces</p>
+  <header class="portal-header">
+    <!-- Technical Drawing Annotation -->
+    <svg style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:200px; height:40px; opacity:0.3;" viewBox="0 0 200 40">
+      <line x1="0" y1="20" x2="80" y2="20" stroke="#ff0000" stroke-width="1"/>
+      <line x1="120" y1="20" x2="200" y2="20" stroke="#ff0000" stroke-width="1"/>
+      <circle cx="100" cy="20" r="8" fill="none" stroke="#ff0000" stroke-width="1.5"/>
+      <text x="100" y="25" text-anchor="middle" fill="#ff6666" font-size="10" font-family="monospace">v2.0</text>
+    </svg>
+    
+    <h1 class="portal-title">SYSTEM NAVIGATION</h1>
+    <p class="portal-subtitle">Select Module • Engineering Interface</p>
+    
+    <!-- Live System Stats -->
+    <div style="display:flex; justify-content:center; gap:32px; margin-top:24px; flex-wrap:wrap;">
+      <div class="stat-item">
+        <div class="stat-value" id="total-projects">--</div>
+        <div class="stat-label">ACTIVE PROJECTS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="github-repos">--</div>
+        <div class="stat-label">REPOSITORIES</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="last-update">--</div>
+        <div class="stat-label">LAST SYNC</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="system-status">
+          <span style="display:inline-block; width:8px; height:8px; background:#0f0; border-radius:50%; margin-right:6px; animation:pulse 2s infinite;"></span>ONLINE
+        </div>
+        <div class="stat-label">SYSTEM STATUS</div>
+      </div>
+    </div>
   </header>
 
   <main class="portal-grid">
     <div class="axis-lines"></div>
-    <a class="portal-card" href="home.html">
-      <div class="portal-icon"><i class="fas fa-house"></i></div>
-      <div class="portal-info">
-        <h3>Home</h3>
-        <p>Hero, CV Viewer, Quick Access</p>
+    
+    <!-- Quick Access Panel -->
+    <div class="info-panel" style="grid-column: span 2;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <i class="fas fa-info-circle" style="color:#ff6666; font-size:1.2rem;"></i>
+        <h3 style="margin:0; font-size:1.1rem; letter-spacing:0.5px; color:#fff; text-transform:uppercase;">Quick Information</h3>
       </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+        <div class="info-card">
+          <div class="info-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">EDUCATION</div>
+            <div style="color:#fff; font-weight:600;">KUET • ESE Dept</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="fas fa-code"></i></div>
+          <div>
+            <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">SPECIALIZATION</div>
+            <div style="color:#fff; font-weight:600;">CAD • IoT • Web Dev</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">LOCATION</div>
+            <div style="color:#fff; font-weight:600;">Khulna, Bangladesh</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="fas fa-link"></i></div>
+          <div>
+            <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">QUICK LINKS</div>
+            <div style="display:flex; gap:8px; margin-top:4px;">
+              <a href="https://github.com/Akhinoor14" target="_blank" class="quick-link" title="GitHub"><i class="fab fa-github"></i></a>
+              <a href="https://www.linkedin.com/in/mdakhinoorislam/" target="_blank" class="quick-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="https://www.facebook.com/mdakhinoorislam" target="_blank" class="quick-link" title="Facebook"><i class="fab fa-facebook"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <a class="portal-card" href="home.html" tabindex="0" aria-label="Open Home Module">
+      <span class="bracket-tl"></span>
+      <span class="bracket-br"></span>
+      <div class="portal-icon-wrapper">
+        <div class="portal-icon"><i class="fas fa-house"></i></div>
+        <div class="portal-info">
+          <h3>HOME</h3>
+          <p>Hero Interface • CV System • Quick Access Dashboard</p>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span>MOD-01</span>
+        <span>STATUS: ACTIVE</span>
+      </div>
+      <span class="shine" aria-hidden="true"></span>
+      <span class="scanline" aria-hidden="true"></span>
     </a>
-    <a class="portal-card" href="about.html">
-      <div class="portal-icon"><i class="fas fa-user"></i></div>
-      <div class="portal-info">
-        <h3>About</h3>
-        <p>Bio, Skills, Expertise</p>
+    
+    <a class="portal-card" href="about.html" tabindex="0" aria-label="Open About Module">
+      <span class="bracket-tl"></span>
+      <span class="bracket-br"></span>
+      <div class="portal-icon-wrapper">
+        <div class="portal-icon"><i class="fas fa-user"></i></div>
+        <div class="portal-info">
+          <h3>ABOUT</h3>
+          <p>Profile Bio • Skill Matrix • Expertise Database</p>
+        </div>
       </div>
+      <div class="card-meta">
+        <span>MOD-02</span>
+        <span>STATUS: ACTIVE</span>
+      </div>
+      <span class="shine" aria-hidden="true"></span>
+      <span class="scanline" aria-hidden="true"></span>
     </a>
-    <a class="portal-card" href="projects.html">
-      <div class="portal-icon"><i class="fas fa-folder-open"></i></div>
-      <div class="portal-info">
-        <h3>Projects</h3>
-        <p>All project cards and auto-sync</p>
+    
+    <a class="portal-card" href="projects.html" tabindex="0" aria-label="Open Projects Module">
+      <span class="bracket-tl"></span>
+      <span class="bracket-br"></span>
+      <div class="portal-icon-wrapper">
+        <div class="portal-icon"><i class="fas fa-folder-open"></i></div>
+        <div class="portal-info">
+          <h3>PROJECTS</h3>
+          <p>Repository Index • Auto-Sync • GitHub Integration</p>
+        </div>
       </div>
+      <div class="card-meta">
+        <span>MOD-03</span>
+        <span>STATUS: SYNCING</span>
+      </div>
+      <span class="shine" aria-hidden="true"></span>
+      <span class="scanline" aria-hidden="true"></span>
     </a>
-    <a class="portal-card" href="contact.html">
-      <div class="portal-icon"><i class="fas fa-paper-plane"></i></div>
-      <div class="portal-info">
-        <h3>Contact</h3>
-        <p>Email, phone, social links</p>
+    
+    <a class="portal-card" href="contact.html" tabindex="0" aria-label="Open Contact Module">
+      <span class="bracket-tl"></span>
+      <span class="bracket-br"></span>
+      <div class="portal-icon-wrapper">
+        <div class="portal-icon"><i class="fas fa-paper-plane"></i></div>
+        <div class="portal-info">
+          <h3>CONTACT</h3>
+          <p>Communication Hub • Network Links • Social Connect</p>
+        </div>
       </div>
+      <div class="card-meta">
+        <span>MOD-04</span>
+        <span>STATUS: ACTIVE</span>
+      </div>
+      <span class="shine" aria-hidden="true"></span>
+      <span class="scanline" aria-hidden="true"></span>
     </a>
   </main>
+  
+  <!-- Recent Activity Timeline -->
+  <section style="max-width:1200px; margin:0 auto 40px; padding:0 24px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+      <i class="fas fa-history" style="color:#ff6666; font-size:1.2rem;"></i>
+      <h3 style="margin:0; font-size:1.1rem; letter-spacing:0.5px; color:#fff; text-transform:uppercase;">Recent Activity</h3>
+    </div>
+    <div style="display:grid; gap:12px;">
+      <div class="activity-item">
+        <div class="activity-time">2 hours ago</div>
+        <div class="activity-content">
+          <i class="fas fa-upload" style="color:#0f0;"></i>
+          <span>Uploaded <strong>SOLIDWORKS Day 05</strong> projects to repository</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-time">5 hours ago</div>
+        <div class="activity-content">
+          <i class="fas fa-sync" style="color:#0af;"></i>
+          <span>Auto-synced <strong>Arduino Projects</strong> with GitHub</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-time">1 day ago</div>
+        <div class="activity-content">
+          <i class="fas fa-code-branch" style="color:#f90;"></i>
+          <span>Updated <strong>Portfolio Website</strong> with new features</span>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-time">2 days ago</div>
+        <div class="activity-content">
+          <i class="fas fa-file-pdf" style="color:#f06;"></i>
+          <span>Published CV viewer with fullscreen zoom support</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <footer class="portal-footer">&copy; 2025 Md Akhinoor Islam</footer>
+  <footer class="portal-footer">© 2025 MD AKHINOOR ISLAM • KUET ESE • ENGINEERING SYSTEMS</footer>
 </div>
 </body>
+<script>
+// High-Performance Procedural Background System
+(function(){
+  const c = document.getElementById('portal-bg'); 
+  if(!c) return; 
+  const ctx = c.getContext('2d', { alpha: true });
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  let w=0, h=0, t=0;
+  const spacing = 60;
+  const nodes = [];
+  const lines = [];
+  
+  function resize(){
+    w = c.clientWidth; h = c.clientHeight; 
+    c.width = w * DPR; c.height = h * DPR; 
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    
+    // Generate grid nodes
+    nodes.length = 0;
+    for(let y=spacing/2; y<h; y+=spacing){
+      for(let x=spacing/2; x<w; x+=spacing){
+        if (Math.random()<0.15) {
+          nodes.push({
+            x, y, 
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.02 + Math.random() * 0.02,
+            radius: 1.5 + Math.random() * 1
+          });
+        }
+      }
+    }
+    
+    // Generate connecting lines
+    lines.length = 0;
+    for(let i=0; i<nodes.length; i++){
+      for(let j=i+1; j<nodes.length; j++){
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < spacing * 2.5) {
+          lines.push({ from: i, to: j, dist });
+        }
+      }
+    }
+  }
+  
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    
+    // Draw grid
+    ctx.strokeStyle = 'rgba(255,0,0,0.04)'; 
+    ctx.lineWidth = 0.5;
+    for(let x=0; x<w; x+=spacing){
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    for(let y=0; y<h; y+=spacing){
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+    
+    // Draw connection lines
+    ctx.strokeStyle = 'rgba(255,30,30,0.08)';
+    ctx.lineWidth = 0.8;
+    lines.forEach(line => {
+      const n1 = nodes[line.from];
+      const n2 = nodes[line.to];
+      const opacity = (1 - line.dist / (spacing * 2.5)) * 0.3;
+      ctx.globalAlpha = opacity;
+      ctx.beginPath();
+      ctx.moveTo(n1.x, n1.y);
+      ctx.lineTo(n2.x, n2.y);
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+    
+    // Draw pulsing nodes
+    nodes.forEach(n => {
+      const pulse = Math.sin(t * n.speed + n.phase);
+      const r = n.radius + pulse * 0.8;
+      const brightness = 0.4 + pulse * 0.3;
+      
+      // Outer glow
+      const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 3);
+      grad.addColorStop(0, `rgba(255,${Math.floor(50+brightness*50)},${Math.floor(50+brightness*50)},${brightness*0.6})`);
+      grad.addColorStop(1, 'rgba(255,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r * 3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Core node
+      ctx.fillStyle = `rgba(255,${Math.floor(100+brightness*100)},${Math.floor(100+brightness*100)},${brightness})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    
+    t++;
+    requestAnimationFrame(draw);
+  }
+  
+  resize(); 
+  draw();
+  window.addEventListener('resize', () => { 
+    cancelAnimationFrame(draw); 
+    resize(); 
+    requestAnimationFrame(draw); 
+  });
+})();
+
+// Advanced Card Tilt with Physics
+(function(){
+  const cards = document.querySelectorAll('.portal-card');
+  cards.forEach(card => {
+    let currentX = 0, currentY = 0;
+    let targetX = 0, targetY = 0;
+    let animationFrame;
+    
+    function animate(){
+      currentX += (targetX - currentX) * 0.15;
+      currentY += (targetY - currentY) * 0.15;
+      
+      card.style.transform = `
+        perspective(1200px) 
+        rotateX(${currentY}deg) 
+        rotateY(${currentX}deg)
+        translateY(-8px)
+        scale(1.02)
+      `;
+      
+      if(Math.abs(targetX - currentX) > 0.01 || Math.abs(targetY - currentY) > 0.01){
+        animationFrame = requestAnimationFrame(animate);
+      }
+    }
+    
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      
+      targetY = (my - 0.5) * 12;
+      targetX = (0.5 - mx) * 15;
+      
+      card.style.setProperty('--mx', `${mx*100}%`);
+      card.style.setProperty('--my', `${my*100}%`);
+      
+      if(!animationFrame){
+        animate();
+      }
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      targetX = 0;
+      targetY = 0;
+      card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)';
+      if(animationFrame){
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+    });
+    
+    // Keyboard support
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { 
+        e.preventDefault(); 
+        card.click(); 
+      }
+    });
+  });
+})();
+
+// Keyboard Navigation System
+(function(){
+  const cards = Array.from(document.querySelectorAll('.portal-card'));
+  if(cards.length === 0) return;
+  
+  let currentIndex = 0;
+  cards[currentIndex].focus();
+  
+  function move(delta){
+    currentIndex = (currentIndex + delta + cards.length) % cards.length;
+    cards[currentIndex].focus();
+  }
+  
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowRight','ArrowDown'].includes(e.key)) { 
+      e.preventDefault(); 
+      move(1); 
+    }
+    if (['ArrowLeft','ArrowUp'].includes(e.key)) { 
+      e.preventDefault(); 
+      move(-1); 
+    }
+  });
+})();
+
+// Loading Animation
+window.addEventListener('load', () => {
+  document.querySelectorAll('.portal-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 100 + i * 120);
+  });
+  
+  // Fetch live stats from GitHub API
+  fetchGitHubStats();
+});
+
+// Live GitHub Stats Fetcher
+async function fetchGitHubStats() {
+  try {
+    const username = 'Akhinoor14';
+    const response = await fetch(`https://api.github.com/users/${username}/repos`);
+    const repos = await response.json();
+    
+    if (Array.isArray(repos)) {
+      // Total repos
+      document.getElementById('github-repos').textContent = repos.length;
+      
+      // Count projects with recent activity
+      const activeProjects = repos.filter(r => {
+        const updated = new Date(r.updated_at);
+        const now = new Date();
+        const daysDiff = (now - updated) / (1000 * 60 * 60 * 24);
+        return daysDiff < 30; // Active in last 30 days
+      }).length;
+      document.getElementById('total-projects').textContent = activeProjects;
+      
+      // Last update time
+      const latestRepo = repos.sort((a, b) => 
+        new Date(b.updated_at) - new Date(a.updated_at)
+      )[0];
+      if (latestRepo) {
+        const lastUpdate = new Date(latestRepo.updated_at);
+        const timeAgo = getTimeAgo(lastUpdate);
+        document.getElementById('last-update').textContent = timeAgo;
+      }
+    }
+  } catch (error) {
+    console.warn('Could not fetch GitHub stats:', error);
+    document.getElementById('total-projects').textContent = '15+';
+    document.getElementById('github-repos').textContent = '8';
+    document.getElementById('last-update').textContent = 'Recent';
+  }
+}
+
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  const intervals = {
+    year: 31536000,
+    month: 2592000,
+    week: 604800,
+    day: 86400,
+    hour: 3600,
+    minute: 60
+  };
+  
+  for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+    const interval = Math.floor(seconds / secondsInUnit);
+    if (interval >= 1) {
+      return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+    }
+  }
+  return 'Just now';
+}
+
+// Real-time clock for system status
+setInterval(() => {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: false 
+  });
+  // Could add a live clock element if needed
+}, 1000);
+</script>
 </html>
