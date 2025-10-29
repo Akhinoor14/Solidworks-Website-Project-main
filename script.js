@@ -2071,9 +2071,17 @@ function selectUploadMode(type, mode) {
         } else if (mode === 'addToProject') {
             showSoloProjectUploadForm(type, 'add');
         } else if (mode === 'update') {
-            showFileUpdateForm(type);
+            if (type === 'solo') {
+                showSoloFileUpdateForm(type);
+            } else {
+                showFileUpdateForm(type);
+            }
         } else if (mode === 'delete') {
-            showFileDeleteForm(type);
+            if (type === 'solo') {
+                showSoloFileDeleteForm(type);
+            } else {
+                showFileDeleteForm(type);
+            }
         }
     }, 400);
 }
@@ -2688,6 +2696,412 @@ async function performSoloProjectUpload(type, mode) {
     }
 }
 
+// Show Solo file update form
+async function showSoloFileUpdateForm(type) {
+    showUploadProgress('Loading projects...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = 'Solo-Projects';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load projects');
+        
+        const items = await response.json();
+        const projects = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+        
+        closeUploadDialog();
+        
+        const dialog = document.createElement('div');
+        dialog.id = 'uploadDialog';
+        dialog.className = 'upload-dialog-overlay';
+        dialog.innerHTML = `
+            <div class="upload-dialog upload-dialog-large">
+                <div class="upload-header">
+                    <h3><i class="fas fa-edit"></i> Update File in Solo Project</h3>
+                    <button class="upload-close" onclick="closeUploadDialog()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="upload-body">
+                    <div class="upload-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-folder"></i> Select Project:</label>
+                            <select id="updateProjectSelect" class="form-control" onchange="loadProjectFilesForUpdate('${type}')">
+                                <option value="">-- Choose Project --</option>
+                                ${projects.map(proj => `<option value="${proj.name}">${proj.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="updateFileSelectGroup" style="display:none;">
+                            <label><i class="fas fa-file"></i> Select File to Update:</label>
+                            <select id="updateFileSelect" class="form-control">
+                                <option value="">-- Choose File --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="updateNewFileGroup" style="display:none;">
+                            <label><i class="fas fa-upload"></i> Upload New Version:</label>
+                            <input type="file" id="updateFileInput" class="form-control" />
+                        </div>
+                        
+                        <div class="upload-actions" id="updateActions" style="display:none;">
+                            <button class="btn-cancel" onclick="closeUploadDialog()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button class="btn-upload" onclick="performSoloFileUpdate('${type}')">
+                                <i class="fas fa-sync-alt"></i> Update File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        setTimeout(() => dialog.classList.add('show'), 10);
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        alert('Failed to load projects: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Load files from selected project for update
+async function loadProjectFilesForUpdate(type) {
+    const projectSelect = document.getElementById('updateProjectSelect');
+    const fileSelectGroup = document.getElementById('updateFileSelectGroup');
+    const fileSelect = document.getElementById('updateFileSelect');
+    const newFileGroup = document.getElementById('updateNewFileGroup');
+    const actions = document.getElementById('updateActions');
+    
+    const projectName = projectSelect.value;
+    
+    if (!projectName) {
+        fileSelectGroup.style.display = 'none';
+        newFileGroup.style.display = 'none';
+        actions.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Solo-Projects/${projectName}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>' +
+            files.filter(f => f.type === 'file').map(f => `<option value="${f.name}" data-sha="${f.sha}">${f.name}</option>`).join('');
+        
+        if (files.filter(f => f.type === 'file').length === 0) {
+            fileSelect.innerHTML += '<option value="" disabled>No files found</option>';
+        }
+        
+        fileSelectGroup.style.display = 'block';
+        
+        fileSelect.onchange = () => {
+            if (fileSelect.value) {
+                newFileGroup.style.display = 'block';
+                actions.style.display = 'flex';
+            } else {
+                newFileGroup.style.display = 'none';
+                actions.style.display = 'none';
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files: ' + error.message);
+    }
+}
+
+// Perform Solo file update
+async function performSoloFileUpdate(type) {
+    const projectSelect = document.getElementById('updateProjectSelect');
+    const fileSelect = document.getElementById('updateFileSelect');
+    const fileInput = document.getElementById('updateFileInput');
+    
+    const projectName = projectSelect.value;
+    const oldFileName = fileSelect.value;
+    const newFile = fileInput.files[0];
+    
+    if (!projectName || !oldFileName || !newFile) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    
+    showUploadProgress('Updating file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const token = getGitHubToken();
+        const filePath = `Solo-Projects/${projectName}/${oldFileName}`;
+        
+        // Read new file content
+        const content = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(newFile);
+        });
+        
+        // Update file
+        const updateResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Update ${oldFileName} in ${projectName}`,
+                content: content,
+                sha: sha
+            })
+        });
+        
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update file');
+        }
+        
+        closeUploadDialog();
+        showToast('Success', `File updated successfully!`);
+        
+        setTimeout(() => {
+            refreshSolidworksContent(type);
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Update error:', error);
+        alert('Failed to update file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Show Solo file delete form
+async function showSoloFileDeleteForm(type) {
+    showUploadProgress('Loading projects...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const folderPath = 'Solo-Projects';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load projects');
+        
+        const items = await response.json();
+        const projects = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+        
+        closeUploadDialog();
+        
+        const dialog = document.createElement('div');
+        dialog.id = 'uploadDialog';
+        dialog.className = 'upload-dialog-overlay';
+        dialog.innerHTML = `
+            <div class="upload-dialog upload-dialog-large">
+                <div class="upload-header">
+                    <h3><i class="fas fa-trash-alt"></i> Delete File from Solo Project</h3>
+                    <button class="upload-close" onclick="closeUploadDialog()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="upload-body">
+                    <div class="upload-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-folder"></i> Select Project:</label>
+                            <select id="deleteProjectSelect" class="form-control" onchange="loadProjectFilesForDelete('${type}')">
+                                <option value="">-- Choose Project --</option>
+                                ${projects.map(proj => `<option value="${proj.name}">${proj.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="deleteFileSelectGroup" style="display:none;">
+                            <label><i class="fas fa-file"></i> Select File to Delete:</label>
+                            <select id="deleteFileSelect" class="form-control" onchange="toggleDeleteActions()">
+                                <option value="">-- Choose File --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="warning-box" id="deleteWarning" style="display:none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> This action cannot be undone. The file will be permanently deleted from the repository.
+                        </div>
+                        
+                        <div class="upload-actions" id="deleteActions" style="display:none;">
+                            <button class="btn-cancel" onclick="closeUploadDialog()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button class="btn-delete" onclick="performSoloFileDelete('${type}')">
+                                <i class="fas fa-trash-alt"></i> Delete File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dialog);
+        setTimeout(() => dialog.classList.add('show'), 10);
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        alert('Failed to load projects: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
+// Load files from selected project for delete
+async function loadProjectFilesForDelete(type) {
+    const projectSelect = document.getElementById('deleteProjectSelect');
+    const fileSelectGroup = document.getElementById('deleteFileSelectGroup');
+    const fileSelect = document.getElementById('deleteFileSelect');
+    
+    const projectName = projectSelect.value;
+    
+    if (!projectName) {
+        fileSelectGroup.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const token = getGitHubToken();
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Solo-Projects/${projectName}`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load files');
+        
+        const files = await response.json();
+        
+        fileSelect.innerHTML = '<option value="">-- Choose File --</option>' +
+            files.filter(f => f.type === 'file').map(f => `<option value="${f.name}" data-sha="${f.sha}">${f.name}</option>`).join('');
+        
+        if (files.filter(f => f.type === 'file').length === 0) {
+            fileSelect.innerHTML += '<option value="" disabled>No files found</option>';
+        }
+        
+        fileSelectGroup.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading files:', error);
+        alert('Failed to load files: ' + error.message);
+    }
+}
+
+// Toggle delete actions visibility
+function toggleDeleteActions() {
+    const fileSelect = document.getElementById('deleteFileSelect');
+    const warning = document.getElementById('deleteWarning');
+    const actions = document.getElementById('deleteActions');
+    
+    if (fileSelect.value) {
+        warning.style.display = 'block';
+        actions.style.display = 'flex';
+    } else {
+        warning.style.display = 'none';
+        actions.style.display = 'none';
+    }
+}
+
+// Perform Solo file delete
+async function performSoloFileDelete(type) {
+    const projectSelect = document.getElementById('deleteProjectSelect');
+    const fileSelect = document.getElementById('deleteFileSelect');
+    
+    const projectName = projectSelect.value;
+    const fileName = fileSelect.value;
+    
+    if (!projectName || !fileName) {
+        alert('Please select a file to delete');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete "${fileName}" from ${projectName}? This cannot be undone.`)) {
+        return;
+    }
+    
+    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const sha = selectedOption.getAttribute('data-sha');
+    
+    showUploadProgress('Deleting file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const token = getGitHubToken();
+        const filePath = `Solo-Projects/${projectName}/${fileName}`;
+        
+        // Delete file
+        const deleteResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Delete ${fileName} from ${projectName}`,
+                sha: sha
+            })
+        });
+        
+        if (!deleteResponse.ok) {
+            throw new Error('Failed to delete file');
+        }
+        
+        closeUploadDialog();
+        showToast('Success', `File deleted successfully!`);
+        
+        setTimeout(() => {
+            refreshSolidworksContent(type);
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete file: ' + error.message);
+        closeUploadDialog();
+    }
+}
+
 // Perform question upload
 async function performQuestionUpload(type) {
     const daySelect = document.getElementById('questionDaySelect');
@@ -2892,14 +3306,28 @@ async function loadDayFilesForUpdate(type) {
         
         if (!response.ok) throw new Error('Failed to load files');
         
-        const files = await response.json();
+        const items = await response.json();
+        
+        // Recursively get all files from day folder and subfolders
+        const allFiles = await fetchAllFilesRecursive(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+        });
         
         fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
-        files.forEach(file => {
-            if (file.type === 'file') {
-                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
-            }
+        
+        allFiles.forEach(file => {
+            // Extract relative path from the day folder
+            const pathParts = file.path.split('/');
+            const dayIndex = pathParts.indexOf(day);
+            const relativePath = pathParts.slice(dayIndex + 1).join('/');
+            
+            fileSelect.innerHTML += `<option value="${relativePath}" data-sha="${file.sha}" data-path="${file.path}">${relativePath}</option>`;
         });
+        
+        if (allFiles.length === 0) {
+            fileSelect.innerHTML += '<option value="" disabled>No files found</option>';
+        }
         
         document.getElementById('updateFileSelectGroup').style.display = 'block';
         
@@ -2915,7 +3343,7 @@ async function loadDayFilesForUpdate(type) {
         
     } catch (error) {
         console.error('Error loading files:', error);
-        alert('Failed to load files');
+        alert('Failed to load files: ' + error.message);
     }
 }
 
@@ -2926,15 +3354,16 @@ async function performFileUpdate(type) {
     const fileInput = document.getElementById('updateFileInput');
     
     const day = daySelect.value;
-    const oldFileName = fileSelect.value;
+    const relativePath = fileSelect.value;
     const newFile = fileInput.files[0];
     
-    if (!day || !oldFileName || !newFile) {
+    if (!day || !relativePath || !newFile) {
         alert('Please fill all fields');
         return;
     }
     
     const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const fullPath = selectedOption.getAttribute('data-path');
     const sha = selectedOption.getAttribute('data-sha');
     const token = getGitHubToken();
     
@@ -2943,18 +3372,16 @@ async function performFileUpdate(type) {
     try {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
-        const folderPath = type === 'cw' ? 'CW' : 'HW';
-        const path = `${folderPath}/${day}/${oldFileName}`;
         const content = await readFileAsBase64(newFile);
         
         const uploadData = {
-            message: `Update ${oldFileName} in ${type.toUpperCase()} ${day}`,
+            message: `Update ${relativePath} in ${type.toUpperCase()} ${day}`,
             content: content,
             sha: sha,
             branch: 'main'
         };
         
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${fullPath}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `token ${token}`,
@@ -3080,23 +3507,26 @@ async function loadDayFilesForDelete(type) {
     const token = getGitHubToken();
     
     try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
+        // Recursively get all files from day folder and subfolders
+        const allFiles = await fetchAllFilesRecursive(`https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/${day}`, {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
         });
-        
-        if (!response.ok) throw new Error('Failed to load files');
-        
-        const files = await response.json();
         
         fileSelect.innerHTML = '<option value="">-- Choose File --</option>';
-        files.forEach(file => {
-            if (file.type === 'file') {
-                fileSelect.innerHTML += `<option value="${file.name}" data-sha="${file.sha}">${file.name}</option>`;
-            }
+        
+        allFiles.forEach(file => {
+            // Extract relative path from the day folder
+            const pathParts = file.path.split('/');
+            const dayIndex = pathParts.indexOf(day);
+            const relativePath = pathParts.slice(dayIndex + 1).join('/');
+            
+            fileSelect.innerHTML += `<option value="${relativePath}" data-sha="${file.sha}" data-path="${file.path}">${relativePath}</option>`;
         });
+        
+        if (allFiles.length === 0) {
+            fileSelect.innerHTML += '<option value="" disabled>No files found</option>';
+        }
         
         document.getElementById('deleteFileSelectGroup').style.display = 'block';
         
@@ -3122,18 +3552,19 @@ async function performFileDelete(type) {
     const fileSelect = document.getElementById('deleteFileSelect');
     
     const day = daySelect.value;
-    const fileName = fileSelect.value;
+    const relativePath = fileSelect.value;
     
-    if (!day || !fileName) {
+    if (!day || !relativePath) {
         alert('Please select a file to delete');
         return;
     }
     
-    if (!confirm(`Are you sure you want to delete "${fileName}"?\n\nThis action cannot be undone!`)) {
+    if (!confirm(`Are you sure you want to delete "${relativePath}"?\n\nThis action cannot be undone!`)) {
         return;
     }
     
     const selectedOption = fileSelect.options[fileSelect.selectedIndex];
+    const fullPath = selectedOption.getAttribute('data-path');
     const sha = selectedOption.getAttribute('data-sha');
     const token = getGitHubToken();
     
@@ -3142,16 +3573,14 @@ async function performFileDelete(type) {
     try {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
-        const folderPath = type === 'cw' ? 'CW' : 'HW';
-        const path = `${folderPath}/${day}/${fileName}`;
         
         const deleteData = {
-            message: `Delete ${fileName} from ${type.toUpperCase()} ${day}`,
+            message: `Delete ${relativePath} from ${type.toUpperCase()} ${day}`,
             sha: sha,
             branch: 'main'
         };
         
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${fullPath}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `token ${token}`,
@@ -3262,6 +3691,13 @@ window.loadDayFilesForUpdate = loadDayFilesForUpdate;
 window.performFileUpdate = performFileUpdate;
 window.loadDayFilesForDelete = loadDayFilesForDelete;
 window.performFileDelete = performFileDelete;
+
+// Make Solo functions globally accessible
+window.loadProjectFilesForUpdate = loadProjectFilesForUpdate;
+window.performSoloFileUpdate = performSoloFileUpdate;
+window.loadProjectFilesForDelete = loadProjectFilesForDelete;
+window.toggleDeleteActions = toggleDeleteActions;
+window.performSoloFileDelete = performSoloFileDelete;
 
 // Make SOLIDWORKS functions globally accessible
 window.openGitHubBrowser = openGitHubBrowser;
