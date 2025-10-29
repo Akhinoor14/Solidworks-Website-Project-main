@@ -6526,11 +6526,20 @@ function cvToggleFullscreen() {
     const modal = document.querySelector('.cv-modal');
     if (!modal) return;
     const icon = document.getElementById('cv-fullscreen-icon');
-    if (!document.fullscreenElement) {
-        modal.requestFullscreen?.().then(()=>{ if(icon) icon.className='fas fa-compress'; });
+    
+    // Toggle maximized class instead of browser fullscreen
+    if (modal.classList.contains('cv-maximized')) {
+        modal.classList.remove('cv-maximized');
+        if(icon) icon.className = 'fas fa-expand';
+        console.log('📉 PDF viewer minimized');
     } else {
-        document.exitFullscreen?.().then(()=>{ if(icon) icon.className='fas fa-expand'; });
+        modal.classList.add('cv-maximized');
+        if(icon) icon.className = 'fas fa-compress';
+        console.log('📈 PDF viewer maximized');
     }
+    
+    // Reapply zoom after size change
+    setTimeout(() => updateCVZoom(), 100);
 }
 function cvZoomIn(){ __cvZoom = Math.min(200, __cvZoom + 10); updateCVZoom(); }
 function cvZoomOut(){ __cvZoom = Math.max(50, __cvZoom - 10); updateCVZoom(); }
@@ -6538,13 +6547,17 @@ function cvZoomReset(){ __cvZoom = 100; updateCVZoom(); }
 function updateCVZoom(){
     const wrap = document.getElementById('cv-iframe-wrap');
     if (!wrap) return;
-    // Prefer CSS zoom for simplicity
+    
+    // Use CSS zoom for simplicity
     wrap.style.zoom = __cvZoom + '%';
+    
     const level = document.getElementById('cv-zoom-level');
     if (level) level.textContent = __cvZoom + '%';
+    
+    console.log(`🔍 Zoom updated: ${__cvZoom}%`);
 }
 function __cvKeyHandler(e){
-    if (e.key === 'Escape' && !document.fullscreenElement) return closeCVViewer();
+    if (e.key === 'Escape') return closeCVViewer();
     if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='p'){ e.preventDefault(); return cvPrint(); }
     if ((e.ctrlKey||e.metaKey) && (e.key==='+'||e.key==='=')){ e.preventDefault(); return cvZoomIn(); }
     if ((e.ctrlKey||e.metaKey) && e.key==='-'){ e.preventDefault(); return cvZoomOut(); }
