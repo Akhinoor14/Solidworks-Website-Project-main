@@ -3548,8 +3548,9 @@ document.addEventListener('DOMContentLoaded', function() {
         async function loadDynamicCWHWFiles() {
             const cwFilesWrap = document.getElementById('cw-files-wrap');
             const hwFilesWrap = document.getElementById('hw-files-wrap');
+            const soloFilesWrap = document.getElementById('solo-files-wrap');
             
-            if (!cwFilesWrap && !hwFilesWrap) return;
+            if (!cwFilesWrap && !hwFilesWrap && !soloFilesWrap) return;
             
             const owner = 'Akhinoor14';
             const repo = 'SOLIDWORKS-Projects';
@@ -3570,13 +3571,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     hwFilesWrap.innerHTML = renderDayFiles(hwData, 'hw');
                 }
                 
+                // Load Solo Projects
+                if (soloFilesWrap) {
+                    soloFilesWrap.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading Solo Projects...</div>';
+                    const soloData = await loadSoloProjectFiles(owner, repo, 'Solo-Projects', headers);
+                    soloFilesWrap.innerHTML = renderSoloProjectFiles(soloData);
+                }
+                
             } catch (error) {
-                console.error('Error loading CW/HW files:', error);
+                console.error('Error loading CW/HW/Solo files:', error);
                 if (cwFilesWrap) {
                     cwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load CW files</p></div>';
                 }
                 if (hwFilesWrap) {
                     hwFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load HW files</p></div>';
+                }
+                if (soloFilesWrap) {
+                    soloFilesWrap.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load Solo Projects</p></div>';
                 }
             }
         }
@@ -3624,6 +3635,104 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `
                     <div class="sw-day-section">
                         <h5 class="sw-day-title"><i class="fas fa-calendar-day"></i> ${day}</h5>
+                        <div class="sw-file-list">
+                `;
+                
+                files.forEach(file => {
+                    const downloadUrl = file.download_url;
+                    const fileName = file.name;
+                    const fileExt = fileName.split('.').pop().toUpperCase();
+                    
+                    // File type icon
+                    let icon = 'fa-file';
+                    if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
+                        icon = 'fa-cube';
+                    } else if (fileExt === 'PDF') {
+                        icon = 'fa-file-pdf';
+                    } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
+                        icon = 'fa-image';
+                    }
+                    
+                    html += `
+                        <div class="sw-file-item">
+                            <div class="sw-file-header">
+                                <i class="fas ${icon}"></i>
+                                <span class="sw-file-name">${fileName}</span>
+                                <span class="sw-file-badge">${fileExt}</span>
+                            </div>
+                            <div class="sw-file-actions">
+                                <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+        
+        // Load Solo Project files (Project 1, Project 2, etc.)
+        async function loadSoloProjectFiles(owner, repo, folder, headers) {
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}`, { headers });
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return {}; // Folder doesn't exist yet
+                }
+                throw new Error(`Failed to load ${folder} folder`);
+            }
+            
+            const items = await response.json();
+            const projectGroups = {};
+            
+            // Load each Project folder (Project 1, Project 2, etc.)
+            for (const item of items) {
+                if (item.type === 'dir' && /^Project\s*\d+/i.test(item.name)) {
+                    const allFiles = await fetchAllFilesRecursive(item.url, headers);
+                    projectGroups[item.name] = allFiles.filter(f => isInterestingSwFile(f.name));
+                }
+            }
+            
+            return projectGroups;
+        }
+        
+        // Render Solo Project files as HTML
+        function renderSoloProjectFiles(projectGroups) {
+            const sortedProjects = Object.keys(projectGroups).sort((a, b) => {
+                const numA = parseInt(a.replace(/Project\s*/i, '').trim());
+                const numB = parseInt(b.replace(/Project\s*/i, '').trim());
+                return numA - numB;
+            });
+            
+            if (sortedProjects.length === 0) {
+                return `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No Solo Projects found</p>
+                        <small style="opacity:0.7; margin-top:8px;">Upload your first project to get started!</small>
+                    </div>
+                `;
+            }
+            
+            let html = '';
+            
+            for (const project of sortedProjects) {
+                const files = projectGroups[project];
+                if (files.length === 0) continue;
+                
+                html += `
+                    <div class="sw-day-section">
+                        <h5 class="sw-day-title"><i class="fas fa-cube"></i> ${project}</h5>
                         <div class="sw-file-list">
                 `;
                 
@@ -6876,3 +6985,7 @@ window.performCentralUpdate = performCentralUpdate;
 window.loadCentralDeleteDays = loadCentralDeleteDays;
 window.loadCentralDeleteFiles = loadCentralDeleteFiles;
 window.performCentralDelete = performCentralDelete;
+
+
+
+
