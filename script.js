@@ -461,7 +461,6 @@ function getFileIcon(item) {
         let wrap = typeof saved.wrap === 'boolean' ? saved.wrap : false;
         let light = typeof saved.light === 'boolean' ? saved.light : false;
         let inFs = false;
-        let placeholder = null;
         let escHandler = null;
 
         const apply = () => {
@@ -510,13 +509,13 @@ function getFileIcon(item) {
             });
         };
 
-        // Fullscreen management
+        // Fullscreen management - simpler approach without DOM manipulation
         const enterFs = () => {
             if (inFs) return;
-            placeholder = document.createComment('md-reader-placeholder');
-            wrapperEl.parentNode.insertBefore(placeholder, wrapperEl);
-            document.body.appendChild(wrapperEl);
+            // Add fullscreen class to wrapper
             wrapperEl.classList.add('md-fs');
+            // Add class to body to prevent background scrolling
+            document.body.style.overflow = 'hidden';
             if (progress) progress.hidden = false;
             inFs = true;
             // ESC to exit
@@ -526,16 +525,15 @@ function getFileIcon(item) {
             wrapperEl.addEventListener('scroll', onScrollFs);
             wrapperEl.addEventListener('scroll', spyFs);
             // Initial update
-            onScrollFs(); spyFs();
+            setTimeout(() => {
+                onScrollFs(); 
+                spyFs();
+            }, 100);
         };
         const exitFs = () => {
             if (!inFs) return;
             wrapperEl.classList.remove('md-fs');
-            if (placeholder && placeholder.parentNode) {
-                placeholder.parentNode.insertBefore(wrapperEl, placeholder);
-                placeholder.remove();
-                placeholder = null;
-            }
+            document.body.style.overflow = '';
             if (progress) progress.hidden = true;
             inFs = false;
             document.removeEventListener('keydown', escHandler);
@@ -555,15 +553,18 @@ function getFileIcon(item) {
         const spyFs = () => {
             const heads = Array.from(content.querySelectorAll('h1,h2,h3'));
             if (!heads.length) return;
-            let activeId = heads[0].id;
+            let activeId = heads[0].id || '';
             const threshold = wrapperEl.scrollTop + 100;
             for (const h of heads) {
-                if (h.offsetTop <= threshold) activeId = h.id;
+                const offsetTop = h.getBoundingClientRect().top + wrapperEl.scrollTop;
+                if (offsetTop <= threshold) activeId = h.id || '';
                 else break;
             }
-            tocBox.querySelectorAll('a').forEach(a=>{
-                a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
-            });
+            if (activeId) {
+                tocBox.querySelectorAll('a').forEach(a=>{
+                    a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+                });
+            }
         };
 
         toolbar.addEventListener('click', (e) => {
