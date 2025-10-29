@@ -6564,6 +6564,21 @@ function __cvKeyHandler(e){
     if ((e.ctrlKey||e.metaKey) && e.key==='0'){ e.preventDefault(); return cvZoomReset(); }
 }
 
+// Lightweight navbar hamburger toggle (shared across pages)
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+            });
+        }
+    } catch (e) {
+        console.warn('Navbar toggle init failed:', e);
+    }
+});
+
 // Expose controls for inline onclick attributes
 window.closeCVViewer = closeCVViewer;
 window.cvPrint = cvPrint;
