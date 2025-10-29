@@ -1836,6 +1836,15 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     gap: 0.5rem;
 }
 
+/* Engineering-architectural brand icon (red/black/white) */
+.nav-logo .brand-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.18));
+    vertical-align: middle;
+}
+
 .nav-logo a::after {
     content: '';
     width: 38px;
