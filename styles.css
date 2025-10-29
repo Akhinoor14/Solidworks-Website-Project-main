@@ -708,9 +708,50 @@ body {
 }
 
 @media (max-width: 768px) {
-    .cv-modal { width: 96vw; height: 82vh; }
-    .cv-modal-header { padding: 10px 12px; }
-    .cv-action span { display: none; }
+    .cv-modal { 
+        width: 100vw; 
+        height: 100vh; 
+        border-radius: 0;
+        margin: 0;
+    }
+    .cv-modal-header { 
+        padding: 10px 12px;
+        flex-wrap: wrap;
+    }
+    .cv-modal-title {
+        font-size: 0.9rem;
+    }
+    .cv-title-icon {
+        width: 32px;
+        height: 32px;
+    }
+    .cv-action span { 
+        display: none; 
+    }
+    .cv-action {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    .cv-zoom-controls {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px;
+        gap: 6px;
+    }
+    .cv-action.round {
+        width: 36px;
+        height: 36px;
+    }
+    .cv-zoom-level {
+        min-width: 50px;
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile PDF viewing optimization */
+    .cv-iframe {
+        /* Force proper rendering on mobile */
+        -webkit-overflow-scrolling: touch;
+    }
 }
 .markdown-body.md-narrow { max-width: 850px; margin: 0 auto; }
 .markdown-body.md-wrap pre code { white-space: pre-wrap !important; word-break: break-word; }

@@ -6373,7 +6373,13 @@ function openCVViewer() {
                     </div>
                     <div class="cv-modal-body">
                         <div class="cv-iframe-wrap" id="cv-iframe-wrap">
-                            <iframe class="cv-iframe" id="cv-iframe" src="" title="CV PDF"></iframe>
+                            <div class="cv-loading" id="cv-loading" style="position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#0a0a0a,#1a0000);color:#fff;z-index:10;">
+                                <div style="text-align:center;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#ff0000;margin-bottom:1rem;"></i>
+                                    <p style="font-size:1.1rem;font-weight:600;">Loading CV...</p>
+                                </div>
+                            </div>
+                            <iframe class="cv-iframe" id="cv-iframe" title="CV PDF" style="display:none;"></iframe>
                         </div>
                         <div class="cv-zoom-controls">
                             <button class="cv-action round" onclick="window.cvZoomOut()" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
@@ -6387,10 +6393,84 @@ function openCVViewer() {
             document.body.appendChild(overlay);
         }
 
-        // Load PDF and show overlay
-        const pdfSrc = './CV/2313014 CV.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
+        // Load PDF and show overlay (FIXED for mobile & desktop + SPACE ENCODING)
+        const pdfPath = './CV/2313014 CV.pdf'; // File has space in name
+        const encodedPath = encodeURI(pdfPath); // Encode spaces properly
+        const pdfSrc = encodedPath + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
         const iframe = overlay.querySelector('#cv-iframe');
-        if (iframe && !iframe.src) iframe.src = pdfSrc;
+        const loading = overlay.querySelector('#cv-loading');
+        
+        console.log('📄 Original path:', pdfPath);
+        console.log('📄 Encoded path:', encodedPath);
+        console.log('📄 Full PDF source:', pdfSrc);
+        
+        if (iframe) {
+            // CRITICAL FIX: Always set src to force load
+            iframe.src = pdfSrc;
+            
+            // Show loading initially
+            if (loading) loading.style.display = 'grid';
+            iframe.style.display = 'none';
+            
+            // Handle successful PDF load
+            iframe.onload = function() {
+                console.log('✅ PDF loaded successfully');
+                setTimeout(() => {
+                    if (loading) loading.style.display = 'none';
+                    iframe.style.display = 'block';
+                }, 300);
+            };
+            
+            // Handle load errors (mobile browser issues)
+            iframe.onerror = function() {
+                console.error('❌ PDF failed to load');
+                if (loading) {
+                    loading.innerHTML = `
+                        <div style="text-align:center;padding:2rem;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:2.5rem;color:#ff0000;margin-bottom:1rem;"></i>
+                            <p style="font-size:1.2rem;margin-bottom:0.5rem;color:#fff;font-weight:600;">Unable to load PDF</p>
+                            <p style="font-size:0.9rem;opacity:0.7;margin-bottom:1.5rem;color:#fff;">Your browser may not support embedded PDFs</p>
+                            <button class="cv-action primary" onclick="window.cvDownload()" style="margin:0 auto;cursor:pointer;padding:12px 24px;">
+                                <i class="fas fa-download"></i> Download CV
+                            </button>
+                            <br/><br/>
+                            <a href="${encodedPath}" target="_blank" style="color:#ff0000;text-decoration:underline;font-size:0.9rem;">
+                                Or open in new tab
+                            </a>
+                        </div>
+                    `;
+                }
+            };
+            
+            // Timeout fallback for slow connections
+            setTimeout(() => {
+                if (loading && loading.style.display !== 'none') {
+                    console.warn('⚠️ PDF loading timeout, checking status...');
+                    try {
+                        // Test if iframe is accessible
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                        if (!iframeDoc) {
+                            throw new Error('Cannot access iframe');
+                        }
+                    } catch (e) {
+                        console.error('PDF blocked or taking too long:', e);
+                        if (loading) {
+                            loading.innerHTML = `
+                                <div style="text-align:center;padding:2rem;">
+                                    <i class="fas fa-clock" style="font-size:2.5rem;color:#ff0000;margin-bottom:1rem;"></i>
+                                    <p style="font-size:1.2rem;margin-bottom:0.5rem;color:#fff;font-weight:600;">PDF taking too long to load</p>
+                                    <p style="font-size:0.9rem;opacity:0.7;margin-bottom:1.5rem;color:#fff;">Try downloading instead</p>
+                                    <button class="cv-action primary" onclick="window.cvDownload()" style="margin:0 auto;cursor:pointer;padding:12px 24px;">
+                                        <i class="fas fa-download"></i> Download CV
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            }, 8000);
+        }
+        
         overlay.classList.add('show');
         document.body.style.overflow = 'hidden';
         __cvZoom = 100; updateCVZoom();
@@ -6425,13 +6505,22 @@ function closeCVViewer() {
 
 function cvPrint() {
     const iframe = document.getElementById('cv-iframe');
-    try { iframe.contentWindow.print(); } catch { window.print(); }
+    try { 
+        iframe.contentWindow.print(); 
+    } catch (e) { 
+        console.warn('Print from iframe failed:', e);
+        window.print(); 
+    }
 }
 function cvDownload() {
+    console.log('⬇️ Downloading CV...');
     const a = document.createElement('a');
-    a.href = './CV/2313014 CV.pdf';
+    a.href = encodeURI('./CV/2313014 CV.pdf'); // Encode space in filename
     a.download = 'Md_Akhinoor_Islam_CV.pdf';
-    document.body.appendChild(a); a.click(); a.remove();
+    document.body.appendChild(a); 
+    a.click(); 
+    a.remove();
+    console.log('✅ Download initiated');
 }
 function cvToggleFullscreen() {
     const modal = document.querySelector('.cv-modal');

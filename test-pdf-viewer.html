@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV PDF Test - Debug</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a0000);
+            color: #fff;
+            padding: 2rem;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ff0000;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .test-section h2 {
+            color: #ff3333;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status.success {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid rgba(0,255,0,0.3);
+            color: #00ff00;
+        }
+        .status.error {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
+            color: #ff6666;
+        }
+        .status.info {
+            background: rgba(0,150,255,0.1);
+            border: 1px solid rgba(0,150,255,0.3);
+            color: #66ccff;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+        }
+        .pdf-test {
+            width: 100%;
+            height: 600px;
+            border: 2px solid rgba(255,0,0,0.3);
+            border-radius: 8px;
+            margin-top: 1rem;
+            background: #fff;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        .log-entry {
+            margin: 5px 0;
+        }
+        code {
+            background: rgba(255,0,0,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1><i class="fas fa-file-pdf"></i> CV PDF Loading Test</h1>
+
+        <!-- Test 1: File Path Check -->
+        <div class="test-section">
+            <h2>📁 Test 1: File Path Verification</h2>
+            <div id="path-check">Checking...</div>
+            <p style="margin-top:1rem;">Original path: <code>./CV/2313014 CV.pdf</code></p>
+            <p>Encoded path: <code id="encoded-path">...</code></p>
+        </div>
+
+        <!-- Test 2: Direct Link Test -->
+        <div class="test-section">
+            <h2>🔗 Test 2: Direct Link Test</h2>
+            <p>Try opening the PDF directly:</p>
+            <button class="btn" onclick="window.open('./CV/2313014 CV.pdf', '_blank')">
+                <i class="fas fa-external-link-alt"></i> Open in New Tab
+            </button>
+            <button class="btn" onclick="window.location.href='./CV/2313014 CV.pdf'">
+                <i class="fas fa-arrow-right"></i> Navigate to PDF
+            </button>
+        </div>
+
+        <!-- Test 3: Iframe Embed Test -->
+        <div class="test-section">
+            <h2>📄 Test 3: Iframe Embed Test</h2>
+            <p>Testing PDF loading in iframe (same as CV viewer):</p>
+            <div id="iframe-status" class="status info">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+            <iframe 
+                id="test-iframe" 
+                class="pdf-test" 
+                src=""
+                title="CV PDF Test"
+            ></iframe>
+        </div>
+
+        <!-- Test 4: Alternative Method (object tag) -->
+        <div class="test-section">
+            <h2>🎯 Test 4: Alternative Method (Object Tag)</h2>
+            <p>If iframe fails, try object tag:</p>
+            <button class="btn" onclick="testObjectTag()">
+                <i class="fas fa-play"></i> Test Object Tag
+            </button>
+            <div id="object-container" style="margin-top:1rem;"></div>
+        </div>
+
+        <!-- Test 5: Fetch Test -->
+        <div class="test-section">
+            <h2>🌐 Test 5: Network Fetch Test</h2>
+            <p>Check if PDF is accessible via fetch API:</p>
+            <button class="btn" onclick="testFetch()">
+                <i class="fas fa-download"></i> Test Fetch
+            </button>
+            <div id="fetch-status"></div>
+        </div>
+
+        <!-- Console Log -->
+        <div class="test-section">
+            <h2>🖥️ Console Log</h2>
+            <div id="console-log" class="log">
+                <div class="log-entry">Initializing tests...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logging helper
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('console-log');
+            const time = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#0ff',
+                success: '#0f0',
+                error: '#f00',
+                warn: '#ff0'
+            };
+            logDiv.innerHTML += `<div class="log-entry" style="color:${colors[type]}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Test 1: Path Check
+        const originalPath = './CV/2313014 CV.pdf';
+        const encodedPath = encodeURI(originalPath);
+        document.getElementById('encoded-path').textContent = encodedPath;
+        
+        fetch(encodedPath, { method: 'HEAD' })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('path-check').innerHTML = `
+                        <div class="status success">
+                            <i class="fas fa-check-circle"></i> File exists and is accessible!
+                        </div>
+                    `;
+                    log('✅ File path verified successfully', 'success');
+                } else {
+                    throw new Error('File not found: ' + res.status);
+                }
+            })
+            .catch(err => {
+                document.getElementById('path-check').innerHTML = `
+                    <div class="status error">
+                        <i class="fas fa-times-circle"></i> File not accessible: ${err.message}
+                    </div>
+                `;
+                log('❌ File path check failed: ' + err.message, 'error');
+            });
+
+        // Test 3: Iframe Test
+        const testIframe = document.getElementById('test-iframe');
+        const iframeStatus = document.getElementById('iframe-status');
+        
+        testIframe.src = encodedPath + '#toolbar=1&navpanes=1&scrollbar=1&view=FitH';
+        log('🔄 Loading PDF in iframe: ' + testIframe.src);
+
+        testIframe.onload = function() {
+            iframeStatus.className = 'status success';
+            iframeStatus.innerHTML = '<i class="fas fa-check-circle"></i> PDF loaded successfully in iframe!';
+            log('✅ Iframe PDF loaded successfully', 'success');
+        };
+
+        testIframe.onerror = function() {
+            iframeStatus.className = 'status error';
+            iframeStatus.innerHTML = '<i class="fas fa-times-circle"></i> Failed to load PDF in iframe';
+            log('❌ Iframe PDF loading failed', 'error');
+        };
+
+        // Timeout check
+        setTimeout(() => {
+            if (iframeStatus.classList.contains('info')) {
+                iframeStatus.className = 'status error';
+                iframeStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> PDF loading timeout (browser may not support embedded PDFs)';
+                log('⚠️ Iframe loading timeout - browser may not support PDF embedding', 'warn');
+            }
+        }, 10000);
+
+        // Test 4: Object Tag
+        function testObjectTag() {
+            log('🎯 Testing object tag method');
+            const container = document.getElementById('object-container');
+            container.innerHTML = `
+                <object 
+                    data="${encodedPath}" 
+                    type="application/pdf" 
+                    width="100%" 
+                    height="600px"
+                    style="border: 2px solid rgba(255,0,0,0.3); border-radius: 8px;"
+                >
+                    <p style="color:#fff;">Your browser does not support embedded PDFs. 
+                    <a href="${encodedPath}" target="_blank" style="color:#ff0000;">Click here to download</a></p>
+                </object>
+            `;
+            log('✅ Object tag test initiated', 'success');
+        }
+
+        // Test 5: Fetch Test
+        async function testFetch() {
+            log('🌐 Testing fetch API...');
+            const statusDiv = document.getElementById('fetch-status');
+            
+            try {
+                const response = await fetch(encodedPath);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    statusDiv.innerHTML = `
+                        <div class="status success" style="margin-top:1rem;">
+                            <i class="fas fa-check-circle"></i> 
+                            PDF fetched successfully! Size: ${(blob.size / 1024).toFixed(2)} KB
+                        </div>
+                    `;
+                    log(`✅ Fetch successful - Size: ${(blob.size / 1024).toFixed(2)} KB`, 'success');
+                } else {
+                    throw new Error('HTTP ' + response.status);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status error" style="margin-top:1rem;">
+                        <i class="fas fa-times-circle"></i> 
+                        Fetch failed: ${error.message}
+                    </div>
+                `;
+                log('❌ Fetch failed: ' + error.message, 'error');
+            }
+        }
+
+        log('🚀 All tests initialized. Check results above.', 'info');
+    </script>
+</body>
+</html>
