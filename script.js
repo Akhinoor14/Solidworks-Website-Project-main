@@ -6398,14 +6398,26 @@ function addProjectSearch() {
     searchInput.style.cssText = `
         margin: 20px 0;
         padding: 10px 15px;
-        border: 2px solid var(--border-color);
+        background: rgba(10, 10, 10, 0.8);
+        border: 2px solid rgba(220, 38, 38, 0.4);
         border-radius: 25px;
         width: 100%;
         max-width: 400px;
         font-size: 16px;
+        color: #ffffff;
         outline: none;
-        transition: border-color 0.3s ease;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     `;
+    searchInput.addEventListener('focus', ()=>{
+        searchInput.style.borderColor = '#ef4444';
+        searchInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.25)';
+        searchInput.style.background = 'rgba(26, 26, 26, 0.9)';
+    });
+    searchInput.addEventListener('blur', ()=>{
+        searchInput.style.borderColor = 'rgba(220, 38, 38, 0.4)';
+        searchInput.style.boxShadow = 'none';
+        searchInput.style.background = 'rgba(10, 10, 10, 0.8)';
+    });
     
     const projectFilters = document.querySelector('.project-filters');
     projectFilters.parentNode.insertBefore(searchInput, projectFilters.nextSibling);

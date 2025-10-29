@@ -398,6 +398,32 @@ body {
 .dark .sw-mode-btn[aria-current="true"], .dark .sw-mode-btn:hover { background:linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.05)); color:#ffffff; box-shadow:0 4px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.1); }
 
 .sw-divider { height:1px; background:linear-gradient(90deg,rgba(0,0,0,0),rgba(255,255,255,.15),rgba(0,0,0,0)); margin:.4rem 0 1.1rem; }
+
+/* Quick Actions - strict theme */
+.sw-quick-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.sw-quick-actions .btn-sw-browse,
+.sw-quick-actions .btn-sw-download,
+.sw-quick-actions .btn-sw-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,0,0,0.3);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .2s ease, box-shadow .2s ease, background .3s ease, border-color .3s ease;
+}
+.sw-quick-actions .btn-sw-browse { background: linear-gradient(135deg, #1a1a1a, #0a0a0a); }
+.sw-quick-actions .btn-sw-download { background: linear-gradient(135deg, #990000, #cc0000); }
+.sw-quick-actions .btn-sw-upload { background: linear-gradient(135deg, #ff0000, #cc0000); }
+.sw-quick-actions .btn-sw-browse:hover { border-color: rgba(255,0,0,0.5); box-shadow: 0 6px 18px rgba(255,0,0,0.25); transform: translateY(-2px); }
+.sw-quick-actions .btn-sw-download:hover { box-shadow: 0 6px 18px rgba(255,0,0,0.35); transform: translateY(-2px); }
+.sw-quick-actions .btn-sw-upload:hover { box-shadow: 0 6px 18px rgba(255,0,0,0.4); transform: translateY(-2px); }
+.sw-quick-actions .btn-sw-browse i,
+.sw-quick-actions .btn-sw-download i,
+.sw-quick-actions .btn-sw-upload i { color: #fff; }
 .dark .sw-divider { background:linear-gradient(90deg,rgba(0,0,0,0),rgba(255,255,255,.15),rgba(0,0,0,0)); }
 
 .sw-root-layout { display:grid; gap:2rem; }
@@ -993,14 +1019,14 @@ body {
 }
 
 .btn-sw-download {
-    background: linear-gradient(135deg, #00cc00, #009900);
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
     color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(220, 38, 38, 0.4);
 }
 
 .btn-sw-download:hover {
-    background: linear-gradient(135deg, #00ff00, #00cc00);
-    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.5);
+    background: linear-gradient(135deg, #171717, #262626);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5);
     transform: translateY(-2px);
 }
 
@@ -1023,15 +1049,15 @@ body {
     text-decoration: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid rgba(118, 75, 162, 0.4);
+    border: 1px solid rgba(220, 38, 38, 0.4);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #dc2626, #991b1b);
     color: #ffffff;
 }
 
 .btn-sw-upload:hover {
-    background: linear-gradient(135deg, #7c8ff0, #8b5ab8);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5);
     transform: translateY(-2px);
 }
 
@@ -1066,7 +1092,7 @@ body {
 
 /* Ripple effect */
 .sw-mode-btn, .sw-tile { position:relative; overflow:hidden; }
-.sw-ripple { position:absolute; border-radius:50%; transform:scale(0); background:rgba(99,102,241,.35); animation:sw-ripple .55s ease-out; pointer-events:none; }
+.sw-ripple { position:absolute; border-radius:50%; transform:scale(0); background:rgba(220,38,38,.35); animation:sw-ripple .55s ease-out; pointer-events:none; }
 @keyframes sw-ripple { to { transform:scale(2.8); opacity:0; } }
 .dark .sw-ripple { background:rgba(59,130,246,.45); }
 
