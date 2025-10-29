@@ -580,6 +580,7 @@ function getFileIcon(item) {
                 escHandler = null;
                 wrapperEl.removeEventListener('scroll', onScrollFs);
                 wrapperEl.removeEventListener('scroll', spyFs);
+                updateFsButton();
             }
         });
         // Safari support
@@ -592,6 +593,7 @@ function getFileIcon(item) {
                 escHandler = null;
                 wrapperEl.removeEventListener('scroll', onScrollFs);
                 wrapperEl.removeEventListener('scroll', spyFs);
+                updateFsButton();
             }
         });
         
@@ -631,8 +633,30 @@ function getFileIcon(item) {
             else if (act === 'theme') { light = !light; apply(); }
             else if (act === 'toc') { tocBox.classList.toggle('hidden'); }
             else if (act === 'help') { wrapperEl.querySelector('.md-help-panel').classList.toggle('hidden'); }
-            else if (act === 'fs') { inFs ? exitFs() : enterFs(); }
+            else if (act === 'fs') { 
+                if (inFs) {
+                    exitFs();
+                } else {
+                    enterFs();
+                }
+                // Update button text
+                updateFsButton();
+            }
         });
+        
+        // Function to update fullscreen button text
+        const updateFsButton = () => {
+            const fsBtn = toolbar.querySelector('[data-act="fs"]');
+            if (fsBtn) {
+                if (inFs) {
+                    fsBtn.innerHTML = '<i class="fas fa-compress"></i> Exit Fullscreen';
+                    fsBtn.title = 'Exit Fullscreen (ESC)';
+                } else {
+                    fsBtn.textContent = 'Fullscreen';
+                    fsBtn.title = 'Fullscreen (F key)';
+                }
+            }
+        };
 
         // Keyboard shortcuts
         wrapperEl.addEventListener('keydown', (e) => {

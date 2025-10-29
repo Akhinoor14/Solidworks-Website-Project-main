@@ -928,6 +928,15 @@ body {
     }
 }
 
+/* Hide TOC close button in fullscreen mode */
+.md-reader.md-fs .md-toc-title {
+    border-bottom: none;
+}
+/* TOC is always visible in fullscreen, hide toggle button */
+.md-reader.md-fs [data-act="toc"] {
+    display: none;
+}
+
 /* Tables in Markdown */
 .markdown-body table { 
     border-collapse: collapse; 
