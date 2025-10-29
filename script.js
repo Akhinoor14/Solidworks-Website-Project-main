@@ -1557,6 +1557,131 @@ function isInterestingSwFile(name) {
     return ['sldprt','sldasm','slddrw','pdf','png','jpg','jpeg','stl','step'].includes(ext);
 }
 
+// Check if file is a question/problem file (PDF or image)
+function isQuestionFile(name) {
+    const ext = fileExt(name);
+    const lowerName = name.toLowerCase();
+    // Match files with "question" or "problem" in name, or PDF/image extensions
+    return (lowerName.includes('question') || lowerName.includes('problem') || lowerName.includes('ques')) 
+           && ['pdf', 'png', 'jpg', 'jpeg'].includes(ext);
+}
+
+// Check if file is a SOLIDWORKS project file
+function isProjectFile(name) {
+    const ext = fileExt(name);
+    return ['sldprt','sldasm','slddrw','stl','step'].includes(ext);
+}
+
+// Render question/problem card
+function renderQuestionCard(questions, type) {
+    const isSolo = type === 'solo';
+    const label = isSolo ? 'Problems' : 'Questions';
+    const icon = isSolo ? '💡' : '📋';
+    
+    let html = `
+        <div class="question-card">
+            <div class="question-card-header">
+                <span class="question-icon">${icon}</span>
+                <h5 class="question-title">${label}</h5>
+                <span class="question-count">${questions.length} file${questions.length > 1 ? 's' : ''}</span>
+            </div>
+            <div class="question-card-body">
+    `;
+    
+    questions.forEach(file => {
+        const ext = fileExt(file.name).toUpperCase();
+        const fileName = file.name;
+        const subfolder = file.subfolder ? ` (${file.subfolder})` : '';
+        
+        // Check if file is PDF or image
+        const isPDF = ext === 'PDF';
+        const isImage = ['PNG', 'JPG', 'JPEG'].includes(ext);
+        
+        html += `
+            <div class="question-item">
+                <div class="question-item-info">
+                    <span class="question-ext-badge ${isPDF ? 'pdf-badge' : 'img-badge'}">${ext}</span>
+                    <span class="question-item-name" title="${fileName}">${fileName}${subfolder}</span>
+                </div>
+                <div class="question-item-actions">
+        `;
+        
+        // View button for PDF/images
+        if (isPDF || isImage) {
+            html += `
+                <button class="question-view-btn" onclick="viewQuestionFile('${file.download_url}', '${fileName}', '${ext}')" title="View ${label}">
+                    <i class="fas fa-eye"></i> View
+                </button>
+            `;
+        }
+        
+        html += `
+                    <a href="${file.download_url}" download="${fileName}" class="question-download-btn" title="Download">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <a href="${file.html_url}" target="_blank" class="question-github-btn" title="View on GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
+
+// View question/problem file in modal
+function viewQuestionFile(url, fileName, fileType) {
+    const isPDF = fileType === 'PDF';
+    const isImage = ['PNG', 'JPG', 'JPEG'].includes(fileType);
+    
+    const modal = document.createElement('div');
+    modal.id = 'questionViewerModal';
+    modal.className = 'question-viewer-overlay';
+    modal.innerHTML = `
+        <div class="question-viewer-dialog">
+            <div class="question-viewer-header">
+                <h3><i class="fas fa-${isPDF ? 'file-pdf' : 'image'}"></i> ${fileName}</h3>
+                <button class="question-viewer-close" onclick="closeQuestionViewer()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="question-viewer-body">
+                ${isPDF ? `
+                    <iframe src="${url}" class="question-pdf-viewer" frameborder="0"></iframe>
+                ` : `
+                    <img src="${url}" alt="${fileName}" class="question-image-viewer" />
+                `}
+            </div>
+            <div class="question-viewer-footer">
+                <a href="${url}" download="${fileName}" class="question-download-btn-large">
+                    <i class="fas fa-download"></i> Download
+                </a>
+                <button class="question-close-btn-large" onclick="closeQuestionViewer()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+// Close question viewer modal
+function closeQuestionViewer() {
+    const modal = document.getElementById('questionViewerModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
 // Render Solo Projects (Project 1, Project 2 structure with upload date/time)
 async function renderSoloProjects(items, contentDiv, headers, owner, repo) {
     console.log(`🎨 Rendering Solo Projects...`);
@@ -1591,7 +1716,11 @@ async function renderSoloProjects(items, contentDiv, headers, owner, repo) {
         const projectResponse = await fetch(project.url, { headers });
         if (!projectResponse.ok) continue;
         const projectFiles = await projectResponse.json();
-        const files = projectFiles.filter(f => f.type === 'file' && isInterestingSwFile(f.name));
+        const allFiles = projectFiles.filter(f => f.type === 'file' && isInterestingSwFile(f.name));
+        
+        // Separate project files and problem files
+        const files = allFiles.filter(f => isProjectFile(f.name));
+        const problemFiles = allFiles.filter(f => isQuestionFile(f.name));
         
         // Get latest commit for upload date/time
         const commitsUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=Solo-Projects/${project.name}&per_page=1`;
@@ -1629,6 +1758,11 @@ async function renderSoloProjects(items, contentDiv, headers, owner, repo) {
                 </div>
                 <div class="solo-project-files">
         `;
+        
+        // Render problem card if problem files exist
+        if (problemFiles.length > 0) {
+            html += renderQuestionCard(problemFiles, 'solo');
+        }
         
         if (files.length > 0) {
             files.forEach(file => {
@@ -1715,36 +1849,49 @@ async function loadSolidworksContent(type) {
                 if (subfolders.length > 0) {
                     // Has subfolders - group by subfolder
                     console.log(`✨ Day ${dayNum} has ${subfolders.length} subfolders:`, subfolders.map(s => s.name).join(', '));
-                    dayGroups[dayNum] = { type: 'subfolders', data: {} };
+                    dayGroups[dayNum] = { type: 'subfolders', data: {}, questions: [] };
                     for (const subfolder of subfolders) {
                         const subFiles = await fetchAllFilesRecursive(subfolder.url, headers);
-                        const filtered = subFiles.filter(f => isInterestingSwFile(f.name));
-                        if (filtered.length > 0) {
-                            console.log(`  🎯 ${subfolder.name}: ${filtered.length} files`);
-                            dayGroups[dayNum].data[subfolder.name] = filtered;
+                        const projectFiles = subFiles.filter(f => isProjectFile(f.name));
+                        const questionFiles = subFiles.filter(f => isQuestionFile(f.name));
+                        
+                        if (projectFiles.length > 0) {
+                            console.log(`  🎯 ${subfolder.name}: ${projectFiles.length} project files`);
+                            dayGroups[dayNum].data[subfolder.name] = projectFiles;
+                        }
+                        if (questionFiles.length > 0) {
+                            console.log(`  📋 ${subfolder.name}: ${questionFiles.length} question files`);
+                            dayGroups[dayNum].questions.push(...questionFiles.map(f => ({...f, subfolder: subfolder.name})));
                         }
                     }
                 } else {
                     // No subfolders - just files
                     console.log(`📄 Day ${dayNum} has no subfolders, loading files directly`);
                     const allFiles = await fetchAllFilesRecursive(item.url, headers);
-                    const filtered = allFiles.filter(f => isInterestingSwFile(f.name));
-                    if (filtered.length > 0) {
-                        console.log(`  📎 Found ${filtered.length} files`);
-                        dayGroups[dayNum] = { type: 'files', data: filtered };
+                    const projectFiles = allFiles.filter(f => isProjectFile(f.name));
+                    const questionFiles = allFiles.filter(f => isQuestionFile(f.name));
+                    
+                    dayGroups[dayNum] = { type: 'files', data: [], questions: [] };
+                    if (projectFiles.length > 0) {
+                        console.log(`  📎 Found ${projectFiles.length} project files`);
+                        dayGroups[dayNum].data = projectFiles;
+                    }
+                    if (questionFiles.length > 0) {
+                        console.log(`  📋 Found ${questionFiles.length} question files`);
+                        dayGroups[dayNum].questions = questionFiles;
                     }
                 }
             }
         }
         
-        // Color palette for subfolder cards (vibrant and eye-catching)
+        // Color palette for subfolder cards (Red/Black/White theme)
         const subfolderColors = [
-            { bg: 'rgba(255, 107, 107, 0.15)', border: 'rgba(255, 107, 107, 0.5)', accent: '#ff6b6b', icon: '🔴' },
-            { bg: 'rgba(78, 205, 196, 0.15)', border: 'rgba(78, 205, 196, 0.5)', accent: '#4ecdc4', icon: '🔵' },
-            { bg: 'rgba(255, 195, 113, 0.15)', border: 'rgba(255, 195, 113, 0.5)', accent: '#ffc371', icon: '🟠' },
-            { bg: 'rgba(162, 155, 254, 0.15)', border: 'rgba(162, 155, 254, 0.5)', accent: '#a29bfe', icon: '🟣' },
-            { bg: 'rgba(253, 121, 168, 0.15)', border: 'rgba(253, 121, 168, 0.5)', accent: '#fd79a8', icon: '🟡' },
-            { bg: 'rgba(85, 230, 193, 0.15)', border: 'rgba(85, 230, 193, 0.5)', accent: '#55efc4', icon: '🟢' }
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' },
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' },
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' },
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' },
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' },
+            { bg: 'rgba(220, 38, 38, 0.06)', border: 'rgba(220, 38, 38, 0.4)', accent: '#ef4444', icon: '🟥' }
         ];
         
         // Render grouped content
@@ -1774,6 +1921,11 @@ async function loadSolidworksContent(type) {
                         📅 Day ${dayNum} <span style="color:#ff6666; font-size:0.8rem;">(${totalFiles} files${dayData.type === 'subfolders' ? ', ' + Object.keys(dayData.data).length + ' sections' : ''})</span>
                     </h4>
             `;
+            
+            // Render question card if questions exist for this day
+            if (dayData.questions && dayData.questions.length > 0) {
+                html += renderQuestionCard(dayData.questions, type);
+            }
             
             if (dayData.type === 'subfolders') {
                 // Render subfolders as separate colorful cards
@@ -1981,6 +2133,12 @@ function showUploadDialog(type, mode = 'upload') {
                             <small>Upload files to an existing project</small>
                         </button>
                         
+                        <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'problem')">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Upload Problem</span>
+                            <small>Add problem PDF or image for a project</small>
+                        </button>
+                        
                         <button class="upload-option-btn" onclick="selectUploadMode('${type}', 'update')">
                             <i class="fas fa-edit"></i>
                             <span>Update File</span>
@@ -2066,6 +2224,8 @@ function selectUploadMode(type, mode) {
             showFileUploadForm(type, 'new');
         } else if (mode === 'question') {
             showQuestionUploadForm(type);
+        } else if (mode === 'problem') {
+            showProblemUploadForm(type);
         } else if (mode === 'newProject') {
             showSoloProjectUploadForm(type, 'new');
         } else if (mode === 'addToProject') {
@@ -2257,6 +2417,177 @@ function updateQuestionFileName(type) {
 
 // Make function globally accessible
 window.updateQuestionFileName = updateQuestionFileName;
+
+// Show problem upload form for Solo Projects
+function showProblemUploadForm(type) {
+    const dialog = document.createElement('div');
+    dialog.id = 'uploadDialog';
+    dialog.className = 'upload-dialog-overlay';
+    dialog.innerHTML = `
+        <div class="upload-dialog upload-dialog-large">
+            <div class="upload-header">
+                <h3><i class="fas fa-lightbulb"></i> Upload Problem for Solo Project</h3>
+                <button class="upload-close" onclick="closeUploadDialog()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="upload-body">
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Select Project:</label>
+                        <select id="problemProjectSelect" class="form-control" onchange="updateProblemFileName()">
+                            <option value="">-- Choose Project --</option>
+                        </select>
+                        <small>Select which project this problem belongs to</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-file-pdf"></i> Select Problem File:</label>
+                        <input type="file" id="problemFileInput" class="form-control" accept=".pdf,.png,.jpg,.jpeg" onchange="updateProblemFileName()" />
+                        <small>Accepted: PDF, PNG, JPG (Problem statement images/PDFs)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> File Name:</label>
+                        <input type="text" id="problemFileName" class="form-control" placeholder="Auto-generated based on Project" value="" />
+                        <small>Auto-generated: Project_X_Problem.ext (you can edit if needed)</small>
+                    </div>
+                    
+                    <div class="upload-actions">
+                        <button class="btn-cancel" onclick="closeUploadDialog()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button class="btn-upload" onclick="performProblemUpload()">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload Problem
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    setTimeout(() => dialog.classList.add('show'), 10);
+    
+    // Load projects for dropdown
+    loadSoloProjectsForProblemSelect();
+}
+
+// Load solo projects for problem upload dropdown
+async function loadSoloProjectsForProblemSelect() {
+    const owner = 'Akhinoor14';
+    const repo = 'SOLIDWORKS-Projects';
+    const headers = getGitHubHeaders();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Solo-Projects`, { headers });
+        if (!response.ok) {
+            console.error('Failed to load projects');
+            return;
+        }
+        
+        const items = await response.json();
+        const projects = items.filter(item => item.type === 'dir' && /^Project\s*\d+/i.test(item.name));
+        
+        const select = document.getElementById('problemProjectSelect');
+        projects.forEach(project => {
+            const projectNum = project.name.replace(/Project\s*/i, '').trim();
+            const option = document.createElement('option');
+            option.value = project.name;
+            option.textContent = `Project ${projectNum}`;
+            select.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+    }
+}
+
+// Update problem file name based on project and file
+function updateProblemFileName() {
+    const projectSelect = document.getElementById('problemProjectSelect');
+    const fileInput = document.getElementById('problemFileInput');
+    const fileNameInput = document.getElementById('problemFileName');
+    
+    const project = projectSelect.value;
+    const file = fileInput.files[0];
+    
+    if (project) {
+        // Get file extension from uploaded file or default to .pdf
+        let extension = '.pdf';
+        if (file) {
+            const fileName = file.name;
+            const lastDot = fileName.lastIndexOf('.');
+            if (lastDot > -1) {
+                extension = fileName.substring(lastDot);
+            }
+        }
+        
+        // Format: Project_1_Problem.pdf
+        const projectFormatted = project.replace(' ', '_');
+        const generatedName = `${projectFormatted}_Problem${extension}`;
+        fileNameInput.value = generatedName;
+    }
+}
+
+// Perform problem upload for Solo Projects
+async function performProblemUpload() {
+    const projectSelect = document.getElementById('problemProjectSelect');
+    const fileInput = document.getElementById('problemFileInput');
+    const fileNameInput = document.getElementById('problemFileName');
+    
+    const projectName = projectSelect.value;
+    const file = fileInput.files[0];
+    const fileName = fileNameInput.value.trim();
+    
+    if (!projectName || !file || !fileName) {
+        alert('Please select project, file, and provide a file name');
+        return;
+    }
+    
+    showUploadProgress('Uploading problem file...');
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        const token = getGitHubToken();
+        const filePath = `Solo-Projects/${projectName}/${fileName}`;
+        
+        // Read file as base64
+        const content = await readFileAsBase64(file);
+        
+        // Upload to GitHub
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Upload problem for ${projectName}`,
+                content: content
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to upload problem');
+        }
+        
+        closeUploadDialog();
+        showToast('Success', `Problem uploaded successfully to ${projectName}!`);
+        
+        setTimeout(() => {
+            refreshSolidworksContent('solo');
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload problem: ' + error.message);
+        closeUploadDialog();
+    }
+}
 
 // Show Solo Project upload form
 function showSoloProjectUploadForm(type, mode = 'new') {
@@ -2932,7 +3263,7 @@ async function showSoloFileDeleteForm(type) {
         dialog.innerHTML = `
             <div class="upload-dialog upload-dialog-large">
                 <div class="upload-header">
-                    <h3><i class="fas fa-trash-alt"></i> Delete File from Solo Project</h3>
+                    <h3><i class="fas fa-trash-alt"></i> Delete Files from Solo Project</h3>
                     <button class="upload-close" onclick="closeUploadDialog()">
                         <i class="fas fa-times"></i>
                     </button>
@@ -2949,15 +3280,24 @@ async function showSoloFileDeleteForm(type) {
                         </div>
                         
                         <div class="form-group" id="deleteFileSelectGroup" style="display:none;">
-                            <label><i class="fas fa-file"></i> Select File to Delete:</label>
-                            <select id="deleteFileSelect" class="form-control" onchange="toggleDeleteActions()">
-                                <option value="">-- Choose File --</option>
-                            </select>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <label style="margin: 0;"><i class="fas fa-file"></i> Select Files to Delete:</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button type="button" class="btn-select-all" onclick="selectAllFiles(true)" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-check-square"></i> Select All
+                                    </button>
+                                    <button type="button" class="btn-select-all" onclick="selectAllFiles(false)" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                        <i class="far fa-square"></i> Deselect All
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="deleteFilesList" class="file-checkbox-list"></div>
+                            <div id="selectedCount" style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.6);"></div>
                         </div>
                         
                         <div class="warning-box" id="deleteWarning" style="display:none;">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Warning:</strong> This action cannot be undone. The file will be permanently deleted from the repository.
+                            <strong>Warning:</strong> This action cannot be undone. The selected files will be permanently deleted from the repository.
                         </div>
                         
                         <div class="upload-actions" id="deleteActions" style="display:none;">
@@ -2965,7 +3305,7 @@ async function showSoloFileDeleteForm(type) {
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                             <button class="btn-delete" onclick="performSoloFileDelete('${type}')">
-                                <i class="fas fa-trash-alt"></i> Delete File
+                                <i class="fas fa-trash-alt"></i> Delete Selected Files
                             </button>
                         </div>
                     </div>
@@ -2987,7 +3327,7 @@ async function showSoloFileDeleteForm(type) {
 async function loadProjectFilesForDelete(type) {
     const projectSelect = document.getElementById('deleteProjectSelect');
     const fileSelectGroup = document.getElementById('deleteFileSelectGroup');
-    const fileSelect = document.getElementById('deleteFileSelect');
+    const filesList = document.getElementById('deleteFilesList');
     
     const projectName = projectSelect.value;
     
@@ -3011,19 +3351,58 @@ async function loadProjectFilesForDelete(type) {
         if (!response.ok) throw new Error('Failed to load files');
         
         const files = await response.json();
+        const fileItems = files.filter(f => f.type === 'file');
         
-        fileSelect.innerHTML = '<option value="">-- Choose File --</option>' +
-            files.filter(f => f.type === 'file').map(f => `<option value="${f.name}" data-sha="${f.sha}">${f.name}</option>`).join('');
-        
-        if (files.filter(f => f.type === 'file').length === 0) {
-            fileSelect.innerHTML += '<option value="" disabled>No files found</option>';
+        if (fileItems.length === 0) {
+            filesList.innerHTML = '<p style="color: rgba(255,255,255,0.5); padding: 1rem; text-align: center;">No files found</p>';
+        } else {
+            filesList.innerHTML = fileItems.map(f => `
+                <div class="file-checkbox-item">
+                    <label>
+                        <input type="checkbox" class="file-checkbox" value="${f.name}" data-sha="${f.sha}" onchange="updateSelectedCount()">
+                        <span class="file-checkbox-label">
+                            <i class="fas fa-file"></i> ${f.name}
+                        </span>
+                    </label>
+                </div>
+            `).join('');
         }
         
         fileSelectGroup.style.display = 'block';
+        updateSelectedCount();
         
     } catch (error) {
         console.error('Error loading files:', error);
         alert('Failed to load files: ' + error.message);
+    }
+}
+
+// Select/Deselect all files
+function selectAllFiles(select) {
+    const checkboxes = document.querySelectorAll('.file-checkbox');
+    checkboxes.forEach(cb => cb.checked = select);
+    updateSelectedCount();
+}
+
+// Update selected file count
+function updateSelectedCount() {
+    const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+    const countDiv = document.getElementById('selectedCount');
+    const warning = document.getElementById('deleteWarning');
+    const actions = document.getElementById('deleteActions');
+    
+    if (countDiv) {
+        if (checkboxes.length > 0) {
+            countDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${checkboxes.length} file(s) selected`;
+            countDiv.style.color = 'rgba(102, 126, 234, 0.9)';
+            if (warning) warning.style.display = 'block';
+            if (actions) actions.style.display = 'flex';
+        } else {
+            countDiv.innerHTML = 'No files selected';
+            countDiv.style.color = 'rgba(255,255,255,0.6)';
+            if (warning) warning.style.display = 'none';
+            if (actions) actions.style.display = 'none';
+        }
     }
 }
 
@@ -3045,59 +3424,81 @@ function toggleDeleteActions() {
 // Perform Solo file delete
 async function performSoloFileDelete(type) {
     const projectSelect = document.getElementById('deleteProjectSelect');
-    const fileSelect = document.getElementById('deleteFileSelect');
+    const selectedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
     
     const projectName = projectSelect.value;
-    const fileName = fileSelect.value;
     
-    if (!projectName || !fileName) {
-        alert('Please select a file to delete');
+    if (!projectName || selectedCheckboxes.length === 0) {
+        alert('Please select at least one file to delete');
         return;
     }
     
-    if (!confirm(`Are you sure you want to delete "${fileName}" from ${projectName}? This cannot be undone.`)) {
+    const fileCount = selectedCheckboxes.length;
+    const fileNames = Array.from(selectedCheckboxes).map(cb => cb.value).join(', ');
+    
+    if (!confirm(`Are you sure you want to delete ${fileCount} file(s) from ${projectName}?\n\nFiles: ${fileNames}\n\nThis cannot be undone.`)) {
         return;
     }
     
-    const selectedOption = fileSelect.options[fileSelect.selectedIndex];
-    const sha = selectedOption.getAttribute('data-sha');
-    
-    showUploadProgress('Deleting file...');
+    showUploadProgress(`Deleting ${fileCount} file(s)...`);
     
     try {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
         const token = getGitHubToken();
-        const filePath = `Solo-Projects/${projectName}/${fileName}`;
         
-        // Delete file
-        const deleteResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `Delete ${fileName} from ${projectName}`,
-                sha: sha
-            })
-        });
+        let successCount = 0;
+        let failCount = 0;
         
-        if (!deleteResponse.ok) {
-            throw new Error('Failed to delete file');
+        for (const checkbox of selectedCheckboxes) {
+            const fileName = checkbox.value;
+            const sha = checkbox.getAttribute('data-sha');
+            const filePath = `Solo-Projects/${projectName}/${fileName}`;
+            
+            try {
+                // Delete file
+                const deleteResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Delete ${fileName} from ${projectName}`,
+                        sha: sha
+                    })
+                });
+                
+                if (deleteResponse.ok) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    console.error(`Failed to delete ${fileName}`);
+                }
+            } catch (error) {
+                failCount++;
+                console.error(`Error deleting ${fileName}:`, error);
+            }
         }
         
         closeUploadDialog();
-        showToast('Success', `File deleted successfully!`);
         
-        setTimeout(() => {
-            refreshSolidworksContent(type);
-        }, 1500);
+        if (successCount > 0) {
+            showToast('Success', `${successCount} file(s) deleted successfully!`);
+            
+            setTimeout(() => {
+                refreshSolidworksContent(type);
+            }, 1500);
+        }
+        
+        if (failCount > 0) {
+            alert(`${failCount} file(s) failed to delete. Check console for details.`);
+        }
         
     } catch (error) {
         console.error('Delete error:', error);
-        alert('Failed to delete file: ' + error.message);
+        alert('Failed to delete files: ' + error.message);
         closeUploadDialog();
     }
 }
@@ -3687,6 +4088,9 @@ window.saveUploadToken = saveUploadToken;
 window.selectUploadMode = selectUploadMode;
 window.performFileUpload = performFileUpload;
 window.performQuestionUpload = performQuestionUpload;
+window.updateQuestionFileName = updateQuestionFileName;
+window.updateProblemFileName = updateProblemFileName;
+window.performProblemUpload = performProblemUpload;
 window.loadDayFilesForUpdate = loadDayFilesForUpdate;
 window.performFileUpdate = performFileUpdate;
 window.loadDayFilesForDelete = loadDayFilesForDelete;
@@ -3696,7 +4100,8 @@ window.performFileDelete = performFileDelete;
 window.loadProjectFilesForUpdate = loadProjectFilesForUpdate;
 window.performSoloFileUpdate = performSoloFileUpdate;
 window.loadProjectFilesForDelete = loadProjectFilesForDelete;
-window.toggleDeleteActions = toggleDeleteActions;
+window.selectAllFiles = selectAllFiles;
+window.updateSelectedCount = updateSelectedCount;
 window.performSoloFileDelete = performSoloFileDelete;
 
 // Make SOLIDWORKS functions globally accessible
@@ -3704,6 +4109,8 @@ window.openGitHubBrowser = openGitHubBrowser;
 window.closeSolidworksWindow = closeSolidworksWindow;
 window.refreshSolidworksContent = refreshSolidworksContent;
 window.uploadToSolidworks = uploadToSolidworks;
+window.viewQuestionFile = viewQuestionFile;
+window.closeQuestionViewer = closeQuestionViewer;
 
 // Scroll to central upload card (Auto-Update System)
 window.scrollToUploadCard = function() {
