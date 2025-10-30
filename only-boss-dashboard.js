@@ -1,13 +1,10 @@
-// Only Boss Dashboard - Management & Security
+// Only Boss Dashboard - Full Featured Management & Security
 // Two-step authentication protected
 
 // ===========================
 // SECURITY CHECK
 // ===========================
-
-function isAuthenticated() {
-    return sessionStorage.getItem('admin_session') !== null;
-}
+function isAuthenticated() { return sessionStorage.getItem('admin_session') !== null; }
 
 // Redirect if not authenticated
 if (!isAuthenticated()) {
@@ -18,7 +15,6 @@ if (!isAuthenticated()) {
 // ===========================
 // PASSWORD HASHING
 // ===========================
-
 async function hashPassword(password) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -31,7 +27,6 @@ async function hashPassword(password) {
 // ===========================
 // SESSION MANAGEMENT
 // ===========================
-
 const logoutBtn = document.getElementById('logoutBtn');
 const lastLoginElement = document.getElementById('lastLogin');
 const lastPwdChangeElement = document.getElementById('lastPwdChange');
@@ -55,14 +50,13 @@ logoutBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to logout?')) {
         console.log('🚪 Logging out...');
         sessionStorage.removeItem('admin_session');
-    window.location.href = './only-boss.html';
+        window.location.href = './only-boss.html';
     }
 });
 
 // ===========================
 // SECURITY SETTINGS MODAL
 // ===========================
-
 const securityCard = document.getElementById('securityCard');
 const securityModal = document.getElementById('securityModal');
 const closeModal = document.getElementById('closeModal');
@@ -135,7 +129,6 @@ function showError(message) {
 // ===========================
 // CHANGE PRIMARY PASSWORD
 // ===========================
-
 savePrimaryBtn.addEventListener('click', async () => {
     const current = currentPrimaryInput.value.trim();
     const newPass = newPrimaryInput.value.trim();
@@ -189,7 +182,6 @@ savePrimaryBtn.addEventListener('click', async () => {
 // ===========================
 // CHANGE SECONDARY PASSWORD
 // ===========================
-
 saveSecondaryBtn.addEventListener('click', async () => {
     const current = currentSecondaryInput.value.trim();
     const newPass = newSecondaryInput.value.trim();
@@ -243,7 +235,6 @@ saveSecondaryBtn.addEventListener('click', async () => {
 // ===========================
 // INACTIVITY TIMEOUT
 // ===========================
-
 let inactivityTimer;
 
 function resetInactivityTimer() {
@@ -252,7 +243,7 @@ function resetInactivityTimer() {
         console.log('⏱️ Session timeout due to inactivity');
         alert('Session expired due to inactivity. Please login again.');
         sessionStorage.removeItem('admin_session');
-    window.location.href = './only-boss.html';
+        window.location.href = './only-boss.html';
     }, 30 * 60 * 1000); // 30 minutes
 }
 
@@ -266,7 +257,6 @@ resetInactivityTimer();
 // ===========================
 // INITIALIZATION
 // ===========================
-
 console.log('👑 Only Boss Dashboard loaded');
 console.log('✅ Session authenticated');
 console.log('⏱️ Auto-logout in 30 minutes of inactivity');

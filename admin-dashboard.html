@@ -456,6 +456,18 @@
         </div>
     </div>
 
+    <!-- Auto-redirect notice -->
+    <script>
+        // Check if user came from old admin-portal or navigated directly
+        // Auto-redirect to unified Only Boss dashboard
+        const isDirectNavigation = !document.referrer.includes('admin-portal.html');
+        if (isDirectNavigation) {
+            console.log('🔄 Redirecting to unified Only Boss dashboard...');
+            setTimeout(() => {
+                window.location.href = './only-boss-dashboard.html';
+            }, 2000);
+        }
+    </script>
     <script src="admin-dashboard.js"></script>
 </body>
 </html>
