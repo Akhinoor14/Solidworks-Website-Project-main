@@ -5,42 +5,16 @@
     'use strict';
 
     // ========== PASSWORD PROTECTION ==========
-    // Default password: 'MOUnoor21014'
-    // Default password hash (SHA-256 of 'MOUnoor21014')
     // Password is hashed for security - never stored in plain text
     // To change default: run generate-hash.html with your new password
-    const DEFAULT_PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212';
+    const DEFAULT_PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212'; // SHA-256 hash
     
     // Get stored password hash (or use default)
     let storedPasswordHash = localStorage.getItem('uploader_pwd_hash') || DEFAULT_PASSWORD_HASH;
 
     // ========== PASSWORD RESET INSTRUCTIONS ==========
-    // যদি password ভুলে যান, তাহলে reset করার উপায়:
-    //
-    // Method 1: Browser Console (সবচেয়ে সহজ)
-    // -----------------------------------------
-    // 1. Browser এ F12 চাপুন (Developer Tools)
-    // 2. Console tab এ যান
-    // 3. এই command টাইপ করুন:
-    //    localStorage.removeItem('uploader_pwd_hash'); location.reload();
-    // 4. Page reload হলে default password 'MOUnoor21014' দিয়ে login করুন
-    //
-    // Method 2: Browser Settings থেকে
-    // -----------------------------------------
-    // 1. Browser Settings → Privacy → Clear browsing data
-    // 2. শুধু "Site data" বা "Local storage" select করুন
-    // 3. Clear data
-    // 4. Page reload করুন, default password 'MOUnoor21014' কাজ করবে
-    //
-    // Method 3: Code থেকে Default Password পরিবর্তন
-    // -----------------------------------------
-    // 1. generate-hash.html খুলুন browser এ
-    // 2. Console এ নতুন password এর hash পাবেন (SHA-256)
-    // 3. উপরে DEFAULT_PASSWORD_HASH এ নতুন hash paste করুন
-    // 4. File save করুন
-    //
+    // If you forget your password, reset using browser console or update the hash.
     // Security Note: Hash দেখে password বের করা practically impossible!
-    // ========================================================
 
     const passwordScreen = document.getElementById('passwordScreen');
     const mainContainer = document.getElementById('mainContainer');

@@ -5,18 +5,19 @@
 </head>
 <body>
     <h2>Password Hash Generator</h2>
-    <p>Password: MOUnoor21014</p>
+    <!-- Password value removed for security -->
     <div id="hash"></div>
     
     <script>
         async function generateHash() {
-            const password = 'MOUnoor21014';
+            // Enter your password here
+            const password = '';
             const msgBuffer = new TextEncoder().encode(password);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             document.getElementById('hash').innerHTML = `<strong>Hash:</strong> ${hash}`;
-            console.log('SHA-256 Hash for MOUnoor21014:', hash);
+            // Hash value logging removed for security
         }
         generateHash();
     </script>
