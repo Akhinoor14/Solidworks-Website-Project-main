@@ -1,3 +1,4 @@
+@"
 // Only Boss Portal - Two-Step Authentication System (Unified)
 
 // ===========================
@@ -92,27 +93,28 @@ function showError(errorElement, message) {
 
 async function verifyStep1() {
     const password = password1Input.value.trim();
-    if (!password) { showError(error1, '⚠️ Please enter the primary password'); return; }
-    const hash = await hashPassword(password);
+    if (!password) { 
+        showError(error1, '⚠️ Please enter the primary password'); 
+        return; 
+    }
     
     // Debug logging
-        // Debug logging
-        console.log('%c🔍 DEBUG STEP 1:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
-        console.log('Entered password:', password);
-        console.log('Password length:', password.length);
+    console.log('%c🔍 DEBUG STEP 1:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
+    console.log('Entered password:', password);
+    console.log('Password length:', password.length);
     
-        const hash = await hashPassword(password);
-        console.log('Generated hash:', hash);
-        console.log('Generated hash length:', hash.length);
-        console.log('Expected hash:', primaryHash);
-        console.log('Expected hash length:', primaryHash.length);
-        console.log('Hashes match:', hash === primaryHash);
-        console.log('Character comparison:');
-        for (let i = 0; i < Math.max(hash.length, primaryHash.length); i++) {
-            if (hash[i] !== primaryHash[i]) {
-                console.log(`  Position ${i}: '${hash[i]}' vs '${primaryHash[i]}'`);
-            }
+    const hash = await hashPassword(password);
+    console.log('Generated hash:', hash);
+    console.log('Generated hash length:', hash.length);
+    console.log('Expected hash:', primaryHash);
+    console.log('Expected hash length:', primaryHash.length);
+    console.log('Hashes match:', hash === primaryHash);
+    console.log('Character comparison:');
+    for (let i = 0; i < Math.max(hash.length, primaryHash.length); i++) {
+        if (hash[i] !== primaryHash[i]) {
+            console.log(\`  Position \${i}: '\${hash[i]}' vs '\${primaryHash[i]}'\`);
         }
+    }
     
     if (hash === primaryHash) { 
         console.log('✅ Step 1 passed'); 
@@ -128,15 +130,28 @@ async function verifyStep1() {
 
 async function verifyStep2() {
     const password = password2Input.value.trim();
-    if (!password) { showError(error2, '⚠️ Please enter the secondary password'); return; }
-    const hash = await hashPassword(password);
+    if (!password) { 
+        showError(error2, '⚠️ Please enter the secondary password'); 
+        return; 
+    }
     
     // Debug logging
-    console.log('🔍 Debug Step 2:');
-    console.log('  Entered password:', password);
-    console.log('  Generated hash:', hash);
-    console.log('  Expected hash:', secondaryHash);
-    console.log('  Match:', hash === secondaryHash);
+    console.log('%c🔍 DEBUG STEP 2:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
+    console.log('Entered password:', password);
+    console.log('Password length:', password.length);
+    
+    const hash = await hashPassword(password);
+    console.log('Generated hash:', hash);
+    console.log('Generated hash length:', hash.length);
+    console.log('Expected hash:', secondaryHash);
+    console.log('Expected hash length:', secondaryHash.length);
+    console.log('Hashes match:', hash === secondaryHash);
+    console.log('Character comparison:');
+    for (let i = 0; i < Math.max(hash.length, secondaryHash.length); i++) {
+        if (hash[i] !== secondaryHash[i]) {
+            console.log(\`  Position \${i}: '\${hash[i]}' vs '\${secondaryHash[i]}'\`);
+        }
+    }
     
     if (hash === secondaryHash) {
         console.log('✅ Step 2 passed');
@@ -185,11 +200,26 @@ window.togglePassword = function(inputId, button) {
 // ===========================
 // INITIALIZATION
 // ===========================
-if (isAuthenticated()) { console.log('🔓 Session active - Redirecting to dashboard...'); window.location.href = './only-boss-dashboard.html'; }
-else { console.log('🔒 Only Boss Portal Loaded - Two-step authentication required'); password1Input.focus(); }
+if (isAuthenticated()) { 
+    console.log('🔓 Session active - Redirecting to dashboard...'); 
+    window.location.href = './only-boss-dashboard.html'; 
+} else { 
+    console.log('🔒 Only Boss Portal Loaded - Two-step authentication required'); 
+    password1Input.focus(); 
+}
 
 let inactivityTimer;
-function resetInactivityTimer(){ clearTimeout(inactivityTimer); inactivityTimer=setTimeout(()=>{ if(isAuthenticated()){ console.log('⏱️ Session timeout - Logging out...'); clearSession(); alert('Session expired due to inactivity'); window.location.reload(); } }, 30*60*1000); }
+function resetInactivityTimer(){ 
+    clearTimeout(inactivityTimer); 
+    inactivityTimer=setTimeout(()=>{ 
+        if(isAuthenticated()){ 
+            console.log('⏱️ Session timeout - Logging out...'); 
+            clearSession(); 
+            alert('Session expired due to inactivity'); 
+            window.location.reload(); 
+        } 
+    }, 30*60*1000); 
+}
 ['mousedown','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt, resetInactivityTimer));
 resetInactivityTimer();
 
@@ -219,3 +249,4 @@ window.clearAuthData = function() {
     location.reload();
 };
 console.log('%c💡 Tip: Run clearAuthData() to reset all stored passwords', 'color: #00aaff;');
+"@ | Out-File -FilePath "only-boss-auth-FIXED.js" -Encoding UTF8
