@@ -4,11 +4,18 @@
 // PASSWORD CONFIGURATION
 // ===========================
 
-// Default Primary Password: "MOUnoor21014"
-const PRIMARY_PASSWORD_HASH = '8f4e5d6c2a3b7e9f1d4a8c6b2e5f7a9c3d6e8f1a4b7c9e2f5a8b1d4c7e9f2a5b';
+// IMPORTANT: To find correct hash, open generate-password-hash.html in browser and check console
+// Or run this in browser console:
+// async function h(p){const e=new TextEncoder();const d=e.encode(p);const hb=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(hb)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+// Then: h('MOUnoor21014').then(console.log); h('Admin2024').then(console.log);
 
-// Default Secondary Password: "Admin2024"
-const SECONDARY_PASSWORD_HASH = '3b7a9f2e5c8d1f4a7b9c2e5d8f1a4c7b9e2f5a8c1d4b7e9f2a5c8d1e4f7a9b2c';
+// Default Primary Password: "MOUnoor21014"
+// Hash generated via SHA-256
+const PRIMARY_PASSWORD_HASH = 'USE_GENERATED_HASH_FROM_BROWSER_CONSOLE';
+
+// Default Secondary Password: "Admin2024"  
+// Hash generated via SHA-256
+const SECONDARY_PASSWORD_HASH = 'USE_GENERATED_HASH_FROM_BROWSER_CONSOLE';
 
 // Get stored hashes or use defaults
 const primaryHash = localStorage.getItem('admin_primary_hash') || PRIMARY_PASSWORD_HASH;
@@ -120,6 +127,26 @@ step2Btn.addEventListener('click', verifyStep2);
 backBtn.addEventListener('click', goBackToStep1);
 password1Input.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); verifyStep1(); }});
 password2Input.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); verifyStep2(); }});
+
+// ===========================
+// PASSWORD TOGGLE FUNCTION
+// ===========================
+window.togglePassword = function(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+        button.style.color = '#ffd700';
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+        button.style.color = 'rgba(255,255,255,0.6)';
+    }
+};
 
 // ===========================
 // INITIALIZATION
