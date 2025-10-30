@@ -6291,42 +6291,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Typing animation completed, cursor stopped');
         }, 3200);
     }
-
-    // ========== HIDDEN UPLOAD PANEL ACCESS ==========
-    
-    // Method 1: Keyboard shortcut - Ctrl+Shift+U (or Cmd+Shift+U on Mac)
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'u') {
-            e.preventDefault();
-            console.log('🔑 Upload panel shortcut activated!');
-            window.location.href = './profile-uploader.html';
-        }
-    });
-
-    // Method 2: Triple-click on profile photo
-    const profilePhoto = document.getElementById('profile-photo');
-    if (profilePhoto) {
-        let clickCount = 0;
-        let clickTimer = null;
-
-        profilePhoto.addEventListener('click', (e) => {
-            e.stopPropagation();
-            clickCount++;
-
-            // Reset after 1 second
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => {
-                clickCount = 0;
-            }, 1000);
-
-            // 3 rapid clicks = open upload panel
-            if (clickCount === 3) {
-                console.log('🔑 Upload panel click activated!');
-                window.location.href = './profile-uploader.html';
-                clickCount = 0;
-            }
-        });
-    }
 });
 
 // Counter Animation
