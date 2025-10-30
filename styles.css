@@ -142,6 +142,22 @@
     box-shadow: 0 8px 24px rgba(204,0,0,0.3);
 }
 
+/* Only Boss portal crown link */
+.nav-crown {
+    color: #ffd700; /* gold */
+    font-size: 20px;
+    line-height: 1;
+    padding: 8px 12px;
+    text-shadow: 0 0 8px rgba(255,215,0,0.9), 0 0 16px rgba(255,215,0,0.6);
+}
+.nav-crown i { color: inherit; }
+.nav-crown:hover {
+    color: #ffe680;
+    background: rgba(255,215,0,0.08);
+    border-color: rgba(255,215,0,0.35);
+    box-shadow: 0 6px 18px rgba(255,215,0,0.25);
+}
+
 .theme-toggle {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.15);
