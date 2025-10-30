@@ -336,12 +336,15 @@ function displayFileTree(contents, owner, repo, currentPath) {
             try {
                 if (typeof window.cvDownload === 'function') return window.cvDownload();
                 const a = document.createElement('a');
-                a.href = './CV/2313014%20CV.pdf';
+                a.href = './CV/2313014 CV.pdf';
                 a.download = 'Md_Akhinoor_Islam_CV.pdf';
-                document.body.appendChild(a); a.click(); a.remove();
+                a.style.display = 'none';
+                document.body.appendChild(a); 
+                a.click(); 
+                setTimeout(() => a.remove(), 100);
             } catch(err) {
                 console.warn('downloadResume fallback error:', err);
-                window.open('./CV/2313014%20CV.pdf', '_blank');
+                window.open('./CV/2313014 CV.pdf', '_blank');
             }
         };
     }
@@ -6278,25 +6281,16 @@ function createParticleSystem() {
     animate();
 }
 
-// Typing Animation
-function initializeTypingAnimation() {
+// Typing Animation - Stop cursor after animation completes
+document.addEventListener('DOMContentLoaded', () => {
     const typingElement = document.querySelector('.typing-text');
-    if (!typingElement) return;
-    
-    const text = typingElement.getAttribute('data-text');
-    let index = 0;
-    
-    function type() {
-        if (index < text.length) {
-            typingElement.textContent += text.charAt(index);
-            index++;
-            setTimeout(type, 100);
-        }
+    if (typingElement) {
+        // Animation duration is 3s, add small delay
+        setTimeout(() => {
+            typingElement.classList.add('typed');
+        }, 3500);
     }
-    
-    // Start typing after page load
-    setTimeout(type, 1000);
-}
+});
 
 // Counter Animation
 function initializeCounterAnimation() {

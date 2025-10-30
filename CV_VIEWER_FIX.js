@@ -173,25 +173,26 @@ function cvDownload() {
     const a = document.createElement('a');
     a.href = './CV/2313014 CV.pdf';
     a.download = 'Md_Akhinoor_Islam_CV.pdf';
+    a.style.display = 'none';
     document.body.appendChild(a); 
     a.click(); 
-    a.remove();
+    setTimeout(() => a.remove(), 100);
 }
 
 function cvToggleFullscreen() {
     const modal = document.querySelector('.cv-modal');
     if (!modal) return;
     const icon = document.getElementById('cv-fullscreen-icon');
-    if (!document.fullscreenElement) {
-        modal.requestFullscreen?.().then(() => { 
-            if (icon) icon.className = 'fas fa-compress'; 
-            console.log('📺 Fullscreen enabled');
-        });
+    
+    // Toggle fullscreen class instead of browser fullscreen
+    if (!modal.classList.contains('fullscreen')) {
+        modal.classList.add('fullscreen');
+        if (icon) icon.className = 'fas fa-compress';
+        console.log('📺 Modal fullscreen enabled');
     } else {
-        document.exitFullscreen?.().then(() => { 
-            if (icon) icon.className = 'fas fa-expand'; 
-            console.log('📺 Fullscreen disabled');
-        });
+        modal.classList.remove('fullscreen');
+        if (icon) icon.className = 'fas fa-expand';
+        console.log('📺 Modal fullscreen disabled');
     }
 }
 
@@ -222,8 +223,16 @@ function updateCVZoom() {
 }
 
 function __cvKeyHandler(e) {
-    if (e.key === 'Escape' && !document.fullscreenElement) {
-        closeCVViewer();
+    // Escape closes the viewer (or exits modal fullscreen first)
+    if (e.key === 'Escape') {
+        const modal = document.querySelector('.cv-modal');
+        if (modal && modal.classList.contains('fullscreen')) {
+            // Exit modal fullscreen first
+            cvToggleFullscreen();
+        } else {
+            // Close viewer
+            closeCVViewer();
+        }
         return;
     }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') { 
@@ -249,6 +258,7 @@ function __cvKeyHandler(e) {
 }
 
 // Expose controls globally
+window.openCVViewer = openCVViewer;
 window.closeCVViewer = closeCVViewer;
 window.cvPrint = cvPrint;
 window.cvDownload = cvDownload;
