@@ -362,6 +362,39 @@
     color: #ffffff;
 }
 
+/* Only Boss Portal Button - Special Golden Crown Theme */
+.btn-boss-portal {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.04));
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.12);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+.btn-boss-portal .btn-icon {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    animation: crownPulse 2s ease-in-out infinite;
+}
+
+.btn-boss-portal:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.16), rgba(255, 215, 0, 0.08));
+    border-color: rgba(255, 215, 0, 0.55);
+    color: #ffe680;
+    box-shadow: 0 6px 24px rgba(255, 215, 0, 0.25);
+    transform: translateY(-3px);
+}
+
+@keyframes crownPulse {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    }
+    50% { 
+        transform: scale(1.1) rotate(-5deg);
+        filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.9));
+    }
+}
+
 /* Expertise showcase */
 .expertise-showcase {
     display: grid;
@@ -8810,6 +8843,126 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 .sync-notification.success {
     background: linear-gradient(135deg, #28a745, #218838);
     border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.sync-notification.error {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+/* ===============================
+   Floating Only Boss Portal Button (FAB)
+   =============================== */
+.fab-boss-portal {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffd700;
+    font-size: 28px;
+    text-decoration: none;
+    box-shadow: 
+        0 6px 24px rgba(255, 215, 0, 0.25),
+        0 0 40px rgba(255, 215, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    cursor: pointer;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+}
+
+.fab-boss-portal:hover {
+    transform: translateY(-4px) scale(1.1);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.12));
+    border-color: rgba(255, 215, 0, 0.65);
+    box-shadow: 
+        0 12px 36px rgba(255, 215, 0, 0.35),
+        0 0 60px rgba(255, 215, 0, 0.25);
+    color: #ffe680;
+}
+
+.fab-boss-portal i {
+    animation: fabCrownFloat 3s ease-in-out infinite;
+}
+
+@keyframes fabCrownFloat {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-3px) rotate(-8deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-3px) rotate(8deg);
+    }
+}
+
+.fab-boss-portal::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.fab-boss-portal:hover::before {
+    opacity: 1;
+}
+
+/* Tooltip for FAB */
+.fab-boss-portal::after {
+    content: 'Only Boss Portal';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(40, 0, 0, 0.95), rgba(20, 0, 0, 0.9));
+    backdrop-filter: blur(10px);
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.fab-boss-portal:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-4px);
+}
+
+/* Mobile responsive for FAB */
+@media (max-width: 768px) {
+    .fab-boss-portal {
+        width: 56px;
+        height: 56px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 24px;
+    }
+    
+    .fab-boss-portal::after {
+        display: none; /* Hide tooltip on mobile */
+    }
 }
 
 .sync-notification.error {

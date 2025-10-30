@@ -1,5 +1,4 @@
 // Only Boss Portal - Two-Step Authentication System (Unified)
-// Copied from admin-auth.js and updated to new routes
 
 // ===========================
 // PASSWORD CONFIGURATION
