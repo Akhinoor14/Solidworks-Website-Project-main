@@ -113,9 +113,26 @@
                 <br><br>
                 Redirecting to Only Boss dashboard...
             </div>
+                <!-- Logout button for admin portal -->
+                <button class="btn btn-secondary" id="logoutBtn" style="margin-top: 20px;">Logout</button>
         </div>
     </div>
 
     <script src="only-boss-auth.js"></script>
+    </body>
+    <script>
+    // Logout button logic: clears session and redirects to login
+    document.addEventListener('DOMContentLoaded', function() {
+        var logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Clear sessionStorage/localStorage if used for auth
+                sessionStorage.removeItem('bossAuth');
+                localStorage.removeItem('bossAuth');
+                window.location.href = 'only-boss.html';
+            });
+        }
+    });
+    </script>
 </body>
 </html>

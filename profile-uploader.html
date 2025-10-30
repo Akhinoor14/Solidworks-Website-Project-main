@@ -346,11 +346,17 @@
         <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Enter password to continue</p>
         
         <div class="password-input-group">
-            <input type="password" 
-                   class="password-input" 
-                   id="passwordInput" 
-                   placeholder="Enter password"
-                   autocomplete="off">
+                <div style="position: relative;">
+                    <input type="password" 
+                           class="password-input" 
+                           id="passwordInput" 
+                           placeholder="Enter password"
+                           autocomplete="off"
+                           style="padding-right: 45px;">
+                    <button type="button" class="password-toggle" onclick="togglePassword('passwordInput', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 18px; padding: 5px 8px;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
         </div>
         
         <button class="password-btn" id="unlockBtn">Unlock</button>
@@ -365,12 +371,15 @@
 
     <!-- Main Upload Interface (hidden by default) -->
     <div class="container" id="mainContainer" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h1 style="margin: 0;">🖼️ Profile Photo Uploader</h1>
-            <button id="settingsBtn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
-                ⚙️ Settings
-            </button>
-        </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h1 style="margin: 0;">🖼️ Profile Photo Uploader</h1>
+                <div style="display: flex; gap: 10px;">
+                    <button id="settingsBtn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                        ⚙️ Settings
+                    </button>
+                    <button id="logoutBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">🚪 Logout</button>
+                </div>
+            </div>
         <p class="subtitle">Private Upload Interface - Auto-rename & GitHub Sync</p>
 
         <!-- Password Change Panel (hidden) -->
@@ -472,5 +481,31 @@
     </div>
 
     <script src="profile-uploader.js"></script>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script>
+    // Password view toggle function
+    function togglePassword(inputId, btn) {
+        var input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+            input.type = 'password';
+            btn.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    }
+
+    // Logout button logic: clears session and redirects to admin dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        var logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('uploader_unlocked');
+                window.location.href = 'only-boss-dashboard.html';
+            });
+        }
+    });
+    </script>
 </body>
 </html>
