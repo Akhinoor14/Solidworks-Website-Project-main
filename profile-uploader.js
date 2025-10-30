@@ -176,6 +176,24 @@
     // Initialize password change functionality
     setupPasswordChange();
 
+    // Logout fallback: keyboard shortcut (Ctrl+L)
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key.toLowerCase() === 'l') {
+            sessionStorage.removeItem('uploader_unlocked');
+            alert('Logout successful! Admin dashboard e niye jawa hobe.');
+            window.location.href = 'only-boss-dashboard.html';
+        }
+    });
+
+    // If logout button exists, attach logic
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            sessionStorage.removeItem('uploader_unlocked');
+            window.location.href = 'only-boss-dashboard.html';
+        });
+    }
+
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
