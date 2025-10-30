@@ -4,18 +4,11 @@
 // PASSWORD CONFIGURATION
 // ===========================
 
-// IMPORTANT: To find correct hash, open generate-password-hash.html in browser and check console
-// Or run this in browser console:
-// async function h(p){const e=new TextEncoder();const d=e.encode(p);const hb=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(hb)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-// Then: h('MOUnoor21014').then(console.log); h('Admin2024').then(console.log);
-
 // Default Primary Password: "MOUnoor21014"
-// Hash generated via SHA-256
-const PRIMARY_PASSWORD_HASH = 'USE_GENERATED_HASH_FROM_BROWSER_CONSOLE';
+const PRIMARY_PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212';
 
-// Default Secondary Password: "Admin2024"  
-// Hash generated via SHA-256
-const SECONDARY_PASSWORD_HASH = 'USE_GENERATED_HASH_FROM_BROWSER_CONSOLE';
+// Default Secondary Password: "Admin2024"
+const SECONDARY_PASSWORD_HASH = '16387b09507b019016e1fb92dd9bb92d8700abf415d728a64f80094942f6dd5c';
 
 // Get stored hashes or use defaults
 const primaryHash = localStorage.getItem('admin_primary_hash') || PRIMARY_PASSWORD_HASH;
