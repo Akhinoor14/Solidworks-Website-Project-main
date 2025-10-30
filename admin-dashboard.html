@@ -28,9 +28,9 @@
             align-items: center;
         }
 
-        .header h1 {
-            color: #cc0000;
-            font-size: 1.8rem;
+            .header h1 {
+                color: #cc0000;
+                font-size: 1.8rem;
         }
 
         .header-info {
@@ -205,9 +205,9 @@
             transition: all 0.3s ease;
         }
 
-        .close-btn:hover {
-            color: #cc0000;
-        }
+            .close-btn:hover {
+                color: #cc0000;
+            }
 
         .form-group {
             margin-bottom: 20px;
@@ -294,12 +294,26 @@
                 grid-template-columns: 1fr;
             }
         }
+            /* Boss icon highlight */
+            .boss-icon {
+                font-size: 2.2rem;
+                margin-right: 8px;
+                vertical-align: -4px;
+                text-shadow: 0 0 8px rgba(204, 0, 0, 0.8), 0 0 16px rgba(204, 0, 0, 0.5);
+            }
+            /* Boss icon highlight */
+            .boss-icon {
+                font-size: 2.2rem;
+                margin-right: 8px;
+                vertical-align: -4px;
+                text-shadow: 0 0 8px rgba(255, 215, 0, 0.9), 0 0 16px rgba(255, 215, 0, 0.6);
+            }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>� Only Boss Dashboard</h1>
+        <h1><span class="boss-icon" aria-hidden="true">👑</span> Only Boss Dashboard</h1>
         <div class="header-info">
             <div class="session-info">
                 Session Active | Last Login: <span id="lastLogin">--</span>

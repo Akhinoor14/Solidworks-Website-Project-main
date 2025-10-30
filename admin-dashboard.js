@@ -267,6 +267,6 @@ resetInactivityTimer();
 // INITIALIZATION
 // ===========================
 
-console.log('� Only Boss Dashboard loaded');
+console.log('👑 Only Boss Dashboard loaded');
 console.log('✅ Session authenticated');
 console.log('⏱️ Auto-logout in 30 minutes of inactivity');

@@ -270,6 +270,6 @@ resetInactivityTimer();
 // CONSOLE COMMANDS (for debugging)
 // ===========================
 
-console.log('%c� Only Boss Security System', 'color: #cc0000; font-size: 16px; font-weight: bold;');
+console.log('%c👑 Only Boss Security System', 'color: #cc0000; font-size: 16px; font-weight: bold;');
 console.log('%cTwo-step authentication active', 'color: #00cc00;');
 console.log('%c⚠️ Unauthorized access is logged and monitored', 'color: #ff9900;');
