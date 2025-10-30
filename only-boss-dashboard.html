@@ -77,11 +77,9 @@
                         <span>Only Boss</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </li>
+                    <li class="nav-item">
+                        <button id="dashboardLogoutBtn" class="logout-btn" style="margin-left: 10px;">🚪 Logout</button>
+                    </li>
             </ul>
             <div class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
         </div>
@@ -200,5 +198,18 @@
     </div>
 
     <script src="only-boss-dashboard.js"></script>
+    <script>
+    // Dashboard logout button logic
+    document.addEventListener('DOMContentLoaded', function() {
+        var logoutBtn = document.getElementById('dashboardLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('bossAuth');
+                localStorage.removeItem('bossAuth');
+                window.location.href = 'only-boss.html';
+            });
+        }
+    });
+    </script>
     </body>
     </html>

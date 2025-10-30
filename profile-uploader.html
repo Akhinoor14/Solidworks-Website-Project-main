@@ -374,11 +374,15 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h1 style="margin: 0;">🖼️ Profile Photo Uploader</h1>
                     <div style="display: flex; gap: 10px;">
-                        <button id="backBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">⬅️ Back</button>
-                        <button id="settingsBtn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
-                            ⚙️ Settings
-                        </button>
-                        <button id="logoutBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">🚪 Logout</button>
+                            <button id="settingsBtn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">⚙️</span> <span>Settings</span>
+                            </button>
+                            <button id="backBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">⬅️</span> <span>Back</span>
+                            </button>
+                            <button id="logoutBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">🚪</span> <span>Logout</span>
+                            </button>
                     </div>
             </div>
         <p class="subtitle">Private Upload Interface - Auto-rename & GitHub Sync</p>
@@ -482,6 +486,13 @@
     </div>
 
     <script src="profile-uploader.js"></script>
+    <style>
+        /* Button alignment for header */
+        #mainContainer > div[style*="display: flex"] button {
+            min-width: 90px;
+            justify-content: center;
+        }
+    </style>
     <script>
     // Back button logic: returns to admin dashboard
     document.addEventListener('DOMContentLoaded', function() {
