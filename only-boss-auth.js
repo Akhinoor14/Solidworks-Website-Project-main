@@ -1,41 +1,33 @@
-@"
-// Only Boss Portal - Two-Step Authentication System (Unified)
+// Only Boss Portal - Simple Two-Step Authentication System
+// New Simple Logic - Direct Password Verification
 
 // ===========================
 // PASSWORD CONFIGURATION
 // ===========================
 
-// Default Primary Password: "MOUnoor21014"
-const PRIMARY_PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212';
-
-// Default Secondary Password: "Admin2024"
-const SECONDARY_PASSWORD_HASH = '16387b09507b019016e1fb92dd9bb92d8700abf415d728a64f80094942f6dd5c';
-
-// Get stored hashes or use defaults
-const primaryHash = localStorage.getItem('admin_primary_hash') || PRIMARY_PASSWORD_HASH;
-const secondaryHash = localStorage.getItem('admin_secondary_hash') || SECONDARY_PASSWORD_HASH;
+// Hardcoded passwords - Simple and Direct
+const PASSWORDS = {
+    primary: "MOUnoor21014",
+    secondary: "Admin2024"
+};
 
 // ===========================
-// SECURITY UTILITIES
+// SESSION MANAGEMENT
 // ===========================
-
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-}
 
 function createSession() {
-    const sessionId = crypto.randomUUID();
-    sessionStorage.setItem('admin_session', sessionId);
-    localStorage.setItem('admin_last_login', new Date().toISOString());
+    const sessionId = 'boss_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    sessionStorage.setItem('only_boss_session', sessionId);
+    sessionStorage.setItem('login_time', new Date().toISOString());
 }
 
-function isAuthenticated() { return sessionStorage.getItem('admin_session') !== null; }
-function clearSession() { sessionStorage.removeItem('admin_session'); }
+function isAuthenticated() { 
+    return sessionStorage.getItem('only_boss_session') !== null; 
+}
+
+function clearSession() { 
+    sessionStorage.clear();
+}
 
 // ===========================
 // UI STATE MANAGEMENT
@@ -59,6 +51,7 @@ function showStep(stepNumber) {
     step1Element.classList.remove('active');
     step2Element.classList.remove('active');
     successElement.classList.remove('active');
+    
     if (stepNumber === 1) {
         step1Element.classList.add('active');
         stepIndicator1.classList.add('active');
@@ -83,103 +76,102 @@ function showError(errorElement, message) {
     errorElement.textContent = message;
     errorElement.style.display = 'block';
     errorElement.parentElement.classList.add('shake');
-    setTimeout(() => { errorElement.parentElement.classList.remove('shake'); }, 300);
-    setTimeout(() => { errorElement.style.display = 'none'; }, 3000);
+    setTimeout(() => { 
+        errorElement.parentElement.classList.remove('shake'); 
+    }, 300);
+    setTimeout(() => { 
+        errorElement.style.display = 'none'; 
+    }, 3000);
 }
 
 // ===========================
-// AUTHENTICATION LOGIC
+// SIMPLE AUTHENTICATION LOGIC
 // ===========================
 
-async function verifyStep1() {
+function verifyStep1() {
     const password = password1Input.value.trim();
-    if (!password) { 
-        showError(error1, '⚠️ Please enter the primary password'); 
-        return; 
+    
+    console.log('🔍 Step 1 Check:');
+    console.log('Entered:', password);
+    console.log('Expected:', PASSWORDS.primary);
+    console.log('Match:', password === PASSWORDS.primary);
+    
+    if (!password) {
+        showError(error1, '⚠️ Please enter the primary password');
+        return;
     }
     
-    // Debug logging
-    console.log('%c🔍 DEBUG STEP 1:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
-    console.log('Entered password:', password);
-    console.log('Password length:', password.length);
-    
-    const hash = await hashPassword(password);
-    console.log('Generated hash:', hash);
-    console.log('Generated hash length:', hash.length);
-    console.log('Expected hash:', primaryHash);
-    console.log('Expected hash length:', primaryHash.length);
-    console.log('Hashes match:', hash === primaryHash);
-    console.log('Character comparison:');
-    for (let i = 0; i < Math.max(hash.length, primaryHash.length); i++) {
-        if (hash[i] !== primaryHash[i]) {
-            console.log(\`  Position \${i}: '\${hash[i]}' vs '\${primaryHash[i]}'\`);
-        }
-    }
-    
-    if (hash === primaryHash) { 
-        console.log('✅ Step 1 passed'); 
-        showStep(2); 
-        password1Input.value = ''; 
-    } else { 
-        console.log('❌ Step 1 failed'); 
-        showError(error1, '❌ Incorrect primary password'); 
-        password1Input.value = ''; 
-        password1Input.focus(); 
+    if (password === PASSWORDS.primary) {
+        console.log('✅ Step 1 PASSED');
+        showStep(2);
+        password1Input.value = '';
+    } else {
+        console.log('❌ Step 1 FAILED');
+        showError(error1, '❌ Incorrect primary password');
+        password1Input.value = '';
+        password1Input.focus();
     }
 }
 
-async function verifyStep2() {
+function verifyStep2() {
     const password = password2Input.value.trim();
-    if (!password) { 
-        showError(error2, '⚠️ Please enter the secondary password'); 
-        return; 
+    
+    console.log('🔍 Step 2 Check:');
+    console.log('Entered:', password);
+    console.log('Expected:', PASSWORDS.secondary);
+    console.log('Match:', password === PASSWORDS.secondary);
+    
+    if (!password) {
+        showError(error2, '⚠️ Please enter the secondary password');
+        return;
     }
     
-    // Debug logging
-    console.log('%c🔍 DEBUG STEP 2:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
-    console.log('Entered password:', password);
-    console.log('Password length:', password.length);
-    
-    const hash = await hashPassword(password);
-    console.log('Generated hash:', hash);
-    console.log('Generated hash length:', hash.length);
-    console.log('Expected hash:', secondaryHash);
-    console.log('Expected hash length:', secondaryHash.length);
-    console.log('Hashes match:', hash === secondaryHash);
-    console.log('Character comparison:');
-    for (let i = 0; i < Math.max(hash.length, secondaryHash.length); i++) {
-        if (hash[i] !== secondaryHash[i]) {
-            console.log(\`  Position \${i}: '\${hash[i]}' vs '\${secondaryHash[i]}'\`);
-        }
-    }
-    
-    if (hash === secondaryHash) {
-        console.log('✅ Step 2 passed');
+    if (password === PASSWORDS.secondary) {
+        console.log('✅ Step 2 PASSED - Creating session...');
         createSession();
         showStep(3);
-        setTimeout(() => { window.location.href = './only-boss-dashboard.html'; }, 1500);
-    } else { 
-        console.log('❌ Step 2 failed'); 
-        showError(error2, '❌ Incorrect secondary password'); 
-        password2Input.value=''; 
-        password2Input.focus(); 
+        setTimeout(() => { 
+            window.location.href = './only-boss-dashboard.html'; 
+        }, 1500);
+    } else {
+        console.log('❌ Step 2 FAILED');
+        showError(error2, '❌ Incorrect secondary password');
+        password2Input.value = '';
+        password2Input.focus();
     }
 }
 
-function goBackToStep1() { password2Input.value = ''; showStep(1); }
+function goBackToStep1() { 
+    password2Input.value = ''; 
+    showStep(1); 
+}
 
 // ===========================
 // EVENT LISTENERS
 // ===========================
+
 step1Btn.addEventListener('click', verifyStep1);
 step2Btn.addEventListener('click', verifyStep2);
 backBtn.addEventListener('click', goBackToStep1);
-password1Input.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); verifyStep1(); }});
-password2Input.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); verifyStep2(); }});
+
+password1Input.addEventListener('keypress', (e) => { 
+    if (e.key === 'Enter') { 
+        e.preventDefault(); 
+        verifyStep1(); 
+    }
+});
+
+password2Input.addEventListener('keypress', (e) => { 
+    if (e.key === 'Enter') { 
+        e.preventDefault(); 
+        verifyStep2(); 
+    }
+});
 
 // ===========================
 // PASSWORD TOGGLE FUNCTION
 // ===========================
+
 window.togglePassword = function(inputId, button) {
     const input = document.getElementById(inputId);
     const icon = button.querySelector('i');
@@ -200,53 +192,36 @@ window.togglePassword = function(inputId, button) {
 // ===========================
 // INITIALIZATION
 // ===========================
-if (isAuthenticated()) { 
-    console.log('🔓 Session active - Redirecting to dashboard...'); 
-    window.location.href = './only-boss-dashboard.html'; 
-} else { 
-    console.log('🔒 Only Boss Portal Loaded - Two-step authentication required'); 
-    password1Input.focus(); 
+
+if (isAuthenticated()) {
+    console.log('🔓 Active session found - Redirecting to dashboard...');
+    window.location.href = './only-boss-dashboard.html';
+} else {
+    console.log('🔒 Only Boss Portal Loaded');
+    console.log('📋 Primary Password:', PASSWORDS.primary);
+    console.log('📋 Secondary Password:', PASSWORDS.secondary);
+    password1Input.focus();
 }
 
+// Session timeout - 30 minutes
 let inactivityTimer;
-function resetInactivityTimer(){ 
-    clearTimeout(inactivityTimer); 
-    inactivityTimer=setTimeout(()=>{ 
-        if(isAuthenticated()){ 
-            console.log('⏱️ Session timeout - Logging out...'); 
-            clearSession(); 
-            alert('Session expired due to inactivity'); 
-            window.location.reload(); 
-        } 
-    }, 30*60*1000); 
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        if (isAuthenticated()) {
+            console.log('⏱️ Session timeout');
+            clearSession();
+            alert('Session expired due to inactivity');
+            window.location.reload();
+        }
+    }, 30 * 60 * 1000);
 }
-['mousedown','keydown','scroll','touchstart'].forEach(evt=>document.addEventListener(evt, resetInactivityTimer));
+
+['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => 
+    document.addEventListener(evt, resetInactivityTimer)
+);
 resetInactivityTimer();
 
-console.log('%c👑 Only Boss Security System', 'color: #cc0000; font-size: 16px; font-weight: bold;');
-console.log('%cTwo-step authentication active', 'color: #00cc00;');
-console.log('%c⚠️ Unauthorized access is logged and monitored', 'color: #ff9900;');
-
-// Debug: Show stored vs default hashes
-console.log('%c🔍 Hash Configuration:', 'color: #ffaa00; font-weight: bold;');
-console.log('Primary Hash (default):', PRIMARY_PASSWORD_HASH);
-console.log('Primary Hash (stored):', localStorage.getItem('admin_primary_hash') || 'NOT SET');
-console.log('Secondary Hash (default):', SECONDARY_PASSWORD_HASH);
-console.log('Secondary Hash (stored):', localStorage.getItem('admin_secondary_hash') || 'NOT SET');
-console.log('Active Primary:', primaryHash);
-console.log('Active Secondary:', secondaryHash);
-
-// Helper function to clear old data
-window.clearAuthData = function() {
-    localStorage.removeItem('admin_primary_hash');
-    localStorage.removeItem('admin_secondary_hash');
-    localStorage.removeItem('admin_session');
-    localStorage.removeItem('admin_last_login');
-    localStorage.removeItem('admin_last_pwd_change');
-    sessionStorage.clear();
-    console.log('✅ All auth data cleared! Reload the page.');
-    alert('Authentication data cleared. Page will reload.');
-    location.reload();
-};
-console.log('%c💡 Tip: Run clearAuthData() to reset all stored passwords', 'color: #00aaff;');
-"@ | Out-File -FilePath "only-boss-auth-FIXED.js" -Encoding UTF8
+console.log('%c👑 Only Boss Security System', 'color: #ffd700; font-size: 18px; font-weight: bold;');
+console.log('%c✅ Simple Direct Authentication Active', 'color: #00ff00; font-size: 14px;');
+console.log('%c⚠️ Passwords visible in console for debugging', 'color: #ff9900;');
