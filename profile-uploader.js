@@ -9,7 +9,7 @@
     // Default password hash (SHA-256 of 'MOUnoor21014')
     // Password is hashed for security - never stored in plain text
     // To change default: run generate-hash.html with your new password
-    const DEFAULT_PASSWORD_HASH = '8f4e5d6c2a3b7e9f1d4c8a6b2e5f3d7c9a1b4e6d8f2c5a7b3e9d1f6c4a8b2e5d';
+    const DEFAULT_PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212';
     
     // Get stored password hash (or use default)
     let storedPasswordHash = localStorage.getItem('uploader_pwd_hash') || DEFAULT_PASSWORD_HASH;
@@ -35,11 +35,11 @@
     // Method 3: Code থেকে Default Password পরিবর্তন
     // -----------------------------------------
     // 1. generate-hash.html খুলুন browser এ
-    // 2. Console এ নতুন password এর hash পাবেন
+    // 2. Console এ নতুন password এর hash পাবেন (SHA-256)
     // 3. উপরে DEFAULT_PASSWORD_HASH এ নতুন hash paste করুন
     // 4. File save করুন
     //
-    // Security Note: Hash দেখে password বের করা impossible!
+    // Security Note: Hash দেখে password বের করা practically impossible!
     // ========================================================
 
     const passwordScreen = document.getElementById('passwordScreen');
@@ -127,6 +127,8 @@
                 confirmPasswordInput.value = '';
                 passwordChangeStatus.style.display = 'none';
             }
+            // Focus on current password input for better UX
+            setTimeout(() => currentPasswordInput.focus(), 100);
         });
 
         // Cancel button
