@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Photo Uploader - Private</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Password screen */
+        .password-screen {
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.8));
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .password-screen h2 {
+            color: #cc0000;
+            margin-bottom: 20px;
+        }
+
+        .password-input-group {
+            margin: 30px 0;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(20, 0, 0, 0.4);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #cc0000;
+            background: rgba(20, 0, 0, 0.6);
+        }
+
+        .password-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #cc0000, #990000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .password-btn:hover {
+            background: linear-gradient(135deg, #dd0000, #aa0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .password-error {
+            color: #ff6666;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.8));
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #cc0000;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(204, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(204, 0, 0, 0.7);
+            background: rgba(204, 0, 0, 0.05);
+        }
+
+        .upload-area.dragging {
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin: 20px 0;
+        }
+
+        .file-item {
+            background: rgba(20, 0, 0, 0.4);
+            border: 1px solid rgba(204, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(204, 0, 0, 0.3);
+        }
+
+        .file-details {
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .remove-btn {
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: rgba(204, 0, 0, 0.4);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #cc0000, #990000);
+            color: white;
+        }
+
+        .btn-upload:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dd0000, #aa0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(0, 200, 0, 0.2);
+            border: 1px solid rgba(0, 200, 0, 0.4);
+            color: #00ff00;
+        }
+
+        .status.error {
+            background: rgba(200, 0, 0, 0.2);
+            border: 1px solid rgba(200, 0, 0, 0.4);
+            color: #ff6666;
+        }
+
+        .status.info {
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+            color: #ffaa66;
+        }
+
+        .progress {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #cc0000, #ff4444);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .info-box {
+            background: rgba(204, 0, 0, 0.1);
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #cc0000;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 5px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .info-box li::before {
+            content: '✓ ';
+            color: #cc0000;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Screen -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="lock-icon">🔒</div>
+        <h2>Access Restricted</h2>
+        <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Enter password to continue</p>
+        
+        <div class="password-input-group">
+            <input type="password" 
+                   class="password-input" 
+                   id="passwordInput" 
+                   placeholder="Enter password"
+                   autocomplete="off">
+        </div>
+        
+        <button class="password-btn" id="unlockBtn">Unlock</button>
+        <div class="password-error" id="passwordError">❌ Incorrect password</div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
+                Forgot password? Contact administrator.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Upload Interface (hidden by default) -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h1 style="margin: 0;">🖼️ Profile Photo Uploader</h1>
+            <button id="settingsBtn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                ⚙️ Settings
+            </button>
+        </div>
+        <p class="subtitle">Private Upload Interface - Auto-rename & GitHub Sync</p>
+
+        <!-- Password Change Panel (hidden) -->
+        <div id="passwordChangePanel" style="display: none; background: rgba(204,0,0,0.1); border: 2px solid rgba(204,0,0,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: #cc0000;">🔐 Change Password</h3>
+            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 15px;">
+                🔒 Passwords are encrypted using SHA-256 hashing for security
+            </p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Current Password:</label>
+                <input type="password" id="currentPassword" placeholder="Enter current password" 
+                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">New Password:</label>
+                <input type="password" id="newPassword" placeholder="Enter new password (min 6 characters)" 
+                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Confirm New Password:</label>
+                <input type="password" id="confirmPassword" placeholder="Re-enter new password" 
+                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button id="savePasswordBtn" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #cc0000, #990000); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer;">
+                    Save New Password
+                </button>
+                <button id="cancelPasswordBtn" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; cursor: pointer;">
+                    Cancel
+                </button>
+            </div>
+            
+            <div id="passwordChangeStatus" style="margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; display: none;"></div>
+            
+            <!-- Password Reset Section (inside settings) -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(204,0,0,0.3);">
+                <h4 style="color: #cc0000; margin-bottom: 10px;">🔓 Password Reset Guide</h4>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+                    If you forget your password, use these methods to reset:
+                </p>
+                
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong style="color: #ff6666; font-size: 0.9rem;">Method 1: Browser Console</strong>
+                    <ol style="margin: 10px 0 0 20px; font-size: 0.8rem; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                        <li>Press <kbd style="background: rgba(204,0,0,0.3); padding: 2px 5px; border-radius: 3px; font-size: 0.75rem;">F12</kbd> → Console tab</li>
+                        <li>Paste this command:
+                            <div style="background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; margin: 6px 0; font-family: monospace; font-size: 0.75rem; color: #00ff00; word-break: break-all;">
+                                localStorage.removeItem('uploader_pwd_hash'); location.reload();
+                            </div>
+                        </li>
+                        <li>Press Enter → Page reloads → Use default password</li>
+                    </ol>
+                </div>
+                
+                <div style="background: rgba(204,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #cc0000;">
+                    <strong style="color: #ff6666; font-size: 0.85rem;">⚠️ Security Note:</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.6);">
+                        Default password is stored in code comments. Only you have access to this panel after login.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>How it works:</h3>
+            <ul>
+                <li>Select or drag multiple photos</li>
+                <li>Auto-renamed as PP1.jpg, PP2.jpg, PP3.jpg...</li>
+                <li>Automatically uploaded to GitHub images/ folder</li>
+                <li>Slideshow will detect them automatically</li>
+            </ul>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📤</div>
+            <p style="font-size: 1.1rem; margin-bottom: 8px;">Click or drag photos here</p>
+            <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.5);">Supports JPG, PNG, WebP</p>
+            <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" multiple>
+        </div>
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="actions">
+            <button class="btn-clear" id="clearBtn">Clear All</button>
+            <button class="btn-upload" id="uploadBtn" disabled>Upload to GitHub</button>
+        </div>
+
+        <div class="progress" id="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script src="profile-uploader.js"></script>
+</body>
+</html>

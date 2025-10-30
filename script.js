@@ -6291,6 +6291,30 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Typing animation completed, cursor stopped');
         }, 3200);
     }
+
+    // Hidden upload panel access (5 clicks on profile photo)
+    const profilePhoto = document.getElementById('profile-photo');
+    if (profilePhoto) {
+        let clickCount = 0;
+        let clickTimer = null;
+
+        profilePhoto.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clickCount++;
+
+            // Reset after 2 seconds
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+            }, 2000);
+
+            // 5 rapid clicks = open upload panel
+            if (clickCount === 5) {
+                window.location.href = './profile-uploader.html';
+                clickCount = 0;
+            }
+        });
+    }
 });
 
 // Counter Animation

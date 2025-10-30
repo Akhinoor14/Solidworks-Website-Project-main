@@ -217,11 +217,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.hero-image::before {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    background: 
+        radial-gradient(circle at center, rgba(204, 0, 0, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse at center, rgba(150, 0, 0, 0.04) 20%, transparent 60%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
 }
 
 .profile-container {
     width: 100%;
-    max-width: 320px;
+    max-width: 380px;
+    position: relative;
+    z-index: 1;
 }
 
 /* Tech stack badges */
@@ -3451,8 +3466,8 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .profile-frame {
-    width: 240px;
-    height: 240px;
+    width: 320px;
+    height: 320px;
     position: relative;
     margin: 0 auto;
 }
@@ -3604,8 +3619,8 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 
 #profile-photo-wrapper {
     display: block;
-    width: 240px;
-    height: 240px;
+    width: 320px;
+    height: 320px;
     border-radius: 50%;
     overflow: hidden;
     position: relative;
