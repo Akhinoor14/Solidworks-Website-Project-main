@@ -8,7 +8,6 @@ function isAuthenticated() { return sessionStorage.getItem('admin_session') !== 
 
 // Redirect if not authenticated
 if (!isAuthenticated()) {
-    console.log('❌ Unauthorized access - Redirecting to login...');
     window.location.href = './only-boss.html';
 }
 
@@ -48,8 +47,9 @@ if (lastPwdChange) {
 // Logout function
 logoutBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to logout?')) {
-        console.log('🚪 Logging out...');
         sessionStorage.removeItem('admin_session');
+        // Also clear any stale session data
+        localStorage.removeItem('admin_last_login');
         window.location.href = './only-boss.html';
     }
 });
@@ -240,14 +240,13 @@ let inactivityTimer;
 function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
-        console.log('⏱️ Session timeout due to inactivity');
         alert('Session expired due to inactivity. Please login again.');
         sessionStorage.removeItem('admin_session');
+        localStorage.removeItem('admin_last_login');
         window.location.href = './only-boss.html';
     }, 30 * 60 * 1000); // 30 minutes
 }
 
-// Track user activity
 ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(event => {
     document.addEventListener(event, resetInactivityTimer);
 });
@@ -257,6 +256,4 @@ resetInactivityTimer();
 // ===========================
 // INITIALIZATION
 // ===========================
-console.log('👑 Only Boss Dashboard loaded');
-console.log('✅ Session authenticated');
-console.log('⏱️ Auto-logout in 30 minutes of inactivity');
+// All unnecessary console logs removed for security.
