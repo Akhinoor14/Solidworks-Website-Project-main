@@ -17,16 +17,16 @@ const PASSWORDS = {
 
 function createSession() {
     const sessionId = 'boss_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    sessionStorage.setItem('only_boss_session', sessionId);
-    sessionStorage.setItem('login_time', new Date().toISOString());
+    sessionStorage.setItem('admin_session', sessionId);  // CHANGED: admin_session to match dashboard
+    localStorage.setItem('admin_last_login', new Date().toISOString());  // ADDED: for dashboard display
 }
 
 function isAuthenticated() { 
-    return sessionStorage.getItem('only_boss_session') !== null; 
+    return sessionStorage.getItem('admin_session') !== null;  // CHANGED: admin_session
 }
 
 function clearSession() { 
-    sessionStorage.clear();
+    sessionStorage.removeItem('admin_session');  // CHANGED: specific removal
 }
 
 // ===========================
