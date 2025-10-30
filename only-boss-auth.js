@@ -96,11 +96,23 @@ async function verifyStep1() {
     const hash = await hashPassword(password);
     
     // Debug logging
-    console.log('🔍 Debug Step 1:');
-    console.log('  Entered password:', password);
-    console.log('  Generated hash:', hash);
-    console.log('  Expected hash:', primaryHash);
-    console.log('  Match:', hash === primaryHash);
+        // Debug logging
+        console.log('%c🔍 DEBUG STEP 1:', 'color: #ffaa00; font-size: 14px; font-weight: bold;');
+        console.log('Entered password:', password);
+        console.log('Password length:', password.length);
+    
+        const hash = await hashPassword(password);
+        console.log('Generated hash:', hash);
+        console.log('Generated hash length:', hash.length);
+        console.log('Expected hash:', primaryHash);
+        console.log('Expected hash length:', primaryHash.length);
+        console.log('Hashes match:', hash === primaryHash);
+        console.log('Character comparison:');
+        for (let i = 0; i < Math.max(hash.length, primaryHash.length); i++) {
+            if (hash[i] !== primaryHash[i]) {
+                console.log(`  Position ${i}: '${hash[i]}' vs '${primaryHash[i]}'`);
+            }
+        }
     
     if (hash === primaryHash) { 
         console.log('✅ Step 1 passed'); 
