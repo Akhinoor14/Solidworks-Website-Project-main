@@ -94,20 +94,49 @@ async function verifyStep1() {
     const password = password1Input.value.trim();
     if (!password) { showError(error1, '⚠️ Please enter the primary password'); return; }
     const hash = await hashPassword(password);
-    if (hash === primaryHash) { console.log('✅ Step 1 passed'); showStep(2); password1Input.value = ''; }
-    else { console.log('❌ Step 1 failed'); showError(error1, '❌ Incorrect primary password'); password1Input.value = ''; password1Input.focus(); }
+    
+    // Debug logging
+    console.log('🔍 Debug Step 1:');
+    console.log('  Entered password:', password);
+    console.log('  Generated hash:', hash);
+    console.log('  Expected hash:', primaryHash);
+    console.log('  Match:', hash === primaryHash);
+    
+    if (hash === primaryHash) { 
+        console.log('✅ Step 1 passed'); 
+        showStep(2); 
+        password1Input.value = ''; 
+    } else { 
+        console.log('❌ Step 1 failed'); 
+        showError(error1, '❌ Incorrect primary password'); 
+        password1Input.value = ''; 
+        password1Input.focus(); 
+    }
 }
 
 async function verifyStep2() {
     const password = password2Input.value.trim();
     if (!password) { showError(error2, '⚠️ Please enter the secondary password'); return; }
     const hash = await hashPassword(password);
+    
+    // Debug logging
+    console.log('🔍 Debug Step 2:');
+    console.log('  Entered password:', password);
+    console.log('  Generated hash:', hash);
+    console.log('  Expected hash:', secondaryHash);
+    console.log('  Match:', hash === secondaryHash);
+    
     if (hash === secondaryHash) {
         console.log('✅ Step 2 passed');
         createSession();
         showStep(3);
         setTimeout(() => { window.location.href = './only-boss-dashboard.html'; }, 1500);
-    } else { console.log('❌ Step 2 failed'); showError(error2, '❌ Incorrect secondary password'); password2Input.value=''; password2Input.focus(); }
+    } else { 
+        console.log('❌ Step 2 failed'); 
+        showError(error2, '❌ Incorrect secondary password'); 
+        password2Input.value=''; 
+        password2Input.focus(); 
+    }
 }
 
 function goBackToStep1() { password2Input.value = ''; showStep(1); }
@@ -155,3 +184,26 @@ resetInactivityTimer();
 console.log('%c👑 Only Boss Security System', 'color: #cc0000; font-size: 16px; font-weight: bold;');
 console.log('%cTwo-step authentication active', 'color: #00cc00;');
 console.log('%c⚠️ Unauthorized access is logged and monitored', 'color: #ff9900;');
+
+// Debug: Show stored vs default hashes
+console.log('%c🔍 Hash Configuration:', 'color: #ffaa00; font-weight: bold;');
+console.log('Primary Hash (default):', PRIMARY_PASSWORD_HASH);
+console.log('Primary Hash (stored):', localStorage.getItem('admin_primary_hash') || 'NOT SET');
+console.log('Secondary Hash (default):', SECONDARY_PASSWORD_HASH);
+console.log('Secondary Hash (stored):', localStorage.getItem('admin_secondary_hash') || 'NOT SET');
+console.log('Active Primary:', primaryHash);
+console.log('Active Secondary:', secondaryHash);
+
+// Helper function to clear old data
+window.clearAuthData = function() {
+    localStorage.removeItem('admin_primary_hash');
+    localStorage.removeItem('admin_secondary_hash');
+    localStorage.removeItem('admin_session');
+    localStorage.removeItem('admin_last_login');
+    localStorage.removeItem('admin_last_pwd_change');
+    sessionStorage.clear();
+    console.log('✅ All auth data cleared! Reload the page.');
+    alert('Authentication data cleared. Page will reload.');
+    location.reload();
+};
+console.log('%c💡 Tip: Run clearAuthData() to reset all stored passwords', 'color: #00aaff;');
