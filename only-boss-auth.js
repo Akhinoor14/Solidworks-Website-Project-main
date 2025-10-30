@@ -5,8 +5,7 @@
 // PASSWORD CONFIGURATION
 // ===========================
 
-// Secure password hash (SHA-256 of 'MOUnoor21014')
-const PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212';
+const PASSWORD_HASH = 'd7a5f8187ceede6c093445dad128e1b4ea2a21d91348a219b947ce2b70416212'; // SHA-256 hash only
 
 // ===========================
 // SESSION MANAGEMENT
