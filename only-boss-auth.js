@@ -120,8 +120,11 @@ window.togglePassword = function(inputId, button) {
 // INITIALIZATION
 // ===========================
 
+// Always require password unless authenticated in this session
 if (isAuthenticated()) {
     window.location.href = './only-boss-dashboard.html';
+    // Prevent auto-login after reload by requiring new session each time
+    sessionStorage.removeItem('admin_session');
 } else {
     passwordInput.focus();
 }
