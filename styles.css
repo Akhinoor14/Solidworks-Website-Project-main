@@ -8853,9 +8853,9 @@ h1, h2, h3, h4, h5, h6, p, span, div {
    Floating Only Boss Portal Button (FAB)
    =============================== */
 .fab-boss-portal {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
     width: 64px;
     height: 64px;
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
@@ -8863,7 +8863,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     -webkit-backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 215, 0, 0.4);
     border-radius: 50%;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     color: #ffd700;
@@ -8873,9 +8873,11 @@ h1, h2, h3, h4, h5, h6, p, span, div {
         0 6px 24px rgba(255, 215, 0, 0.25),
         0 0 40px rgba(255, 215, 0, 0.15);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 9999;
+    z-index: 99999 !important;
     cursor: pointer;
     text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .fab-boss-portal:hover {
