@@ -6285,10 +6285,11 @@ function createParticleSystem() {
 document.addEventListener('DOMContentLoaded', () => {
     const typingElement = document.querySelector('.typing-text');
     if (typingElement) {
-        // Animation duration is 3s, add small delay
+        // Animation duration is 3s, wait a bit longer to ensure completion
         setTimeout(() => {
             typingElement.classList.add('typed');
-        }, 3500);
+            console.log('Typing animation completed, cursor stopped');
+        }, 3200);
     }
 });
 
