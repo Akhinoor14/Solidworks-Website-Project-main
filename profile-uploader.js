@@ -30,10 +30,7 @@
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    // Check if already unlocked (session storage)
-    if (sessionStorage.getItem('uploader_unlocked') === 'true') {
-        showMainInterface();
-    }
+    // Always require password on page load
 
     // Password unlock handler
     async function checkPassword() {
