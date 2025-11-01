@@ -34,6 +34,16 @@
                 document.body.style.overflow = 'hidden';
 
                 const panel = document.querySelector('.password-panel') || passwordScreen;
+                // hide underlying main container completely while overlay is active
+                try {
+                    if (mainContainer) {
+                        mainContainer.style.visibility = 'hidden';
+                        mainContainer.style.pointerEvents = 'none';
+                        mainContainer.setAttribute('aria-hidden', 'true');
+                    }
+                } catch (err) {
+                    // ignore
+                }
                 const focusable = panel.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
                 if (focusable.length) {
                     const firstFocusable = focusable[0];
@@ -95,6 +105,14 @@
         // hide overlay and restore page behaviour
         passwordScreen.style.display = 'none';
         document.body.style.overflow = '';
+        // restore main container visibility
+        try {
+            if (mainContainer) {
+                mainContainer.style.visibility = '';
+                mainContainer.style.pointerEvents = '';
+                mainContainer.removeAttribute('aria-hidden');
+            }
+        } catch (err) {}
         mainContainer.style.display = 'block';
         initializeUploader();
     }
