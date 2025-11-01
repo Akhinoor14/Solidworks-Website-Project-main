@@ -261,7 +261,13 @@ async function handleUpload(event, type) {
                 progressPanel.classList.remove('show');
                 event.target.reset();
                 clearFiles(prefix);
-                alert(`✅ Upload complete!\n${successCount} file(s) uploaded to GitHub.\n\nPath: ${type}/Day ${day}/${type} ${number}/`);
+                
+                // Show success with redirect option
+                const viewProjects = confirm(`✅ Upload complete!\n${successCount} file(s) uploaded to GitHub.\n\nPath: ${type}/Day ${day}/${type} ${number}/\n\n📌 Click OK to view your projects now, or Cancel to continue uploading.`);
+                
+                if (viewProjects) {
+                    window.location.href = 'projects.html';
+                }
             }, 2000);
         } else {
             progressText.textContent = `⚠️ Uploaded ${successCount} file(s), ${failCount} failed`;
@@ -277,19 +283,24 @@ async function handleUpload(event, type) {
 }
 
 // ============================================
-// SOLO PROJECT UPLOAD
+// SOLO PROJECT UPLOAD - COMPLETE IMPLEMENTATION
 // ============================================
 
 async function handleSoloUpload(event) {
     event.preventDefault();
     
-    const projectNumber = document.getElementById('solo-project-number').value;
     const mode = document.getElementById('solo-mode').value;
     const fileInput = document.getElementById('solo-files');
     const files = fileInput.files;
+    const commitMsg = document.getElementById('solo-commit-msg').value.trim();
 
-    if (!projectNumber || !mode || files.length === 0) {
-        alert('❌ Please fill all fields and select files');
+    if (!mode) {
+        alert('❌ Please select upload mode (New Project or Add to Existing)');
+        return;
+    }
+
+    if (files.length === 0) {
+        alert('❌ Please select at least one file');
         return;
     }
 
@@ -299,24 +310,43 @@ async function handleSoloUpload(event) {
         return;
     }
 
+    // Get project name based on mode
+    const isNewProject = mode === 'new';
+    let projectName;
+    
+    if (isNewProject) {
+        projectName = document.getElementById('solo-project-name').value.trim();
+        if (!projectName) {
+            alert('❌ Please enter a project name');
+            return;
+        }
+    } else {
+        projectName = document.getElementById('solo-project-select').value;
+        if (!projectName) {
+            alert('❌ Please select an existing project');
+            return;
+        }
+    }
+
     const progressPanel = document.getElementById('solo-progress');
     const progressBar = document.getElementById('solo-bar');
     const progressText = document.getElementById('solo-text');
     
     progressPanel.classList.add('show');
     progressBar.style.width = '0%';
-    progressText.textContent = 'Starting solo project upload...';
+    progressText.textContent = isNewProject ? `Creating new project: ${projectName}...` : `Adding to ${projectName}...`;
 
     try {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
         const basePath = 'Solo-Projects';
-        const projectName = `Project ${projectNumber}`;
+        const message = commitMsg || `Upload files to ${projectName}`;
         
         let successCount = 0;
         let failCount = 0;
+        const uploadedFiles = [];
         
-        progressText.textContent = `Uploading ${files.length} files to ${projectName}...`;
+        progressText.textContent = `Uploading ${files.length} file(s) to ${projectName}...`;
         
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -328,7 +358,7 @@ async function handleSoloUpload(event) {
                 const content = await readFileAsBase64(file);
                 const uploadPath = `${basePath}/${projectName}/${file.name}`;
                 
-                // Check if file exists
+                // Check if file exists (for overwrite detection)
                 let sha = null;
                 try {
                     const checkResponse = await fetch(
@@ -345,18 +375,18 @@ async function handleSoloUpload(event) {
                         sha = existingFile.sha;
                     }
                 } catch (e) {
-                    // File doesn't exist
+                    // File doesn't exist, which is fine
                 }
                 
-                // Upload
+                // Upload file
                 const uploadData = {
-                    message: `Upload ${file.name} to ${projectName} (${mode})`,
+                    message: `${message} - ${file.name}`,
                     content: content,
                     branch: 'main'
                 };
                 
                 if (sha) {
-                    uploadData.sha = sha;
+                    uploadData.sha = sha; // Include SHA for updates
                 }
                 
                 const uploadResponse = await fetch(
@@ -374,6 +404,12 @@ async function handleSoloUpload(event) {
                 
                 if (uploadResponse.ok) {
                     successCount++;
+                    const result = await uploadResponse.json();
+                    uploadedFiles.push({
+                        name: file.name,
+                        path: result.content.path,
+                        url: result.content.html_url
+                    });
                 } else {
                     failCount++;
                     console.error(`Failed to upload ${file.name}:`, await uploadResponse.text());
@@ -389,15 +425,31 @@ async function handleSoloUpload(event) {
         
         if (failCount === 0) {
             progressText.textContent = `✅ Successfully uploaded ${successCount} file(s) to ${projectName}!`;
+            
+            // Log success
+            console.log('Solo project upload complete:', uploadedFiles);
+            
             setTimeout(() => {
                 progressPanel.classList.remove('show');
                 event.target.reset();
                 clearFiles('solo');
-                alert(`✅ Solo project upload complete!\n${successCount} file(s) uploaded.\n\nPath: Solo-Projects/${projectName}/`);
+                
+                // Reset form
+                if (isNewProject) {
+                    document.getElementById('solo-project-name').value = '';
+                }
+                document.getElementById('solo-commit-msg').value = '';
+                
+                // Show success with redirect option
+                const viewProjects = confirm(`✅ Upload complete!\n${successCount} file(s) uploaded to ${projectName}.\n\nPath: Solo-Projects/${projectName}/\n\n📌 Click OK to view your Solo Projects now, or Cancel to continue uploading.`);
+                
+                if (viewProjects) {
+                    window.location.href = 'projects.html';
+                }
             }, 2000);
         } else {
             progressText.textContent = `⚠️ Uploaded ${successCount}, ${failCount} failed`;
-            alert(`⚠️ Upload partially complete:\n✅ Success: ${successCount}\n❌ Failed: ${failCount}`);
+            alert(`⚠️ Upload partially complete:\n✅ Success: ${successCount}\n❌ Failed: ${failCount}\n\nCheck console for details.`);
         }
 
     } catch (error) {
@@ -408,20 +460,101 @@ async function handleSoloUpload(event) {
     }
 }
 
+// Load existing Solo Projects for dropdown
+async function loadSoloProjects() {
+    const select = document.getElementById('solo-project-select');
+    if (!select) return;
+    
+    const token = getGitHubToken();
+    if (!token) {
+        select.innerHTML = '<option value="">⚠️ Token required</option>';
+        return;
+    }
+    
+    select.innerHTML = '<option value="">Loading projects...</option>';
+    
+    try {
+        const owner = 'Akhinoor14';
+        const repo = 'SOLIDWORKS-Projects';
+        
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Solo-Projects`, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) {
+            select.innerHTML = '<option value="">No projects found</option>';
+            return;
+        }
+        
+        const items = await response.json();
+        const projects = items.filter(item => item.type === 'dir' && /^Project\s*\d+|^Project\s+.+/i.test(item.name));
+        
+        if (projects.length === 0) {
+            select.innerHTML = '<option value="">No projects found</option>';
+            return;
+        }
+        
+        // Sort projects by number
+        projects.sort((a, b) => {
+            const numA = parseInt(a.name.replace(/Project\s*/i, '')) || 0;
+            const numB = parseInt(b.name.replace(/Project\s*/i, '')) || 0;
+            return numA - numB;
+        });
+        
+        let html = '<option value="">-- Choose Project --</option>';
+        projects.forEach(project => {
+            html += `<option value="${project.name}">${project.name}</option>`;
+        });
+        select.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        select.innerHTML = '<option value="">Error loading projects</option>';
+    }
+}
+
+// Toggle Solo Project upload mode
+function toggleSoloMode() {
+    const mode = document.getElementById('solo-mode').value;
+    const newProjectField = document.getElementById('solo-new-project-field');
+    const existingProjectField = document.getElementById('solo-existing-project-field');
+    
+    if (mode === 'new') {
+        newProjectField.style.display = 'block';
+        existingProjectField.style.display = 'none';
+    } else if (mode === 'existing') {
+        newProjectField.style.display = 'none';
+        existingProjectField.style.display = 'block';
+        loadSoloProjects(); // Load existing projects
+    } else {
+        newProjectField.style.display = 'none';
+        existingProjectField.style.display = 'none';
+    }
+}
+
 // ============================================
-// QUESTION UPLOAD
+// QUESTION UPLOAD - COMPLETE IMPLEMENTATION
 // ============================================
 
 async function handleQuestionUpload(event) {
     event.preventDefault();
     
-    const day = document.getElementById('question-day').value;
     const type = document.getElementById('question-type').value;
+    const daySelect = document.getElementById('question-day');
+    const workNumberSelect = document.getElementById('question-work-number');
     const fileInput = document.getElementById('question-files');
-    const files = fileInput.files;
+    const fileNameInput = document.getElementById('question-filename');
+    
+    const day = daySelect.value;
+    const workNumber = workNumberSelect.value;
+    const file = fileInput.files[0];
+    const fileName = fileNameInput.value.trim() || 'Question.pdf';
 
-    if (!day || !type || files.length === 0) {
-        alert('❌ Please fill all fields and select at least one file');
+    if (!type || !day || !workNumber || !file) {
+        alert('❌ Please fill all fields and select a file');
         return;
     }
 
@@ -444,86 +577,76 @@ async function handleQuestionUpload(event) {
         const repo = 'SOLIDWORKS-Projects';
         const folderPath = type; // CW or HW
         
-        let successCount = 0;
-        let failCount = 0;
+        // Path: CW/Day 01/CW1/Question.pdf
+        const path = `${folderPath}/${day}/${workNumber}/${fileName}`;
         
-        progressText.textContent = `Uploading ${files.length} question file(s)...`;
+        progressText.textContent = `Uploading ${fileName}...`;
+        progressBar.style.width = '30%';
         
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const progress = ((i + 1) / files.length * 90);
-            progressBar.style.width = progress + '%';
-            progressText.textContent = `Uploading ${file.name}... (${i + 1}/${files.length})`;
-            
-            try {
-                // Path: CW/Day 10/Questions/filename.pdf
-                const fileName = file.name;
-                const path = `${folderPath}/Day ${day}/Questions/${fileName}`;
-                
-                const content = await readFileAsBase64(file);
-                
-                // Check if exists
-                const checkUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-                const checkResponse = await fetch(checkUrl, {
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                let sha = null;
-                if (checkResponse.ok) {
-                    const existingFile = await checkResponse.json();
-                    sha = existingFile.sha;
-                }
-                
-                // Upload
-                const uploadData = {
-                    message: `Upload question for ${type} Day ${day}`,
-                    content: content,
-                    branch: 'main'
-                };
-                
-                if (sha) {
-                    uploadData.sha = sha;
-                }
-                
-                const uploadResponse = await fetch(checkUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(uploadData)
-                });
-                
-                if (uploadResponse.ok) {
-                    successCount++;
-                } else {
-                    failCount++;
-                    console.error(`Failed to upload ${file.name}:`, await uploadResponse.text());
-                }
-                
-            } catch (error) {
-                failCount++;
-                console.error(`Error uploading ${file.name}:`, error);
+        const content = await readFileAsBase64(file);
+        
+        progressBar.style.width = '50%';
+        
+        // Check if file exists (get SHA for update)
+        const checkUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        const checkResponse = await fetch(checkUrl, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
             }
-        }
-
-        progressBar.style.width = '100%';
+        });
         
-        if (failCount === 0) {
-            progressText.textContent = `✅ Question paper(s) uploaded successfully!`;
+        let sha = null;
+        if (checkResponse.ok) {
+            const existingFile = await checkResponse.json();
+            sha = existingFile.sha;
+        }
+        
+        progressBar.style.width = '70%';
+        
+        // Upload question file
+        const uploadData = {
+            message: `Upload question for ${type} ${day}/${workNumber}`,
+            content: content,
+            branch: 'main'
+        };
+        
+        if (sha) {
+            uploadData.sha = sha; // Update existing
+        }
+        
+        const uploadResponse = await fetch(checkUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadData)
+        });
+        
+        if (uploadResponse.ok) {
+            progressBar.style.width = '100%';
+            progressText.textContent = `✅ Question uploaded successfully!`;
+            
+            const result = await uploadResponse.json();
+            console.log('Question upload complete:', result.content);
+            
             setTimeout(() => {
                 progressPanel.classList.remove('show');
                 event.target.reset();
                 clearFiles('question');
-                alert(`✅ Question upload complete!\n${successCount} file(s) uploaded.\n\nPath: ${type}/Day ${day}/Questions/`);
+                document.getElementById('question-filename').value = '';
+                
+                // Show success with redirect option
+                const viewProjects = confirm(`✅ Question uploaded to GitHub!\n\nPath: ${path}\n\n📌 The question will appear in the "${workNumber}" section of ${type} Day ${day}.\n\nClick OK to view your projects now, or Cancel to continue uploading.`);
+                
+                if (viewProjects) {
+                    window.location.href = 'projects.html';
+                }
             }, 2000);
         } else {
-            progressText.textContent = `⚠️ Uploaded ${successCount}, ${failCount} failed`;
-            alert(`⚠️ Upload partially complete:\n✅ Success: ${successCount}\n❌ Failed: ${failCount}`);
+            throw new Error(await uploadResponse.text());
         }
 
     } catch (error) {
@@ -532,6 +655,55 @@ async function handleQuestionUpload(event) {
         console.error('Question upload error:', error);
         alert('❌ Upload failed: ' + error.message);
     }
+}
+
+// Auto-generate question filename based on Day, Work Number, and file extension
+function updateQuestionFileName() {
+    const type = document.getElementById('question-type').value;
+    const daySelect = document.getElementById('question-day');
+    const workNumberSelect = document.getElementById('question-work-number');
+    const fileInput = document.getElementById('question-files');
+    const fileNameInput = document.getElementById('question-filename');
+    
+    const day = daySelect ? daySelect.value : '';
+    const workNumber = workNumberSelect ? workNumberSelect.value : '';
+    const file = fileInput ? fileInput.files[0] : null;
+    
+    if (day && workNumber) {
+        // Get file extension from uploaded file or default to .pdf
+        let extension = '.pdf';
+        if (file) {
+            const fileName = file.name;
+            const lastDot = fileName.lastIndexOf('.');
+            if (lastDot > -1) {
+                extension = fileName.substring(lastDot);
+            }
+        }
+        
+        // Format: Day_01_CW1_Question.pdf
+        const dayFormatted = day.replace(' ', '_');
+        const generatedName = `${dayFormatted}_${workNumber}_Question${extension}`;
+        if (fileNameInput) {
+            fileNameInput.value = generatedName;
+        }
+    }
+}
+
+// Load work numbers dynamically based on type
+function loadQuestionWorkNumbers() {
+    const type = document.getElementById('question-type').value;
+    const workNumberSelect = document.getElementById('question-work-number');
+    
+    if (!type || !workNumberSelect) return;
+    
+    const typeUpper = type; // CW or HW
+    
+    let html = `<option value="">-- Choose ${typeUpper} Number --</option>`;
+    for (let i = 1; i <= 10; i++) {
+        html += `<option value="${typeUpper}${i}">${typeUpper}${i}</option>`;
+    }
+    
+    workNumberSelect.innerHTML = html;
 }
 
 // ============================================

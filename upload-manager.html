@@ -456,6 +456,39 @@
         <div class="header">
             <h1><i class="fas fa-cube"></i> SOLIDWORKS Upload Manager</h1>
             <p>Professional project management system for all SOLIDWORKS uploads</p>
+            <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="projects.html" class="btn btn-primary btn-small" style="text-decoration: none;">
+                    <i class="fas fa-eye"></i> View Projects
+                </a>
+                <a href="only-boss-dashboard.html" class="btn btn-secondary btn-small" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div style="max-width: 900px; margin: 20px auto; padding: 20px; background: rgba(220, 38, 38, 0.1); border: 2px solid rgba(220, 38, 38, 0.3); border-radius: 15px;">
+            <h3 style="color: #ff3333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-info-circle"></i> How Uploaded Content Appears
+            </h3>
+            <div style="display: grid; gap: 12px; color: rgba(255,255,255,0.9); font-size: 0.95rem;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-check-circle" style="color: #10b981; margin-top: 3px;"></i>
+                    <div><strong>CW/HW Files:</strong> Appear in project cards under respective Day sections with download/view buttons</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-check-circle" style="color: #10b981; margin-top: 3px;"></i>
+                    <div><strong>Questions:</strong> Auto-detected and shown as separate "Questions" card with PDF/image viewer</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-check-circle" style="color: #10b981; margin-top: 3px;"></i>
+                    <div><strong>Solo Projects:</strong> Displayed in dedicated "Solo Projects" section with all files organized by project name</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-arrow-right" style="color: #3b82f6; margin-top: 3px;"></i>
+                    <div><strong>After Upload:</strong> Visit <a href="projects.html" style="color: #ff6666; text-decoration: underline;">Projects Page</a> to see your uploaded content automatically organized!</div>
+                </div>
+            </div>
         </div>
 
         <!-- GitHub Token Panel -->
@@ -703,47 +736,81 @@
                     <div class="form-section">
                         <h3 class="section-title">
                             <i class="fas fa-star"></i>
-                            Solo Project Details
+                            Solo Project Upload Mode
                         </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Project Number</label>
-                                <select id="solo-project-number" class="form-control" required>
-                                    <option value="">Select Project...</option>
-                                    <option value="1">Project 1</option>
-                                    <option value="2">Project 2</option>
-                                    <option value="3">Project 3</option>
-                                    <option value="4">Project 4</option>
-                                    <option value="5">Project 5</option>
-                                    <option value="6">Project 6</option>
-                                    <option value="7">Project 7</option>
-                                    <option value="8">Project 8</option>
-                                    <option value="9">Project 9</option>
-                                    <option value="10">Project 10</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Upload Mode</label>
-                                <select id="solo-mode" class="form-control" required>
-                                    <option value="">Select Mode...</option>
-                                    <option value="new">New Project</option>
-                                    <option value="add">Add to Existing</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-folder-plus"></i> Upload Mode
+                            </label>
+                            <select id="solo-mode" class="form-control" required onchange="toggleSoloMode()">
+                                <option value="">-- Select Upload Mode --</option>
+                                <option value="new">🆕 Create New Project</option>
+                                <option value="existing">➕ Add to Existing Project</option>
+                            </select>
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                Choose whether to create a new project or add files to an existing one
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- New Project Field -->
+                    <div class="form-section" id="solo-new-project-field" style="display: none;">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder-plus"></i>
+                            New Project Name
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Project Name</label>
+                            <input type="text" id="solo-project-name" class="form-control" placeholder="e.g., Project 15, Mechanical Arm, Robot Design">
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                <i class="fas fa-info-circle"></i> Enter any name - folder will be created automatically in Solo-Projects/
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Existing Project Field -->
+                    <div class="form-section" id="solo-existing-project-field" style="display: none;">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            Select Existing Project
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Choose Project</label>
+                            <select id="solo-project-select" class="form-control">
+                                <option value="">-- Choose Project --</option>
+                            </select>
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                <i class="fas fa-sync"></i> Projects loaded from GitHub repository
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Commit Message (Optional) -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-comment"></i>
+                            Commit Message (Optional)
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Git Commit Message</label>
+                            <input type="text" id="solo-commit-msg" class="form-control" placeholder="e.g., Added mechanical arm assembly files">
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                <i class="fas fa-info-circle"></i> Optional - Describe what you're uploading
+                            </small>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <h3 class="section-title">
                             <i class="fas fa-folder-open"></i>
-                            Upload Files
+                            Upload SOLIDWORKS Files
                         </h3>
                         <div class="upload-zone" id="solo-zone" onclick="document.getElementById('solo-files').click()">
                             <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                             <h4>Drag & Drop Your Files Here</h4>
-                            <p>or click to browse (.SLDASM, .SLDPRT, .PNG, .JPG, .PDF)</p>
+                            <p>Accepted: .SLDPRT, .SLDASM, .SLDDRW, .PDF, .PNG, .JPG, .STL, .STEP</p>
                         </div>
-                        <input type="file" id="solo-files" class="hidden" multiple accept=".SLDASM,.SLDPRT,.png,.jpg,.jpeg,.pdf">
+                        <input type="file" id="solo-files" class="hidden" multiple accept=".SLDASM,.SLDPRT,.SLDDRW,.sldasm,.sldprt,.slddrw,.png,.jpg,.jpeg,.pdf,.stl,.step,.STL,.STEP">
                         
                         <div class="file-preview" id="solo-preview">
                             <h4><i class="fas fa-list"></i> Selected Files</h4>
@@ -756,7 +823,7 @@
                             <i class="fas fa-times"></i> Clear All
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-rocket"></i> Upload Solo Project
+                            <i class="fas fa-rocket"></i> Upload to Solo Project
                         </button>
                     </div>
                 </form>
@@ -776,49 +843,70 @@
                 <form id="form-question" onsubmit="handleQuestionUpload(event)">
                     <div class="form-section">
                         <h3 class="section-title">
-                            <i class="fas fa-info-circle"></i>
-                            Question Paper Details
+                            <i class="fas fa-question-circle"></i>
+                            Question Paper Upload
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Day Number</label>
-                                <select id="question-day" class="form-control" required>
-                                    <option value="">Select Day...</option>
-                                    <option value="06">Day 06</option>
-                                    <option value="07">Day 07</option>
-                                    <option value="08">Day 08</option>
-                                    <option value="09">Day 09</option>
-                                    <option value="10">Day 10</option>
-                                    <option value="11">Day 11</option>
-                                    <option value="12">Day 12</option>
-                                    <option value="13">Day 13</option>
-                                    <option value="14">Day 14</option>
-                                    <option value="15">Day 15</option>
-                                    <option value="16">Day 16</option>
-                                    <option value="17">Day 17</option>
-                                    <option value="18">Day 18</option>
-                                    <option value="19">Day 19</option>
-                                    <option value="20">Day 20</option>
-                                    <option value="21">Day 21</option>
-                                    <option value="22">Day 22</option>
-                                    <option value="23">Day 23</option>
-                                    <option value="24">Day 24</option>
-                                    <option value="25">Day 25</option>
-                                    <option value="26">Day 26</option>
-                                    <option value="27">Day 27</option>
-                                    <option value="28">Day 28</option>
-                                    <option value="29">Day 29</option>
-                                    <option value="30">Day 30</option>
+                                <label class="form-label">
+                                    <i class="fas fa-book"></i> Type (CW/HW)
+                                </label>
+                                <select id="question-type" class="form-control" required onchange="loadQuestionWorkNumbers(); updateQuestionFileName();">
+                                    <option value="">-- Select Type --</option>
+                                    <option value="CW">Class Work (CW)</option>
+                                    <option value="HW">Home Work (HW)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Question Type</label>
-                                <select id="question-type" class="form-control" required>
-                                    <option value="">Select Type...</option>
-                                    <option value="CW">Class Work Question</option>
-                                    <option value="HW">Home Work Question</option>
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i> Day Number
+                                </label>
+                                <select id="question-day" class="form-control" required onchange="updateQuestionFileName()">
+                                    <option value="">-- Select Day --</option>
+                                    <option value="Day 01">Day 01</option>
+                                    <option value="Day 02">Day 02</option>
+                                    <option value="Day 03">Day 03</option>
+                                    <option value="Day 04">Day 04</option>
+                                    <option value="Day 05">Day 05</option>
+                                    <option value="Day 06">Day 06</option>
+                                    <option value="Day 07">Day 07</option>
+                                    <option value="Day 08">Day 08</option>
+                                    <option value="Day 09">Day 09</option>
+                                    <option value="Day 10">Day 10</option>
+                                    <option value="Day 11">Day 11</option>
+                                    <option value="Day 12">Day 12</option>
+                                    <option value="Day 13">Day 13</option>
+                                    <option value="Day 14">Day 14</option>
+                                    <option value="Day 15">Day 15</option>
+                                    <option value="Day 16">Day 16</option>
+                                    <option value="Day 17">Day 17</option>
+                                    <option value="Day 18">Day 18</option>
+                                    <option value="Day 19">Day 19</option>
+                                    <option value="Day 20">Day 20</option>
+                                    <option value="Day 21">Day 21</option>
+                                    <option value="Day 22">Day 22</option>
+                                    <option value="Day 23">Day 23</option>
+                                    <option value="Day 24">Day 24</option>
+                                    <option value="Day 25">Day 25</option>
+                                    <option value="Day 26">Day 26</option>
+                                    <option value="Day 27">Day 27</option>
+                                    <option value="Day 28">Day 28</option>
+                                    <option value="Day 29">Day 29</option>
+                                    <option value="Day 30">Day 30</option>
                                 </select>
                             </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-hashtag"></i> Work Number (CW/HW Number)
+                            </label>
+                            <select id="question-work-number" class="form-control" required onchange="updateQuestionFileName()">
+                                <option value="">-- First select Type --</option>
+                            </select>
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                <i class="fas fa-info-circle"></i> Select which CW/HW this question belongs to (creates subfolder if needed)
+                            </small>
                         </div>
                     </div>
 
@@ -832,11 +920,25 @@
                             <h4>Drag & Drop Question Paper</h4>
                             <p>PDF or Image files (.PDF, .PNG, .JPG)</p>
                         </div>
-                        <input type="file" id="question-files" class="hidden" multiple accept=".pdf,.png,.jpg,.jpeg">
+                        <input type="file" id="question-files" class="hidden" accept=".pdf,.png,.jpg,.jpeg" onchange="displayFiles('question', this.files); updateQuestionFileName();" required>
                         
                         <div class="file-preview" id="question-preview">
-                            <h4><i class="fas fa-list"></i> Selected Files</h4>
+                            <h4><i class="fas fa-list"></i> Selected File</h4>
                             <ul class="file-list" id="question-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-tag"></i>
+                            File Name (Auto-Generated)
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Question File Name</label>
+                            <input type="text" id="question-filename" class="form-control" placeholder="Auto-generated based on Day and CW/HW number" readonly>
+                            <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                                <i class="fas fa-magic"></i> Format: Day_XX_CW/HWX_Question.ext (e.g., Day_01_CW1_Question.pdf)
+                            </small>
                         </div>
                     </div>
 

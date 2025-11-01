@@ -4515,15 +4515,44 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load each day folder recursively
             for (const item of items) {
                 if (item.type === 'dir' && /^Day\s*\d+/i.test(item.name)) {
-                    const allFiles = await fetchAllFilesRecursive(item.url, headers);
-                    dayGroups[item.name] = allFiles.filter(f => isInterestingSwFile(f.name));
+                    const dayResponse = await fetch(item.url, { headers });
+                    if (!dayResponse.ok) continue;
+                    const dayContents = await dayResponse.json();
+                    
+                    // Check if day has subfolders (CW1, CW2, HW1, etc.)
+                    const subfolders = dayContents.filter(entry => entry.type === 'dir');
+                    
+                    if (subfolders.length > 0) {
+                        // Has subfolders - load all files and questions from them
+                        dayGroups[item.name] = { type: 'subfolders', data: {}, questions: [] };
+                        
+                        for (const subfolder of subfolders) {
+                            const subFiles = await fetchAllFilesRecursive(subfolder.url, headers);
+                            const projectFiles = subFiles.filter(f => isProjectFile(f.name));
+                            const questionFiles = subFiles.filter(f => isQuestionFile(f.name));
+                            
+                            if (projectFiles.length > 0) {
+                                dayGroups[item.name].data[subfolder.name] = projectFiles;
+                            }
+                            if (questionFiles.length > 0) {
+                                dayGroups[item.name].questions.push(...questionFiles.map(f => ({...f, subfolder: subfolder.name})));
+                            }
+                        }
+                    } else {
+                        // No subfolders - direct files
+                        const allFiles = await fetchAllFilesRecursive(item.url, headers);
+                        const projectFiles = allFiles.filter(f => isProjectFile(f.name));
+                        const questionFiles = allFiles.filter(f => isQuestionFile(f.name));
+                        
+                        dayGroups[item.name] = { type: 'files', data: projectFiles, questions: questionFiles };
+                    }
                 }
             }
             
             return dayGroups;
         }
         
-        // Render day files as HTML
+        // Render day files as HTML with QUESTION CARD SUPPORT
         function renderDayFiles(dayGroups, type) {
             const sortedDays = Object.keys(dayGroups).sort((a, b) => {
                 const numA = parseInt(a.replace('Day', '').trim());
@@ -4538,59 +4567,122 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = '';
             
             for (const day of sortedDays) {
-                const files = dayGroups[day];
-                if (files.length === 0) continue;
+                const dayData = dayGroups[day];
                 
                 html += `
                     <div class="sw-day-section">
                         <h5 class="sw-day-title"><i class="fas fa-calendar-day"></i> ${day}</h5>
-                        <div class="sw-file-list">
                 `;
                 
-                files.forEach(file => {
-                    const downloadUrl = file.download_url;
-                    const fileName = file.name;
-                    const fileExt = fileName.split('.').pop().toUpperCase();
+                // RENDER QUESTION CARD FIRST if questions exist
+                if (dayData.questions && dayData.questions.length > 0) {
+                    html += renderQuestionCard(dayData.questions, type);
+                }
+                
+                // Render project files based on type
+                if (dayData.type === 'subfolders') {
+                    // Has subfolders (CW1, CW2, HW1, etc.)
+                    const subfolders = Object.keys(dayData.data).sort();
                     
-                    // File type icon
-                    let icon = 'fa-file';
-                    if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
-                        icon = 'fa-cube';
-                    } else if (fileExt === 'PDF') {
-                        icon = 'fa-file-pdf';
-                    } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
-                        icon = 'fa-image';
+                    for (const subfolder of subfolders) {
+                        const files = dayData.data[subfolder];
+                        if (files.length === 0) continue;
+                        
+                        html += `
+                            <div class="sw-subfolder">
+                                <h6 class="sw-subfolder-title"><i class="fas fa-folder"></i> ${subfolder}</h6>
+                                <div class="sw-file-list">
+                        `;
+                        
+                        files.forEach(file => {
+                            const downloadUrl = file.download_url;
+                            const fileName = file.name;
+                            const fileExt = fileName.split('.').pop().toUpperCase();
+                            
+                            let icon = 'fa-file';
+                            if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
+                                icon = 'fa-cube';
+                            } else if (fileExt === 'PDF') {
+                                icon = 'fa-file-pdf';
+                            } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
+                                icon = 'fa-image';
+                            }
+                            
+                            html += `
+                                <div class="sw-file-item">
+                                    <div class="sw-file-header">
+                                        <i class="fas ${icon}"></i>
+                                        <span class="sw-file-name">${fileName}</span>
+                                        <span class="sw-file-badge">${fileExt}</span>
+                                    </div>
+                                    <div class="sw-file-actions">
+                                        <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
+                                            <i class="fab fa-github"></i> GitHub
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
+                            </div>
+                        `;
                     }
+                } else if (dayData.type === 'files') {
+                    // Direct files (no subfolders)
+                    const files = dayData.data;
                     
-                    html += `
-                        <div class="sw-file-item">
-                            <div class="sw-file-header">
-                                <i class="fas ${icon}"></i>
-                                <span class="sw-file-name">${fileName}</span>
-                                <span class="sw-file-badge">${fileExt}</span>
-                            </div>
-                            <div class="sw-file-actions">
-                                <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                                <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
-                                    <i class="fab fa-github"></i> GitHub
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                });
+                    if (files.length > 0) {
+                        html += `<div class="sw-file-list">`;
+                        
+                        files.forEach(file => {
+                            const downloadUrl = file.download_url;
+                            const fileName = file.name;
+                            const fileExt = fileName.split('.').pop().toUpperCase();
+                            
+                            let icon = 'fa-file';
+                            if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
+                                icon = 'fa-cube';
+                            } else if (fileExt === 'PDF') {
+                                icon = 'fa-file-pdf';
+                            } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
+                                icon = 'fa-image';
+                            }
+                            
+                            html += `
+                                <div class="sw-file-item">
+                                    <div class="sw-file-header">
+                                        <i class="fas ${icon}"></i>
+                                        <span class="sw-file-name">${fileName}</span>
+                                        <span class="sw-file-badge">${fileExt}</span>
+                                    </div>
+                                    <div class="sw-file-actions">
+                                        <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
+                                            <i class="fab fa-github"></i> GitHub
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `</div>`;
+                    }
+                }
                 
-                html += `
-                        </div>
-                    </div>
-                `;
+                html += `</div>`;
             }
             
             return html;
         }
         
-        // Load Solo Project files (Project 1, Project 2, etc.)
+        // Load Solo Project files (Project 1, Project 2, etc.) with QUESTION SUPPORT
         async function loadSoloProjectFiles(owner, repo, folder, headers) {
             const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}`, { headers });
             
@@ -4608,14 +4700,20 @@ document.addEventListener('DOMContentLoaded', function() {
             for (const item of items) {
                 if (item.type === 'dir' && /^Project\s*\d+/i.test(item.name)) {
                     const allFiles = await fetchAllFilesRecursive(item.url, headers);
-                    projectGroups[item.name] = allFiles.filter(f => isInterestingSwFile(f.name));
+                    const projectFiles = allFiles.filter(f => isProjectFile(f.name));
+                    const questionFiles = allFiles.filter(f => isQuestionFile(f.name));
+                    
+                    projectGroups[item.name] = {
+                        files: projectFiles,
+                        questions: questionFiles
+                    };
                 }
             }
             
             return projectGroups;
         }
         
-        // Render Solo Project files as HTML
+        // Render Solo Project files as HTML with QUESTION CARD SUPPORT
         function renderSoloProjectFiles(projectGroups) {
             const sortedProjects = Object.keys(projectGroups).sort((a, b) => {
                 const numA = parseInt(a.replace(/Project\s*/i, '').trim());
@@ -4636,53 +4734,60 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = '';
             
             for (const project of sortedProjects) {
-                const files = projectGroups[project];
-                if (files.length === 0) continue;
+                const projectData = projectGroups[project];
                 
                 html += `
                     <div class="sw-day-section">
                         <h5 class="sw-day-title"><i class="fas fa-cube"></i> ${project}</h5>
-                        <div class="sw-file-list">
                 `;
                 
-                files.forEach(file => {
-                    const downloadUrl = file.download_url;
-                    const fileName = file.name;
-                    const fileExt = fileName.split('.').pop().toUpperCase();
-                    
-                    // File type icon
-                    let icon = 'fa-file';
-                    if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
-                        icon = 'fa-cube';
-                    } else if (fileExt === 'PDF') {
-                        icon = 'fa-file-pdf';
-                    } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
-                        icon = 'fa-image';
-                    }
-                    
-                    html += `
-                        <div class="sw-file-item">
-                            <div class="sw-file-header">
-                                <i class="fas ${icon}"></i>
-                                <span class="sw-file-name">${fileName}</span>
-                                <span class="sw-file-badge">${fileExt}</span>
-                            </div>
-                            <div class="sw-file-actions">
-                                <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                                <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
-                                    <i class="fab fa-github"></i> GitHub
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                });
+                // RENDER QUESTION CARD FIRST if questions exist
+                if (projectData.questions && projectData.questions.length > 0) {
+                    html += renderQuestionCard(projectData.questions, 'SOLO');
+                }
                 
-                html += `
-                        </div>
-                    </div>
-                `;
+                // Render project files
+                const files = projectData.files;
+                if (files.length > 0) {
+                    html += `<div class="sw-file-list">`;
+                    
+                    files.forEach(file => {
+                        const downloadUrl = file.download_url;
+                        const fileName = file.name;
+                        const fileExt = fileName.split('.').pop().toUpperCase();
+                        
+                        let icon = 'fa-file';
+                        if (fileExt === 'SLDPRT' || fileExt === 'SLDASM' || fileExt === 'SLDDRW') {
+                            icon = 'fa-cube';
+                        } else if (fileExt === 'PDF') {
+                            icon = 'fa-file-pdf';
+                        } else if (['PNG', 'JPG', 'JPEG'].includes(fileExt)) {
+                            icon = 'fa-image';
+                        }
+                        
+                        html += `
+                            <div class="sw-file-item">
+                                <div class="sw-file-header">
+                                    <i class="fas ${icon}"></i>
+                                    <span class="sw-file-name">${fileName}</span>
+                                    <span class="sw-file-badge">${fileExt}</span>
+                                </div>
+                                <div class="sw-file-actions">
+                                    <a href="${downloadUrl}" download="${fileName}" class="sw-action-btn sw-btn-download" title="Download">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                    <a href="${file.html_url}" target="_blank" class="sw-action-btn sw-btn-page" title="View on GitHub">
+                                        <i class="fab fa-github"></i> GitHub
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
             }
             
             return html;
