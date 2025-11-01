@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLIDWORKS Upload Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.95), rgba(10, 0, 0, 0.98));
+            border-radius: 20px;
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(204, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            color: #cc0000;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+        }
+
+        /* GitHub Token Panel */
+        .token-panel {
+            background: rgba(30, 0, 0, 0.9);
+            border: 2px solid rgba(204, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .token-panel h3 {
+            color: #ff3333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .token-input {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: #cc0000;
+            box-shadow: 0 0 0 4px rgba(204, 0, 0, 0.2);
+        }
+
+        .token-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .token-status.connected {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 2px solid #28a745;
+        }
+
+        .token-status.disconnected {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            padding: 18px 20px;
+            background: rgba(30, 0, 0, 0.7);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn i {
+            font-size: 1.5rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(204, 0, 0, 0.2);
+            border-color: #cc0000;
+            color: #ff3333;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #cc0000, #ff3333);
+            border-color: #cc0000;
+            color: #fff;
+            box-shadow: 0 6px 25px rgba(204, 0, 0, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Upload Form */
+        .upload-panel {
+            background: rgba(30, 0, 0, 0.9);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            color: #ff3333;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(204, 0, 0, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #cc0000;
+            box-shadow: 0 0 0 4px rgba(204, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* File Upload Zone */
+        .upload-zone {
+            border: 3px dashed rgba(204, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.15);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #cc0000;
+            margin-bottom: 20px;
+        }
+
+        .upload-zone h4 {
+            font-size: 1.5rem;
+            color: #ff3333;
+            margin-bottom: 10px;
+        }
+
+        .upload-zone p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* File Preview */
+        .file-preview {
+            margin-top: 25px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            display: none;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-preview h4 {
+            color: #ff3333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .file-item:hover {
+            background: rgba(204, 0, 0, 0.1);
+            border-color: #cc0000;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: #cc0000;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 3px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #cc0000, #ff3333);
+            color: white;
+            box-shadow: 0 5px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(204, 0, 0, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(60, 60, 60, 0.9);
+            color: #fff;
+            border: 2px solid rgba(204, 0, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(80, 80, 80, 1);
+            border-color: #cc0000;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        /* Progress Section */
+        .progress-panel {
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(30, 0, 0, 0.9);
+            border: 2px solid rgba(204, 0, 0, 0.4);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .progress-panel.show {
+            display: block;
+        }
+
+        .progress-panel h3 {
+            color: #ff3333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar-container {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            height: 12px;
+            overflow: hidden;
+            margin: 25px 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #cc0000, #ff3333, #cc0000);
+            background-size: 200% 100%;
+            animation: gradient 2s ease infinite;
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .header h1 { font-size: 2rem; }
+            .token-grid { grid-template-columns: 1fr; }
+            .tab-nav { grid-template-columns: repeat(2, 1fr); }
+            .form-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Session Guard -->
+    <script>
+        (function(){
+            try {
+                var s = sessionStorage.getItem('admin_session');
+                if(!s){ window.location.href = 'only-boss.html'; }
+            } catch(e){ window.location.href = 'only-boss.html'; }
+        })();
+    </script>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-cube"></i> SOLIDWORKS Upload Manager</h1>
+            <p>Professional project management system for all SOLIDWORKS uploads</p>
+        </div>
+
+        <!-- GitHub Token Panel -->
+        <div class="token-panel">
+            <h3><i class="fab fa-github"></i> GitHub Authentication</h3>
+            <div class="token-grid">
+                <input type="password" id="github-token" class="token-input" placeholder="Enter GitHub Personal Access Token...">
+                <button class="btn btn-primary btn-small" onclick="saveToken()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <div id="token-status" class="token-status disconnected">
+                    <i class="fas fa-times-circle"></i> Not Connected
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('cw')">
+                <i class="fas fa-book"></i>
+                <span>Class Work</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('hw')">
+                <i class="fas fa-home"></i>
+                <span>Home Work</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('solo')">
+                <i class="fas fa-star"></i>
+                <span>Solo Projects</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('question')">
+                <i class="fas fa-file-pdf"></i>
+                <span>Questions</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('update')">
+                <i class="fas fa-edit"></i>
+                <span>Update</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('delete')">
+                <i class="fas fa-trash"></i>
+                <span>Delete</span>
+            </button>
+        </div>
+
+        <!-- Tab: Class Work -->
+        <div id="tab-cw" class="tab-content active">
+            <div class="upload-panel">
+                <form id="form-cw" onsubmit="handleUpload(event, 'CW')">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Class Work Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Day Number</label>
+                                <select id="cw-day" class="form-control" required>
+                                    <option value="">Select Day...</option>
+                                    <option value="06">Day 06</option>
+                                    <option value="07">Day 07</option>
+                                    <option value="08">Day 08</option>
+                                    <option value="09">Day 09</option>
+                                    <option value="10">Day 10</option>
+                                    <option value="11">Day 11</option>
+                                    <option value="12">Day 12</option>
+                                    <option value="13">Day 13</option>
+                                    <option value="14">Day 14</option>
+                                    <option value="15">Day 15</option>
+                                    <option value="16">Day 16</option>
+                                    <option value="17">Day 17</option>
+                                    <option value="18">Day 18</option>
+                                    <option value="19">Day 19</option>
+                                    <option value="20">Day 20</option>
+                                    <option value="21">Day 21</option>
+                                    <option value="22">Day 22</option>
+                                    <option value="23">Day 23</option>
+                                    <option value="24">Day 24</option>
+                                    <option value="25">Day 25</option>
+                                    <option value="26">Day 26</option>
+                                    <option value="27">Day 27</option>
+                                    <option value="28">Day 28</option>
+                                    <option value="29">Day 29</option>
+                                    <option value="30">Day 30</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Number</label>
+                                <select id="cw-number" class="form-control" required>
+                                    <option value="">Select Number...</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            Upload Files
+                        </h3>
+                        <div class="upload-zone" id="cw-zone" onclick="document.getElementById('cw-files').click()">
+                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h4>Drag & Drop Your Files Here</h4>
+                            <p>or click to browse (.SLDASM, .SLDPRT, .PNG, .JPG, .PDF)</p>
+                        </div>
+                        <input type="file" id="cw-files" class="hidden" multiple accept=".SLDASM,.SLDPRT,.png,.jpg,.jpeg,.pdf">
+                        
+                        <div class="file-preview" id="cw-preview">
+                            <h4><i class="fas fa-list"></i> Selected Files</h4>
+                            <ul class="file-list" id="cw-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="clearFiles('cw')">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i> Upload Class Work
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-panel" id="cw-progress">
+                <h3><i class="fas fa-spinner fa-spin"></i> Upload Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="cw-bar"></div>
+                </div>
+                <div class="progress-text" id="cw-text">Ready to upload...</div>
+            </div>
+        </div>
+
+        <!-- Tab: Home Work -->
+        <div id="tab-hw" class="tab-content">
+            <div class="upload-panel">
+                <form id="form-hw" onsubmit="handleUpload(event, 'HW')">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Home Work Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Day Number</label>
+                                <select id="hw-day" class="form-control" required>
+                                    <option value="">Select Day...</option>
+                                    <option value="06">Day 06</option>
+                                    <option value="07">Day 07</option>
+                                    <option value="08">Day 08</option>
+                                    <option value="09">Day 09</option>
+                                    <option value="10">Day 10</option>
+                                    <option value="11">Day 11</option>
+                                    <option value="12">Day 12</option>
+                                    <option value="13">Day 13</option>
+                                    <option value="14">Day 14</option>
+                                    <option value="15">Day 15</option>
+                                    <option value="16">Day 16</option>
+                                    <option value="17">Day 17</option>
+                                    <option value="18">Day 18</option>
+                                    <option value="19">Day 19</option>
+                                    <option value="20">Day 20</option>
+                                    <option value="21">Day 21</option>
+                                    <option value="22">Day 22</option>
+                                    <option value="23">Day 23</option>
+                                    <option value="24">Day 24</option>
+                                    <option value="25">Day 25</option>
+                                    <option value="26">Day 26</option>
+                                    <option value="27">Day 27</option>
+                                    <option value="28">Day 28</option>
+                                    <option value="29">Day 29</option>
+                                    <option value="30">Day 30</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Number</label>
+                                <select id="hw-number" class="form-control" required>
+                                    <option value="">Select Number...</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            Upload Files
+                        </h3>
+                        <div class="upload-zone" id="hw-zone" onclick="document.getElementById('hw-files').click()">
+                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h4>Drag & Drop Your Files Here</h4>
+                            <p>or click to browse (.SLDASM, .SLDPRT, .PNG, .JPG, .PDF)</p>
+                        </div>
+                        <input type="file" id="hw-files" class="hidden" multiple accept=".SLDASM,.SLDPRT,.png,.jpg,.jpeg,.pdf">
+                        
+                        <div class="file-preview" id="hw-preview">
+                            <h4><i class="fas fa-list"></i> Selected Files</h4>
+                            <ul class="file-list" id="hw-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="clearFiles('hw')">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i> Upload Home Work
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-panel" id="hw-progress">
+                <h3><i class="fas fa-spinner fa-spin"></i> Upload Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="hw-bar"></div>
+                </div>
+                <div class="progress-text" id="hw-text">Ready to upload...</div>
+            </div>
+        </div>
+
+        <!-- Placeholder Tabs -->
+        <div id="tab-solo" class="tab-content">
+            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
+                <i class="fas fa-star" style="font-size: 5rem; color: #cc0000; margin-bottom: 30px;"></i>
+                <h2 style="color: #ff3333; margin-bottom: 20px;">Solo Projects Upload</h2>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
+                    Integrate with existing solo project upload from script.js
+                </p>
+                <button class="btn btn-primary" onclick="alert('Solo upload - Coming Soon!')">
+                    <i class="fas fa-rocket"></i> Launch Solo Upload
+                </button>
+            </div>
+        </div>
+
+        <div id="tab-question" class="tab-content">
+            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
+                <i class="fas fa-file-pdf" style="font-size: 5rem; color: #cc0000; margin-bottom: 30px;"></i>
+                <h2 style="color: #ff3333; margin-bottom: 20px;">Question Papers Upload</h2>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
+                    Integrate with existing question upload from script.js
+                </p>
+                <button class="btn btn-primary" onclick="alert('Question upload - Coming Soon!')">
+                    <i class="fas fa-file-upload"></i> Upload Questions
+                </button>
+            </div>
+        </div>
+
+        <div id="tab-update" class="tab-content">
+            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
+                <i class="fas fa-edit" style="font-size: 5rem; color: #ff9800; margin-bottom: 30px;"></i>
+                <h2 style="color: #ff9800; margin-bottom: 20px;">Update Existing Files</h2>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
+                    Integrate with existing update system from script.js
+                </p>
+                <button class="btn btn-primary" onclick="alert('Update files - Coming Soon!')">
+                    <i class="fas fa-sync"></i> Update Files
+                </button>
+            </div>
+        </div>
+
+        <div id="tab-delete" class="tab-content">
+            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
+                <i class="fas fa-trash" style="font-size: 5rem; color: #dc3545; margin-bottom: 30px;"></i>
+                <h2 style="color: #dc3545; margin-bottom: 20px;">Delete Files</h2>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
+                    Integrate with existing delete system from script.js
+                </p>
+                <button class="btn btn-primary" onclick="alert('Delete files - Coming Soon!')">
+                    <i class="fas fa-trash-alt"></i> Delete Files
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load existing systems -->
+    <script src="github-uploader.js"></script>
+    <script src="website-updater.js"></script>
+    
+    <script>
+        // Tab Switching
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        // Token Management
+        function saveToken() {
+            const token = document.getElementById('github-token').value.trim();
+            if (!token) {
+                alert('❌ Please enter a GitHub token');
+                return;
+            }
+            localStorage.setItem('github_token', token);
+            updateTokenStatus();
+            alert('✅ GitHub token saved successfully!');
+        }
+
+        function updateTokenStatus() {
+            const token = localStorage.getItem('github_token');
+            const status = document.getElementById('token-status');
+            if (token) {
+                status.className = 'token-status connected';
+                status.innerHTML = '<i class="fas fa-check-circle"></i> Connected';
+            } else {
+                status.className = 'token-status disconnected';
+                status.innerHTML = '<i class="fas fa-times-circle"></i> Not Connected';
+            }
+        }
+
+        // File Upload Handlers
+        function setupFileHandlers(type) {
+            const fileInput = document.getElementById(type + '-files');
+            const uploadZone = document.getElementById(type + '-zone');
+            const preview = document.getElementById(type + '-preview');
+            const list = document.getElementById(type + '-list');
+
+            fileInput.addEventListener('change', () => displayFiles(type, fileInput.files));
+
+            uploadZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+
+            uploadZone.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                fileInput.files = e.dataTransfer.files;
+                displayFiles(type, e.dataTransfer.files);
+            });
+        }
+
+        function displayFiles(type, files) {
+            const preview = document.getElementById(type + '-preview');
+            const list = document.getElementById(type + '-list');
+            
+            if (files.length === 0) {
+                preview.classList.remove('show');
+                return;
+            }
+
+            preview.classList.add('show');
+            list.innerHTML = '';
+
+            Array.from(files).forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.innerHTML = `
+                    <div class="file-info">
+                        <i class="fas fa-file file-icon"></i>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle" style="color: #28a745; font-size: 1.2rem;"></i>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function clearFiles(type) {
+            document.getElementById(type + '-files').value = '';
+            document.getElementById(type + '-preview').classList.remove('show');
+        }
+
+        // Upload Handler
+        async function handleUpload(event, type) {
+            event.preventDefault();
+            
+            const prefix = type.toLowerCase();
+            const day = document.getElementById(prefix + '-day').value;
+            const number = document.getElementById(prefix + '-number').value;
+            const files = document.getElementById(prefix + '-files').files;
+
+            if (!day || !number || files.length === 0) {
+                alert('❌ Please fill all fields and select files');
+                return;
+            }
+
+            const token = localStorage.getItem('github_token');
+            if (!token) {
+                alert('❌ Please save GitHub token first!');
+                return;
+            }
+
+            // Show progress
+            const progressPanel = document.getElementById(prefix + '-progress');
+            const progressBar = document.getElementById(prefix + '-bar');
+            const progressText = document.getElementById(prefix + '-text');
+            
+            progressPanel.classList.add('show');
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Starting upload...';
+
+            try {
+                // Use GitHubUploader from github-uploader.js
+                const uploader = new GitHubUploader(token, 'Akhinoor14', 'SOLIDWORKS-Projects');
+                const folderPath = `${type}/Day ${day}/${type} ${number}`;
+
+                progressText.textContent = `Uploading ${files.length} files to GitHub...`;
+                
+                // Upload each file
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    progressBar.style.width = ((i + 1) / files.length * 90) + '%';
+                    progressText.textContent = `Uploading ${file.name}... (${i + 1}/${files.length})`;
+                    
+                    await uploader.uploadFile(folderPath, file);
+                }
+
+                progressBar.style.width = '100%';
+                progressText.textContent = '✅ Upload completed successfully!';
+
+                setTimeout(() => {
+                    progressPanel.classList.remove('show');
+                    event.target.reset();
+                    clearFiles(prefix);
+                }, 3000);
+
+            } catch (error) {
+                progressText.textContent = '❌ Upload failed: ' + error.message;
+                console.error('Upload error:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTokenStatus();
+            setupFileHandlers('cw');
+            setupFileHandlers('hw');
+            
+            const savedToken = localStorage.getItem('github_token');
+            if (savedToken) {
+                document.getElementById('github-token').value = savedToken;
+            }
+        });
+    </script>
+</body>
+</html>

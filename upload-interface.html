@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOLIDWORKS Project Management • Only Boss</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>SOLIDWORKS Auto Upload System</title>
     <style>
         * {
             margin: 0;
@@ -15,7 +14,6 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
-            color: #ffffff;
             min-height: 100vh;
             padding: 20px;
         }
@@ -23,11 +21,12 @@
         .upload-container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.95), rgba(10, 0, 0, 0.98));
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(204, 0, 0, 0.3);
+            border: 2px solid rgba(204, 0, 0, 0.3);
         }
 
         .upload-header {
@@ -37,15 +36,12 @@
 
         .upload-header h1 {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #cc0000;
             margin-bottom: 10px;
         }
 
         .upload-header p {
-            color: #666;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 1.1rem;
         }
 
@@ -56,7 +52,7 @@
         .section-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #333;
+            color: #ff3333;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -77,24 +73,25 @@
 
         .form-group label {
             font-weight: 600;
-            color: #333;
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 8px;
             font-size: 0.9rem;
         }
 
         .form-control {
             padding: 12px 16px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid rgba(204, 0, 0, 0.3);
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: white;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #cc0000;
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.2);
         }
 
         .radio-group {
@@ -109,15 +106,16 @@
             gap: 8px;
             cursor: pointer;
             padding: 10px 15px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid rgba(204, 0, 0, 0.3);
             border-radius: 10px;
             transition: all 0.3s ease;
-            background: white;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .radio-item:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.2);
         }
 
         .radio-item input[type="radio"] {
@@ -125,49 +123,49 @@
         }
 
         .radio-item.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.3);
+            color: #ff3333;
             font-weight: 600;
         }
 
         .file-upload-zone {
-            border: 3px dashed #e1e5e9;
+            border: 3px dashed rgba(204, 0, 0, 0.4);
             border-radius: 15px;
             padding: 40px 20px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
 
         .file-upload-zone.drag-over {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.2);
         }
 
         .upload-icon {
             font-size: 3rem;
             margin-bottom: 15px;
-            color: #667eea;
+            color: #cc0000;
         }
 
         .upload-text h3 {
             font-size: 1.3rem;
-            color: #333;
+            color: #ff3333;
             margin-bottom: 8px;
         }
 
         .upload-text p {
-            color: #666;
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 15px;
         }
 
         .file-requirements {
-            background: rgba(102, 126, 234, 0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            background: rgba(204, 0, 0, 0.1);
+            border: 1px solid rgba(204, 0, 0, 0.3);
             border-radius: 10px;
             padding: 15px;
             margin: 20px 0;
@@ -179,6 +177,7 @@
             gap: 10px;
             margin: 5px 0;
             font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .requirement-item .status {
@@ -188,7 +187,7 @@
         .file-preview {
             margin-top: 20px;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             display: none;
         }
@@ -206,8 +205,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px 15px;
-            background: white;
-            border: 1px solid #e1e5e9;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(204, 0, 0, 0.3);
             border-radius: 8px;
             margin-bottom: 8px;
         }
@@ -220,16 +219,17 @@
 
         .file-icon {
             font-size: 1.2rem;
+            color: #cc0000;
         }
 
         .file-details .file-name {
             font-weight: 600;
-            color: #333;
+            color: #fff;
         }
 
         .file-details .file-size {
             font-size: 0.8rem;
-            color: #666;
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .file-status {
@@ -250,22 +250,23 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #cc0000, #ff3333);
             color: white;
+            box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(204, 0, 0, 0.5);
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: rgba(60, 60, 60, 0.8);
+            color: #fff;
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: rgba(80, 80, 80, 0.9);
         }
 
         .btn:disabled {
@@ -302,25 +303,29 @@
             align-items: center;
             gap: 10px;
             padding: 15px;
-            background: white;
-            border: 2px solid #e1e5e9;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(204, 0, 0, 0.3);
             border-radius: 10px;
             transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .progress-step.active {
             border-color: #ffc107;
-            background: rgba(255, 193, 7, 0.1);
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
         }
 
         .progress-step.completed {
             border-color: #28a745;
-            background: rgba(40, 167, 69, 0.1);
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
         }
 
         .progress-step.error {
             border-color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
         }
 
         .step-icon {
@@ -333,7 +338,7 @@
         }
 
         .progress-bar-container {
-            background: #e1e5e9;
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
             height: 8px;
             overflow: hidden;
@@ -341,7 +346,7 @@
         }
 
         .progress-bar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #cc0000, #ff3333);
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
@@ -647,59 +652,59 @@
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
 
-            <p id="progress-text" style="text-align: center; margin-top: 15px; font-weight: 600;">Ready to upload...</p>
+            <p id="progress-text" style="text-align: center; margin-top: 15px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">Ready to upload...</p>
         </div>
     </div>
 
     <!-- Setup Guide Modal -->
-    <div id="setup-guide-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
-        <div style="background: white; max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 15px; max-height: 90vh; overflow-y: auto;">
+    <div id="setup-guide-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; padding: 20px; box-sizing: border-box;">
+        <div style="background: linear-gradient(135deg, rgba(30, 0, 0, 0.98), rgba(10, 0, 0, 0.98)); border: 2px solid rgba(204, 0, 0, 0.4); max-width: 800px; margin: 20px auto; padding: 30px; border-radius: 15px; max-height: 90vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: #667eea; margin: 0;">📚 GitHub Upload Setup Guide</h2>
-                <button onclick="closeSetupGuide()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">&times;</button>
+                <h2 style="color: #cc0000; margin: 0;">📚 GitHub Upload Setup Guide</h2>
+                <button onclick="closeSetupGuide()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #ff3333;">&times;</button>
             </div>
             
             <div class="setup-steps">
-                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #f8f9ff; border-left: 4px solid #667eea; border-radius: 0 10px 10px 0;">
-                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🔐 Step 1: Create GitHub Personal Access Token</h3>
-                    <ol style="line-height: 1.8;">
-                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #667eea;">GitHub Personal Access Tokens</a></li>
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: rgba(204, 0, 0, 0.1); border-left: 4px solid #cc0000; border-radius: 0 10px 10px 0;">
+                    <h3 style="color: #ff3333; margin: 0 0 10px 0;">🔐 Step 1: Create GitHub Personal Access Token</h3>
+                    <ol style="line-height: 1.8; color: rgba(255, 255, 255, 0.9);">
+                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #cc0000;">GitHub Personal Access Tokens</a></li>
                         <li>Click <strong>"Generate new token"</strong> → <strong>"Generate new token (classic)"</strong></li>
-                        <li>Give it a name like <code>"SOLIDWORKS Upload"</code></li>
+                        <li>Give it a name like <code style="background: rgba(0, 0, 0, 0.5); padding: 2px 6px; border-radius: 4px;">"SOLIDWORKS Upload"</code></li>
                         <li>Set expiration (recommend 90 days for security)</li>
-                        <li><strong>IMPORTANT:</strong> Check the <code>repo</code> scope (gives full repository access)</li>
+                        <li><strong>IMPORTANT:</strong> Check the <code style="background: rgba(0, 0, 0, 0.5); padding: 2px 6px; border-radius: 4px;">repo</code> scope (gives full repository access)</li>
                         <li>Click <strong>"Generate token"</strong></li>
                         <li><strong>COPY THE TOKEN IMMEDIATELY</strong> - you won't see it again!</li>
                     </ol>
                 </div>
                 
-                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #f0fff4; border-left: 4px solid #4CAF50; border-radius: 0 10px 10px 0;">
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: rgba(40, 167, 69, 0.15); border-left: 4px solid #4CAF50; border-radius: 0 10px 10px 0;">
                     <h3 style="color: #4CAF50; margin: 0 0 10px 0;">✅ Step 2: Verify Repository Access</h3>
-                    <p>Target repository for your uploads:</p>
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border: 2px solid #4CAF50;">
-                        <strong>📁 Repository:</strong> 
-                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" target="_blank" style="color: #667eea; text-decoration: none;">
+                    <p style="color: rgba(255, 255, 255, 0.9);">Target repository for your uploads:</p>
+                    <div style="background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 8px; margin: 10px 0; border: 2px solid #4CAF50;">
+                        <strong style="color: #fff;">📁 Repository:</strong> 
+                        <a href="https://github.com/Akhinoor14/SOLIDWORKS-Projects" target="_blank" style="color: #cc0000; text-decoration: none;">
                             <strong>Akhinoor14/SOLIDWORKS-Projects</strong>
                         </a>
                     </div>
-                    <p style="color: #666; font-size: 0.9rem;">✅ This repository is public and accessible. Your token needs push permissions to upload files.</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">✅ This repository is public and accessible. Your token needs push permissions to upload files.</p>
                 </div>
                 
-                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: #fff8e1; border-left: 4px solid #FF9800; border-radius: 0 10px 10px 0;">
+                <div class="setup-step" style="margin: 20px 0; padding: 20px; background: rgba(255, 152, 0, 0.15); border-left: 4px solid #FF9800; border-radius: 0 10px 10px 0;">
                     <h3 style="color: #FF9800; margin: 0 0 10px 0;">⚠️ Common Issues & Solutions</h3>
                     
                     <div style="margin: 15px 0;">
-                        <strong>❌ "Invalid token" error:</strong>
-                        <ul style="margin: 5px 0; color: #666;">
-                            <li>Ensure token has <code>repo</code> scope selected</li>
+                        <strong style="color: #dc3545;">❌ "Invalid token" error:</strong>
+                        <ul style="margin: 5px 0; color: rgba(255, 255, 255, 0.8);">
+                            <li>Ensure token has <code style="background: rgba(0, 0, 0, 0.5); padding: 2px 6px; border-radius: 4px;">repo</code> scope selected</li>
                             <li>Check token hasn't expired</li>
                             <li>Verify you copied the complete token (no spaces)</li>
                         </ul>
                     </div>
                     
                     <div style="margin: 15px 0;">
-                        <strong>❌ "Access denied" error:</strong>
-                        <ul style="margin: 5px 0; color: #666;">
+                        <strong style="color: #dc3545;">❌ "Access denied" error:</strong>
+                        <ul style="margin: 5px 0; color: rgba(255, 255, 255, 0.8);">
                             <li>Token needs push permissions to repository</li>
                             <li>Make sure you're the owner of the repository</li>
                             <li>If collaborator, ensure you have write access</li>
@@ -707,8 +712,8 @@
                     </div>
                     
                     <div style="margin: 15px 0;">
-                        <strong>❌ Upload fails or hangs:</strong>
-                        <ul style="margin: 5px 0; color: #666;">
+                        <strong style="color: #dc3545;">❌ Upload fails or hangs:</strong>
+                        <ul style="margin: 5px 0; color: rgba(255, 255, 255, 0.8);">
                             <li>Check stable internet connection</li>
                             <li>File size limit: 25MB per file</li>
                             <li>Try refreshing page and uploading again</li>
