@@ -22,15 +22,27 @@
             padding: 20px;
         }
 
-        /* Password screen */
+        /* Password screen overlay (covers entire viewport while logging in) */
         .password-screen {
-            background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.8));
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.65);
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        /* Inner card for the password form */
+        .password-panel {
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.95), rgba(10, 0, 0, 0.98));
             border: 2px solid rgba(204, 0, 0, 0.3);
             border-radius: 20px;
-            padding: 40px;
-            max-width: 400px;
+            padding: 36px;
+            max-width: 420px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
             text-align: center;
         }
 
@@ -339,13 +351,14 @@
     </style>
 </head>
 <body>
-    <!-- Password Screen -->
+    <!-- Password Screen (overlay) -->
     <div class="password-screen" id="passwordScreen">
-        <div class="lock-icon">🔒</div>
-        <h2>Access Restricted</h2>
-        <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Enter password to continue</p>
-        
-        <div class="password-input-group">
+        <div class="password-panel">
+            <div class="lock-icon">🔒</div>
+            <h2>Access Restricted</h2>
+            <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 20px;">Enter password to continue</p>
+
+            <div class="password-input-group">
                 <div style="position: relative;">
                     <input type="password" 
                            class="password-input" 
@@ -357,20 +370,21 @@
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
-        </div>
-        
-        <button class="password-btn" id="unlockBtn">Unlock</button>
-        <div class="password-error" id="passwordError">❌ Incorrect password</div>
-        
-        <div style="margin-top: 20px; text-align: center;">
-            <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
-                Forgot password? Contact administrator.
-            </p>
+            </div>
+
+            <button class="password-btn" id="unlockBtn">Unlock</button>
+            <div class="password-error" id="passwordError">❌ Incorrect password</div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
+                    Forgot password? Contact administrator.
+                </p>
+            </div>
         </div>
     </div>
 
-    <!-- Main Upload Interface (hidden by default, always hidden until unlock) -->
-    <div class="container" id="mainContainer" style="display: none; visibility: hidden; position: absolute; left: -9999px;">
+    <!-- Main Upload Interface (hidden by default) -->
+    <div class="container" id="mainContainer" style="display: none;">
             <div class="header-btns" style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
                 <h1 style="margin: 0; flex: 1;">🖼️ Profile Photo Uploader</h1>
                 <button id="settingsBtn" class="header-btn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 6px;">
@@ -485,22 +499,6 @@
     </div>
 
     <script src="profile-uploader.js"></script>
-    <script>
-    // Show/hide main interface strictly on unlock
-    document.addEventListener('DOMContentLoaded', function() {
-        var passwordScreen = document.getElementById('passwordScreen');
-        var mainContainer = document.getElementById('mainContainer');
-        function showMainInterface() {
-            passwordScreen.style.display = 'none';
-            mainContainer.style.display = 'block';
-            mainContainer.style.visibility = 'visible';
-            mainContainer.style.position = 'static';
-            mainContainer.style.left = '';
-        }
-        // Patch for legacy unlock logic
-        window.showMainInterface = showMainInterface;
-    });
-    </script>
         <style>
             .header-btns {
                 display: flex;

@@ -22,6 +22,46 @@
     const unlockBtn = document.getElementById('unlockBtn');
     const passwordError = document.getElementById('passwordError');
 
+    // Improve UX while password overlay is active:
+    // - disable page scroll
+    // - focus password input
+    // - trap Tab focus inside the password panel so underlying controls aren't reachable
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            if (passwordScreen && passwordInput) {
+                // ensure overlay is visible and focus is on input
+                passwordInput.focus();
+                document.body.style.overflow = 'hidden';
+
+                const panel = document.querySelector('.password-panel') || passwordScreen;
+                const focusable = panel.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+                if (focusable.length) {
+                    const firstFocusable = focusable[0];
+                    const lastFocusable = focusable[focusable.length - 1];
+                    panel.addEventListener('keydown', function(e) {
+                        if (e.key === 'Tab') {
+                            // Wrap focus
+                            if (e.shiftKey) {
+                                if (document.activeElement === firstFocusable) {
+                                    e.preventDefault();
+                                    lastFocusable.focus();
+                                }
+                            } else {
+                                if (document.activeElement === lastFocusable) {
+                                    e.preventDefault();
+                                    firstFocusable.focus();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            // non-fatal
+            console.warn('Focus trap setup failed:', err);
+        }
+    });
+
     // SHA-256 hash function
     async function hashPassword(password) {
         const msgBuffer = new TextEncoder().encode(password);
@@ -52,7 +92,9 @@
     }
 
     function showMainInterface() {
+        // hide overlay and restore page behaviour
         passwordScreen.style.display = 'none';
+        document.body.style.overflow = '';
         mainContainer.style.display = 'block';
         initializeUploader();
     }
