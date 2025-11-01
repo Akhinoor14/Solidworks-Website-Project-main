@@ -1532,6 +1532,9 @@ function openSolidworksWindow(type) {
         'hw': 'HW',
         'solo': 'Solo-Projects'
     };
+    // Admin session check for showing upload button
+    let isAdmin = false;
+    try { isAdmin = !!sessionStorage.getItem('admin_session'); } catch(e) { isAdmin = false; }
     
     const modal = document.createElement('div');
     modal.id = `solidworks${type.toUpperCase()}Modal`;
@@ -1554,9 +1557,9 @@ function openSolidworksWindow(type) {
                     <button class="sw-action-btn" onclick="window.open('${repoUrl}', '_blank')">
                         <i class="fab fa-github"></i> Open in GitHub
                     </button>
-                    <button class="sw-action-btn" onclick="uploadToSolidworks('${type}')">
-                        <i class="fas fa-upload"></i> Upload Files
-                    </button>
+                    ${isAdmin ? `<button class="sw-action-btn" onclick="window.location.href='only-boss-uploads.html'">
+                        <i class='fas fa-upload'></i> Upload Files
+                    </button>` : ''}
                     <button class="sw-action-btn" onclick="refreshSolidworksContent('${type}')" title="Refresh from GitHub">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>

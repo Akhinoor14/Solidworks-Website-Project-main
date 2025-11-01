@@ -403,6 +403,15 @@
     </style>
 </head>
 <body>
+    <script>
+        // Admin session guard: prevent public access to uploader
+        (function(){
+            try {
+                var s = sessionStorage.getItem('admin_session');
+                if(!s){ window.location.href = 'only-boss.html'; }
+            } catch(e){ window.location.href = 'only-boss.html'; }
+        })();
+    </script>
     <div class="upload-container">
         <!-- Header -->
         <div class="upload-header">
