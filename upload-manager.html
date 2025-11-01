@@ -698,237 +698,246 @@
 
         <!-- Placeholder Tabs -->
         <div id="tab-solo" class="tab-content">
-            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
-                <i class="fas fa-star" style="font-size: 5rem; color: #cc0000; margin-bottom: 30px;"></i>
-                <h2 style="color: #ff3333; margin-bottom: 20px;">Solo Projects Upload</h2>
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
-                    Integrate with existing solo project upload from script.js
-                </p>
-                <button class="btn btn-primary" onclick="alert('Solo upload - Coming Soon!')">
-                    <i class="fas fa-rocket"></i> Launch Solo Upload
-                </button>
+            <div class="upload-panel">
+                <form id="form-solo" onsubmit="handleSoloUpload(event)">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-star"></i>
+                            Solo Project Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Project Number</label>
+                                <select id="solo-project-number" class="form-control" required>
+                                    <option value="">Select Project...</option>
+                                    <option value="1">Project 1</option>
+                                    <option value="2">Project 2</option>
+                                    <option value="3">Project 3</option>
+                                    <option value="4">Project 4</option>
+                                    <option value="5">Project 5</option>
+                                    <option value="6">Project 6</option>
+                                    <option value="7">Project 7</option>
+                                    <option value="8">Project 8</option>
+                                    <option value="9">Project 9</option>
+                                    <option value="10">Project 10</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Upload Mode</label>
+                                <select id="solo-mode" class="form-control" required>
+                                    <option value="">Select Mode...</option>
+                                    <option value="new">New Project</option>
+                                    <option value="add">Add to Existing</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            Upload Files
+                        </h3>
+                        <div class="upload-zone" id="solo-zone" onclick="document.getElementById('solo-files').click()">
+                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h4>Drag & Drop Your Files Here</h4>
+                            <p>or click to browse (.SLDASM, .SLDPRT, .PNG, .JPG, .PDF)</p>
+                        </div>
+                        <input type="file" id="solo-files" class="hidden" multiple accept=".SLDASM,.SLDPRT,.png,.jpg,.jpeg,.pdf">
+                        
+                        <div class="file-preview" id="solo-preview">
+                            <h4><i class="fas fa-list"></i> Selected Files</h4>
+                            <ul class="file-list" id="solo-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="clearFiles('solo')">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i> Upload Solo Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-panel" id="solo-progress">
+                <h3><i class="fas fa-spinner fa-spin"></i> Upload Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="solo-bar"></div>
+                </div>
+                <div class="progress-text" id="solo-text">Ready to upload...</div>
             </div>
         </div>
 
         <div id="tab-question" class="tab-content">
-            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
-                <i class="fas fa-file-pdf" style="font-size: 5rem; color: #cc0000; margin-bottom: 30px;"></i>
-                <h2 style="color: #ff3333; margin-bottom: 20px;">Question Papers Upload</h2>
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
-                    Integrate with existing question upload from script.js
-                </p>
-                <button class="btn btn-primary" onclick="alert('Question upload - Coming Soon!')">
-                    <i class="fas fa-file-upload"></i> Upload Questions
-                </button>
+            <div class="upload-panel">
+                <form id="form-question" onsubmit="handleQuestionUpload(event)">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Question Paper Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Day Number</label>
+                                <select id="question-day" class="form-control" required>
+                                    <option value="">Select Day...</option>
+                                    <option value="06">Day 06</option>
+                                    <option value="07">Day 07</option>
+                                    <option value="08">Day 08</option>
+                                    <option value="09">Day 09</option>
+                                    <option value="10">Day 10</option>
+                                    <option value="11">Day 11</option>
+                                    <option value="12">Day 12</option>
+                                    <option value="13">Day 13</option>
+                                    <option value="14">Day 14</option>
+                                    <option value="15">Day 15</option>
+                                    <option value="16">Day 16</option>
+                                    <option value="17">Day 17</option>
+                                    <option value="18">Day 18</option>
+                                    <option value="19">Day 19</option>
+                                    <option value="20">Day 20</option>
+                                    <option value="21">Day 21</option>
+                                    <option value="22">Day 22</option>
+                                    <option value="23">Day 23</option>
+                                    <option value="24">Day 24</option>
+                                    <option value="25">Day 25</option>
+                                    <option value="26">Day 26</option>
+                                    <option value="27">Day 27</option>
+                                    <option value="28">Day 28</option>
+                                    <option value="29">Day 29</option>
+                                    <option value="30">Day 30</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Question Type</label>
+                                <select id="question-type" class="form-control" required>
+                                    <option value="">Select Type...</option>
+                                    <option value="CW">Class Work Question</option>
+                                    <option value="HW">Home Work Question</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-file-pdf"></i>
+                            Upload Question File
+                        </h3>
+                        <div class="upload-zone" id="question-zone" onclick="document.getElementById('question-files').click()">
+                            <div class="upload-icon"><i class="fas fa-file-pdf"></i></div>
+                            <h4>Drag & Drop Question Paper</h4>
+                            <p>PDF or Image files (.PDF, .PNG, .JPG)</p>
+                        </div>
+                        <input type="file" id="question-files" class="hidden" multiple accept=".pdf,.png,.jpg,.jpeg">
+                        
+                        <div class="file-preview" id="question-preview">
+                            <h4><i class="fas fa-list"></i> Selected Files</h4>
+                            <ul class="file-list" id="question-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="clearFiles('question')">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-upload"></i> Upload Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-panel" id="question-progress">
+                <h3><i class="fas fa-spinner fa-spin"></i> Upload Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="question-bar"></div>
+                </div>
+                <div class="progress-text" id="question-text">Ready to upload...</div>
             </div>
         </div>
 
         <div id="tab-update" class="tab-content">
-            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
-                <i class="fas fa-edit" style="font-size: 5rem; color: #ff9800; margin-bottom: 30px;"></i>
-                <h2 style="color: #ff9800; margin-bottom: 20px;">Update Existing Files</h2>
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
-                    Integrate with existing update system from script.js
-                </p>
-                <button class="btn btn-primary" onclick="alert('Update files - Coming Soon!')">
-                    <i class="fas fa-sync"></i> Update Files
-                </button>
+            <div class="upload-panel">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit"></i>
+                        Update Existing Files
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Project Type</label>
+                            <select id="update-type" class="form-control" onchange="loadUpdateFiles(this.value)">
+                                <option value="">Select Type...</option>
+                                <option value="CW">Class Work (CW)</option>
+                                <option value="HW">Home Work (HW)</option>
+                                <option value="Solo">Solo Projects</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="update-form-container" style="display: none;">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder"></i>
+                            Select File to Update
+                        </h3>
+                        <div id="update-files-list"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="proceedUpdate()">
+                            <i class="fas fa-sync"></i> Update Selected Files
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="tab-delete" class="tab-content">
-            <div class="upload-panel" style="text-align: center; padding: 80px 40px;">
-                <i class="fas fa-trash" style="font-size: 5rem; color: #dc3545; margin-bottom: 30px;"></i>
-                <h2 style="color: #dc3545; margin-bottom: 20px;">Delete Files</h2>
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-bottom: 30px;">
-                    Integrate with existing delete system from script.js
-                </p>
-                <button class="btn btn-primary" onclick="alert('Delete files - Coming Soon!')">
-                    <i class="fas fa-trash-alt"></i> Delete Files
-                </button>
+            <div class="upload-panel">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-trash"></i>
+                        Delete Files
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Project Type</label>
+                            <select id="delete-type" class="form-control" onchange="loadDeleteFiles(this.value)">
+                                <option value="">Select Type...</option>
+                                <option value="CW">Class Work (CW)</option>
+                                <option value="HW">Home Work (HW)</option>
+                                <option value="Solo">Solo Projects</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-form-container" style="display: none;">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-folder"></i>
+                            Select Files to Delete
+                        </h3>
+                        <div id="delete-files-list"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" style="background: linear-gradient(135deg, #dc3545, #c82333);" onclick="proceedDelete()">
+                            <i class="fas fa-trash-alt"></i> Delete Selected Files
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Load existing systems -->
-    <script src="github-uploader.js"></script>
-    <script src="website-updater.js"></script>
-    
-    <script>
-        // Tab Switching
-        function switchTab(tab) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById('tab-' + tab).classList.add('active');
-            event.target.closest('.tab-btn').classList.add('active');
-        }
-
-        // Token Management
-        function saveToken() {
-            const token = document.getElementById('github-token').value.trim();
-            if (!token) {
-                alert('❌ Please enter a GitHub token');
-                return;
-            }
-            localStorage.setItem('github_token', token);
-            updateTokenStatus();
-            alert('✅ GitHub token saved successfully!');
-        }
-
-        function updateTokenStatus() {
-            const token = localStorage.getItem('github_token');
-            const status = document.getElementById('token-status');
-            if (token) {
-                status.className = 'token-status connected';
-                status.innerHTML = '<i class="fas fa-check-circle"></i> Connected';
-            } else {
-                status.className = 'token-status disconnected';
-                status.innerHTML = '<i class="fas fa-times-circle"></i> Not Connected';
-            }
-        }
-
-        // File Upload Handlers
-        function setupFileHandlers(type) {
-            const fileInput = document.getElementById(type + '-files');
-            const uploadZone = document.getElementById(type + '-zone');
-            const preview = document.getElementById(type + '-preview');
-            const list = document.getElementById(type + '-list');
-
-            fileInput.addEventListener('change', () => displayFiles(type, fileInput.files));
-
-            uploadZone.addEventListener('dragover', e => {
-                e.preventDefault();
-                uploadZone.classList.add('drag-over');
-            });
-
-            uploadZone.addEventListener('dragleave', () => {
-                uploadZone.classList.remove('drag-over');
-            });
-
-            uploadZone.addEventListener('drop', e => {
-                e.preventDefault();
-                uploadZone.classList.remove('drag-over');
-                fileInput.files = e.dataTransfer.files;
-                displayFiles(type, e.dataTransfer.files);
-            });
-        }
-
-        function displayFiles(type, files) {
-            const preview = document.getElementById(type + '-preview');
-            const list = document.getElementById(type + '-list');
-            
-            if (files.length === 0) {
-                preview.classList.remove('show');
-                return;
-            }
-
-            preview.classList.add('show');
-            list.innerHTML = '';
-
-            Array.from(files).forEach(file => {
-                const li = document.createElement('li');
-                li.className = 'file-item';
-                li.innerHTML = `
-                    <div class="file-info">
-                        <i class="fas fa-file file-icon"></i>
-                        <div>
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${formatSize(file.size)}</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-check-circle" style="color: #28a745; font-size: 1.2rem;"></i>
-                `;
-                list.appendChild(li);
-            });
-        }
-
-        function formatSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-
-        function clearFiles(type) {
-            document.getElementById(type + '-files').value = '';
-            document.getElementById(type + '-preview').classList.remove('show');
-        }
-
-        // Upload Handler
-        async function handleUpload(event, type) {
-            event.preventDefault();
-            
-            const prefix = type.toLowerCase();
-            const day = document.getElementById(prefix + '-day').value;
-            const number = document.getElementById(prefix + '-number').value;
-            const files = document.getElementById(prefix + '-files').files;
-
-            if (!day || !number || files.length === 0) {
-                alert('❌ Please fill all fields and select files');
-                return;
-            }
-
-            const token = localStorage.getItem('github_token');
-            if (!token) {
-                alert('❌ Please save GitHub token first!');
-                return;
-            }
-
-            // Show progress
-            const progressPanel = document.getElementById(prefix + '-progress');
-            const progressBar = document.getElementById(prefix + '-bar');
-            const progressText = document.getElementById(prefix + '-text');
-            
-            progressPanel.classList.add('show');
-            progressBar.style.width = '0%';
-            progressText.textContent = 'Starting upload...';
-
-            try {
-                // Use GitHubUploader from github-uploader.js
-                const uploader = new GitHubUploader(token, 'Akhinoor14', 'SOLIDWORKS-Projects');
-                const folderPath = `${type}/Day ${day}/${type} ${number}`;
-
-                progressText.textContent = `Uploading ${files.length} files to GitHub...`;
-                
-                // Upload each file
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    progressBar.style.width = ((i + 1) / files.length * 90) + '%';
-                    progressText.textContent = `Uploading ${file.name}... (${i + 1}/${files.length})`;
-                    
-                    await uploader.uploadFile(folderPath, file);
-                }
-
-                progressBar.style.width = '100%';
-                progressText.textContent = '✅ Upload completed successfully!';
-
-                setTimeout(() => {
-                    progressPanel.classList.remove('show');
-                    event.target.reset();
-                    clearFiles(prefix);
-                }, 3000);
-
-            } catch (error) {
-                progressText.textContent = '❌ Upload failed: ' + error.message;
-                console.error('Upload error:', error);
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            updateTokenStatus();
-            setupFileHandlers('cw');
-            setupFileHandlers('hw');
-            
-            const savedToken = localStorage.getItem('github_token');
-            if (savedToken) {
-                document.getElementById('github-token').value = savedToken;
-            }
-        });
-    </script>
+    <!-- Load Upload Manager JavaScript -->
+    <script src="upload-manager.js"></script>
 </body>
 </html>
