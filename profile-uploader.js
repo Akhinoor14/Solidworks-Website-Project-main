@@ -4,6 +4,36 @@
 (function() {
     'use strict';
 
+    // ========== NOTIFICATION SYSTEM ==========
+    /**
+     * Show toast notification (uses styles.css .toast-notification)
+     */
+    function showNotification(message, type = 'info', duration = 4000) {
+        const container = document.getElementById('notification-container');
+        if (!container) {
+            console.warn('Notification container not found');
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            return;
+        }
+
+        // Set message and type
+        container.textContent = message;
+        container.className = `toast-notification ${type}`;
+        
+        // Show notification
+        setTimeout(() => container.classList.add('show'), 10);
+        
+        // Auto-hide after duration
+        if (duration > 0) {
+            setTimeout(() => {
+                container.classList.remove('show');
+            }, duration);
+        }
+        
+        // Also log to console for debugging
+        console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+
     // ========== PASSWORD PROTECTION ==========
     // Password is hashed for security - never stored in plain text
     // To change default: run generate-hash.html with your new password
@@ -154,17 +184,91 @@
         const githubTokenInput = document.getElementById('githubToken');
         const githubRepoInput = document.getElementById('githubRepo');
         const saveGitHubConfigBtn = document.getElementById('saveGitHubConfig');
+        const testGitHubConnectionBtn = document.getElementById('testGitHubConnection');
         const githubConfigStatus = document.getElementById('githubConfigStatus');
+        const configStatusBadge = document.getElementById('configStatusBadge');
+        
+        // Update badge status
+        function updateConfigBadge(status) {
+            if (!configStatusBadge) return;
+            
+            if (status === 'connected') {
+                configStatusBadge.textContent = 'Connected ✓';
+                configStatusBadge.classList.add('connected');
+            } else {
+                configStatusBadge.textContent = 'Not Configured';
+                configStatusBadge.classList.remove('connected');
+            }
+        }
         
         // Load existing GitHub config
         if (githubTokenInput && githubRepoInput) {
-            const savedToken = localStorage.getItem('github_token');
-            const savedRepo = localStorage.getItem('github_repo') || 'Akhinoor14/Solidworks-Website-Project-main';
-            if (savedToken) githubTokenInput.value = savedToken;
+            const savedToken = localStorage.getItem('githubToken') || localStorage.getItem('github_token');
+            const savedRepo = localStorage.getItem('githubRepo') || localStorage.getItem('github_repo') || 'Akhinoor14/Solidworks-Website-Project-main';
+            
+            if (savedToken) {
+                githubTokenInput.value = savedToken;
+                updateConfigBadge('connected');
+            }
             githubRepoInput.value = savedRepo;
         }
         
-        // Save GitHub config
+        // Test GitHub connection
+        if (testGitHubConnectionBtn) {
+            testGitHubConnectionBtn.addEventListener('click', async () => {
+                const token = githubTokenInput.value.trim();
+                const repo = githubRepoInput.value.trim();
+                
+                if (!token || !repo) {
+                    showGitHubConfigStatus('❌ Please enter both token and repository', 'error');
+                    showNotification('❌ Please fill in all fields', 'error');
+                    return;
+                }
+                
+                testGitHubConnectionBtn.disabled = true;
+                testGitHubConnectionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+                
+                try {
+                    showNotification('🔍 Testing GitHub connection...', 'info', 0);
+                    
+                    // Test API access
+                    const [owner, repoName] = repo.split('/');
+                    const apiUrl = `https://api.github.com/repos/${owner}/${repoName}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const repoData = await response.json();
+                        const successMsg = `✅ Connected to ${repoData.full_name}! ${repoData.private ? '🔒 Private' : '🌍 Public'} repository`;
+                        showGitHubConfigStatus(successMsg, 'success');
+                        showNotification(successMsg, 'success', 5000);
+                        updateConfigBadge('connected');
+                    } else if (response.status === 401) {
+                        throw new Error('Invalid token - please check your Personal Access Token');
+                    } else if (response.status === 404) {
+                        throw new Error('Repository not found - check owner/repo format');
+                    } else {
+                        throw new Error(`GitHub API error: ${response.status}`);
+                    }
+                    
+                } catch (error) {
+                    const errorMsg = `❌ Connection failed: ${error.message}`;
+                    showGitHubConfigStatus(errorMsg, 'error');
+                    showNotification(errorMsg, 'error', 6000);
+                    updateConfigBadge('error');
+                } finally {
+                    testGitHubConnectionBtn.disabled = false;
+                    testGitHubConnectionBtn.innerHTML = '<i class="fas fa-plug"></i> Test Connection';
+                }
+            });
+        }
+        
+        // Save GitHub config with validation
         if (saveGitHubConfigBtn) {
             saveGitHubConfigBtn.addEventListener('click', () => {
                 const token = githubTokenInput.value.trim();
@@ -172,36 +276,54 @@
                 
                 if (!token) {
                     showGitHubConfigStatus('❌ Please enter a GitHub token', 'error');
+                    showNotification('❌ GitHub token is required', 'error');
+                    githubTokenInput.focus();
                     return;
                 }
                 
                 if (!repo || !repo.includes('/')) {
                     showGitHubConfigStatus('❌ Invalid repo format (use: owner/repo)', 'error');
+                    showNotification('❌ Invalid repository format. Use: owner/repo', 'error');
+                    githubRepoInput.focus();
                     return;
                 }
                 
-                localStorage.setItem('github_token', token);
-                localStorage.setItem('github_repo', repo);
-                showGitHubConfigStatus('✅ GitHub config saved successfully!', 'success');
+                // Validate token format
+                if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+                    showGitHubConfigStatus('⚠️ Token format unusual but saved', 'info');
+                    showNotification('⚠️ Token format looks unusual. Typically starts with ghp_ or github_pat_', 'warning', 5000);
+                }
+                
+                // Save with both key names for compatibility
+                localStorage.setItem('githubToken', token);
+                localStorage.setItem('githubRepo', repo);
+                localStorage.setItem('github_token', token); // Legacy support
+                localStorage.setItem('github_repo', repo); // Legacy support
+                
+                const successMsg = '✅ GitHub credentials saved successfully!';
+                showGitHubConfigStatus(successMsg, 'success');
+                showNotification(successMsg + ' You can now upload photos.', 'success', 4000);
+                updateConfigBadge('connected');
+                
+                // Auto-hide status after 4 seconds
+                setTimeout(() => {
+                    githubConfigStatus.style.display = 'none';
+                }, 4000);
             });
         }
         
         function showGitHubConfigStatus(message, type) {
             if (!githubConfigStatus) return;
-            githubConfigStatus.textContent = message;
-            githubConfigStatus.style.display = 'block';
-            githubConfigStatus.style.background = type === 'success' 
-                ? 'rgba(0, 200, 0, 0.2)' 
-                : 'rgba(200, 0, 0, 0.2)';
-            githubConfigStatus.style.border = type === 'success'
-                ? '1px solid rgba(0, 200, 0, 0.4)'
-                : '1px solid rgba(200, 0, 0, 0.4)';
-            githubConfigStatus.style.color = type === 'success' ? '#00ff00' : '#ff6666';
             
+            githubConfigStatus.textContent = message;
+            githubConfigStatus.className = `status-message ${type}`;
+            githubConfigStatus.style.display = 'block';
+            
+            // Auto-hide success messages
             if (type === 'success') {
                 setTimeout(() => {
                     githubConfigStatus.style.display = 'none';
-                }, 3000);
+                }, 5000);
             }
         }
 
@@ -282,14 +404,15 @@
 
         function showPasswordStatus(message, type) {
             passwordChangeStatus.textContent = message;
-            passwordChangeStatus.style.display = 'block';
-            passwordChangeStatus.style.background = type === 'success' 
-                ? 'rgba(0, 200, 0, 0.2)' 
-                : 'rgba(200, 0, 0, 0.2)';
-            passwordChangeStatus.style.border = type === 'success'
-                ? '1px solid rgba(0, 200, 0, 0.4)'
-                : '1px solid rgba(200, 0, 0, 0.4)';
-            passwordChangeStatus.style.color = type === 'success' ? '#00ff00' : '#ff6666';
+            passwordChangeStatus.className = `status-message ${type}`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    passwordChangeStatus.className = 'status-message';
+                    passwordChangeStatus.textContent = '';
+                }, 5000);
+            }
         }
     }
 
@@ -456,16 +579,20 @@
         clearBtn.disabled = true;
         progress.style.display = 'block';
         
+        showNotification('🚀 Preparing upload...', 'info');
         showStatus('🚀 Preparing upload...', 'info');
 
         try {
-            // Upload to GitHub
+            // Upload to GitHub with real-time notifications
             await uploadToGitHub();
             
-            showStatus(`✅ Successfully uploaded ${selectedFiles.length} photo(s)!`, 'success');
+            const successMsg = `✅ Successfully uploaded ${selectedFiles.length} photo(s)!`;
+            showNotification(successMsg, 'success', 5000);
+            showStatus(successMsg, 'success');
             
             // Refresh gallery to show new photos
             if (typeof loadGallery === 'function') {
+                showNotification('🔄 Refreshing gallery...', 'info', 2000);
                 setTimeout(() => loadGallery(), 1000);
             }
             
@@ -480,44 +607,73 @@
             }, 3000);
             
         } catch (error) {
-            showStatus(`❌ Upload failed: ${error.message}`, 'error');
+            const errorMsg = `❌ Upload failed: ${error.message}`;
+            showNotification(errorMsg, 'error', 6000);
+            showStatus(errorMsg, 'error');
             uploadBtn.disabled = false;
         } finally {
             clearBtn.disabled = false;
         }
     });
 
-    // Upload files to GitHub - REAL implementation
+    // Upload files to GitHub - REAL implementation with auto-rename
     async function uploadToGitHub() {
         const totalFiles = selectedFiles.length;
         
-        // Get GitHub credentials from localStorage (consistent naming)
-        const githubToken = localStorage.getItem('githubToken');
-        const githubRepo = localStorage.getItem('githubRepo');
+        // Get GitHub credentials from localStorage
+        let githubToken = localStorage.getItem('githubToken');
+        let githubRepo = localStorage.getItem('githubRepo');
+        
+        // Fallback to old keys for compatibility
+        if (!githubToken) githubToken = localStorage.getItem('github_token');
+        if (!githubRepo) githubRepo = localStorage.getItem('github_repo');
         
         if (!githubToken || !githubRepo) {
-            throw new Error('GitHub credentials not configured. Please set up in Settings first.');
+            throw new Error('GitHub credentials not configured. Please configure in Settings panel first.');
         }
+        
+        // Validate token format
+        if (!githubToken.startsWith('ghp_') && !githubToken.startsWith('github_pat_')) {
+            const proceed = confirm(
+                '⚠️ Token format looks unusual.\n\n' +
+                'GitHub tokens typically start with "ghp_" or "github_pat_"\n\n' +
+                'Continue anyway?'
+            );
+            if (!proceed) {
+                throw new Error('Upload cancelled - please check your GitHub token');
+            }
+        }
+        
+        showNotification('🔍 Checking existing photos...', 'info', 2000);
+        showNotification('🔍 Checking existing photos...', 'info', 2000);
         
         // Refresh existing photos count before upload
         await fetchExistingPhotos();
+        
+        const startNumber = existingPhotos.length + 1;
+        showNotification(`📋 Found ${existingPhotos.length} existing photos. New photos will start from PP${startNumber}.jpg`, 'info', 3000);
         
         for (let i = 0; i < totalFiles; i++) {
             const file = selectedFiles[i];
             const newName = `PP${existingPhotos.length + i + 1}.jpg`;
             
-            showStatus(`📤 Uploading ${i + 1}/${totalFiles}: ${newName}...`, 'info');
+            const uploadMsg = `📤 Uploading ${i + 1}/${totalFiles}: ${file.name} → ${newName}`;
+            showNotification(uploadMsg, 'info', 2000);
+            showStatus(uploadMsg, 'info');
             updateProgress((i / totalFiles) * 100);
             
-            await realGitHubUpload(file, newName, githubToken, githubRepo);
-            
-            existingPhotos.push(newName);
+            try {
+                await realGitHubUpload(file, newName, githubToken, githubRepo);
+                console.log(`✅ Successfully uploaded ${newName}`);
+                existingPhotos.push(newName);
+            } catch (error) {
+                throw new Error(`Failed to upload ${file.name}: ${error.message}`);
+            }
         }
         
         updateProgress(100);
-    }
-
-    // Real GitHub API upload
+        showNotification(`🎉 All ${totalFiles} photos uploaded successfully!`, 'success', 4000);
+    }    // Real GitHub API upload
     function realGitHubUpload(file, newName, token, repo) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -598,6 +754,7 @@
             galleryStatus.textContent = '⚠️ Configure GitHub credentials in Settings first';
             galleryStatus.style.color = '#ffaa66';
             photoGallery.style.display = 'block';
+            showNotification('⚠️ Please configure GitHub credentials in Settings', 'warning', 4000);
             return;
         }
 
@@ -606,15 +763,19 @@
             galleryStatus.style.color = 'rgba(255,255,255,0.6)';
             photoGallery.style.display = 'block';
             
+            showNotification('🔍 Loading photo gallery from GitHub...', 'info', 2000);
             const photos = await fetchGitHubPhotos(githubToken, githubRepo);
             
             if (photos.length === 0) {
                 galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">📭 No photos uploaded yet</div>';
                 galleryStatus.textContent = '';
+                showNotification('📭 No photos found in repository', 'info', 3000);
                 return;
             }
             
             existingPhotos = photos.map(p => p.name); // Update global list
+            
+            showNotification(`✅ Loaded ${photos.length} photo${photos.length > 1 ? 's' : ''} from GitHub`, 'success', 3000);
             
             galleryGrid.innerHTML = photos.map(photo => `
                 <div class="gallery-photo" data-filename="${photo.name}">
@@ -646,8 +807,10 @@
             
         } catch (error) {
             console.error('Gallery load error:', error);
-            galleryStatus.textContent = `❌ Failed to load: ${error.message}`;
+            const errorMsg = `❌ Failed to load gallery: ${error.message}`;
+            galleryStatus.textContent = errorMsg;
             galleryStatus.style.color = '#ff6666';
+            showNotification(errorMsg, 'error', 6000);
         }
     }
 
@@ -704,7 +867,7 @@
         const githubRepo = localStorage.getItem('githubRepo');
         
         if (!githubToken || !githubRepo) {
-            alert('❌ GitHub credentials not configured');
+            showNotification('❌ GitHub credentials not configured', 'error');
             hideDeleteConfirmation();
             return;
         }
@@ -714,22 +877,29 @@
             deleteConfirmBtn.textContent = '⏳ Deleting...';
             
             const photoToDelete = currentDeleteTarget.name;
-            const photoNumber = parseInt(photoToDelete.match(/\d+/)?.[0] || '0');
             
+            showNotification(`🗑️ Deleting ${photoToDelete}...`, 'info', 0);
             console.log(`🗑️ Deleting ${photoToDelete}...`);
             
             // Step 1: Delete the photo
             await deleteFromGitHub(currentDeleteTarget, githubToken, githubRepo);
+            showNotification(`✅ Deleted ${photoToDelete} from GitHub`, 'success', 2000);
             
             // Step 2: Get all remaining photos
+            showNotification('🔍 Checking remaining photos...', 'info', 2000);
             const remainingPhotos = await fetchGitHubPhotos(githubToken, githubRepo);
             
             // Step 3: Renumber photos to fill gaps
-            await renumberPhotos(remainingPhotos, githubToken, githubRepo);
+            if (remainingPhotos.length > 0) {
+                showNotification(`🔢 Renumbering ${remainingPhotos.length} photos to fill gaps...`, 'info', 0);
+                await renumberPhotos(remainingPhotos, githubToken, githubRepo);
+            }
             
             hideDeleteConfirmation();
             
-            showStatus(`✅ Deleted ${photoToDelete} and renumbered photos!`, 'success');
+            const successMsg = `✅ Deleted ${photoToDelete} and renumbered ${remainingPhotos.length} photos!`;
+            showNotification(successMsg, 'success', 5000);
+            showStatus(successMsg, 'success');
             
             // Reload gallery
             setTimeout(() => {
@@ -748,7 +918,9 @@
             
         } catch (error) {
             console.error('Delete error:', error);
-            alert(`❌ Delete failed: ${error.message}`);
+            const errorMsg = `❌ Delete failed: ${error.message}`;
+            showNotification(errorMsg, 'error', 6000);
+            showStatus(errorMsg, 'error');
             deleteConfirmBtn.disabled = false;
             deleteConfirmBtn.textContent = '🗑️ Delete';
         }

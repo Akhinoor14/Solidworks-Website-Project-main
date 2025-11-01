@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Photo Uploader - Private</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         * {
             margin: 0;
@@ -550,6 +551,251 @@
         .delete-cancel-btn:hover {
             background: rgba(255,255,255,0.2);
         }
+
+        /* ========== MODERN SETTINGS INTERFACE ========== */
+        .settings-section {
+            background: rgba(10, 0, 0, 0.4);
+            border: 1px solid rgba(204, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .section-header h4 {
+            color: #cc0000;
+            font-size: 1.1rem;
+            margin: 0;
+            flex: 1;
+        }
+
+        .config-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 100, 100, 0.2);
+            color: #ff6666;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .config-badge.connected {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+
+        .section-description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-label i {
+            margin-right: 6px;
+            color: #cc0000;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(20, 0, 0, 0.5);
+            border: 1.5px solid rgba(204, 0, 0, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #cc0000;
+            background: rgba(20, 0, 0, 0.7);
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .input-with-toggle {
+            position: relative;
+        }
+
+        .input-with-toggle .form-input {
+            padding-right: 45px;
+        }
+
+        .toggle-visibility-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-visibility-btn:hover {
+            background: rgba(204, 0, 0, 0.4);
+            color: #fff;
+        }
+
+        .input-help {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .help-link {
+            color: #cc0000;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .help-link:hover {
+            color: #ff4444;
+        }
+
+        .help-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #cc0000, #990000);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #dd0000, #aa0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: rgba(0, 200, 0, 0.2);
+            border: 1px solid rgba(0, 200, 0, 0.4);
+            color: #00ff00;
+        }
+
+        .status-message.error {
+            background: rgba(200, 0, 0, 0.2);
+            border: 1px solid rgba(200, 0, 0, 0.4);
+            color: #ff6666;
+        }
+
+        .status-message.info {
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+            color: #ffaa66;
+        }
+
+        @media (max-width: 640px) {
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .config-badge {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -633,65 +879,99 @@
             <h3 style="margin-bottom: 10px; color: #cc0000;">⚙️ Settings</h3>
             
             <!-- GitHub Configuration Section -->
-            <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(204,0,0,0.2);">
-                <h4 style="color: #cc0000; margin-bottom: 12px; font-size: 1rem;">� GitHub Configuration</h4>
-                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 15px;">
-                    Required for auto-uploading profile photos to GitHub
+            <div class="settings-section github-config-section">
+                <div class="section-header">
+                    <i class="fas fa-github" style="margin-right: 8px;"></i>
+                    <h4>GitHub Configuration</h4>
+                    <span class="config-badge" id="configStatusBadge">Not Configured</span>
+                </div>
+                
+                <p class="section-description">
+                    Connect your GitHub repository to enable photo uploads and management
                 </p>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">GitHub Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx" 
-                           style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff; font-family: monospace;">
-                    <small style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Generate at: GitHub → Settings → Developer settings → Personal access tokens</small>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key"></i> Personal Access Token
+                    </label>
+                    <div class="input-with-toggle">
+                        <input type="password" id="githubToken" class="form-input" 
+                               placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+                        <button type="button" class="toggle-visibility-btn" onclick="toggleTokenVisibility()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="input-help">
+                        <a href="https://github.com/settings/tokens" target="_blank" class="help-link">
+                            <i class="fas fa-external-link-alt"></i> Generate token at GitHub
+                        </a>
+                        <span class="help-text">• Select "repo" scope • Never expires recommended</span>
+                    </div>
                 </div>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Repository (format: owner/repo):</label>
-                    <input type="text" id="githubRepo" placeholder="Akhinoor14/Solidworks-Website-Project-main" 
-                           style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-code-branch"></i> Repository
+                    </label>
+                    <input type="text" id="githubRepo" class="form-input" 
+                           placeholder="username/repository-name" autocomplete="off">
+                    <div class="input-help">
+                        <span class="help-text">Format: owner/repo (e.g., Akhinoor14/Solidworks-Website-Project-main)</span>
+                    </div>
                 </div>
                 
-                <button id="saveGitHubConfig" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #cc0000, #990000); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer;">
-                    💾 Save GitHub Config
-                </button>
-                <div id="githubConfigStatus" style="margin-top: 10px; padding: 8px; border-radius: 6px; text-align: center; display: none;"></div>
+                <div class="form-actions">
+                    <button id="testGitHubConnection" class="btn-secondary">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <button id="saveGitHubConfig" class="btn-primary">
+                        <i class="fas fa-save"></i> Save Configuration
+                    </button>
+                </div>
+                
+                <div id="githubConfigStatus" class="status-message" style="display: none;"></div>
             </div>
             
             <!-- Password Change Section -->
-            <h4 style="color: #cc0000; margin-bottom: 12px; font-size: 1rem;">�🔐 Change Password</h4>
-            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 15px;">
-                🔒 Passwords are encrypted using SHA-256 hashing for security
-            </p>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Current Password:</label>
-                <input type="password" id="currentPassword" placeholder="Enter current password" 
-                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
+            <div class="settings-section password-section">
+                <div class="section-header">
+                    <i class="fas fa-lock" style="margin-right: 8px;"></i>
+                    <h4>Change Password</h4>
+                </div>
+                
+                <p class="section-description">
+                    <i class="fas fa-shield-alt"></i> SHA-256 encrypted for security
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="currentPassword" class="form-input" 
+                           placeholder="Enter current password" autocomplete="current-password">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="newPassword" class="form-input" 
+                           placeholder="Minimum 6 characters" autocomplete="new-password">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" 
+                           placeholder="Re-enter new password" autocomplete="new-password">
+                </div>
+                
+                <div class="form-actions">
+                    <button id="cancelPasswordBtn" class="btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button id="savePasswordBtn" class="btn-primary">
+                        <i class="fas fa-check"></i> Save Password
+                    </button>
+                </div>
+                
+                <div id="passwordChangeStatus" class="status-message" style="display: none;"></div>
             </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">New Password:</label>
-                <input type="password" id="newPassword" placeholder="Enter new password (min 6 characters)" 
-                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">Confirm New Password:</label>
-                <input type="password" id="confirmPassword" placeholder="Re-enter new password" 
-                       style="width: 100%; padding: 10px; background: rgba(20,0,0,0.4); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; color: #fff;">
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-                <button id="savePasswordBtn" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #cc0000, #990000); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer;">
-                    Save New Password
-                </button>
-                <button id="cancelPasswordBtn" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; cursor: pointer;">
-                    Cancel
-                </button>
-            </div>
-            
-            <div id="passwordChangeStatus" style="margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; display: none;"></div>
             
             <!-- Password Reset Section (inside settings) -->
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(204,0,0,0.3);">
@@ -835,5 +1115,25 @@
         }
     });
     </script>
+    <script>
+    // Token visibility toggle
+    function toggleTokenVisibility() {
+        const tokenInput = document.getElementById('githubToken');
+        const btn = event.target.closest('button');
+        const icon = btn.querySelector('i');
+        
+        if (tokenInput.type === 'password') {
+            tokenInput.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            tokenInput.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+    </script>
+
+    <!-- Notification Toast Container -->
+    <div id="notification-container" class="toast-notification" role="alert" aria-live="polite"></div>
+
 </body>
 </html>
