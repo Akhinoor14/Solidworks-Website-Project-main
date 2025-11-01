@@ -4,6 +4,92 @@
  */
 
 // ============================================
+// MODERN TOAST NOTIFICATION SYSTEM
+// ============================================
+
+function showToast(title, message, type = 'info', duration = 5000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    const toastId = `toast-${Date.now()}`;
+    toast.id = toastId;
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-times-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle',
+        loading: 'fa-spinner fa-spin'
+    };
+    
+    toast.innerHTML = `
+        <div class="toast-icon">
+            <i class="fas ${icons[type] || icons.info}"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="closeToast('${toastId}')">
+            <i class="fas fa-times"></i>
+        </button>
+        ${type !== 'loading' ? '<div class="toast-progress"></div>' : ''}
+    `;
+    
+    container.appendChild(toast);
+    
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Auto-remove after duration (except for loading toasts)
+    if (type !== 'loading' && duration > 0) {
+        setTimeout(() => closeToast(toastId), duration);
+    }
+    
+    return toastId;
+}
+
+function closeToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.classList.add('hide');
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }
+}
+
+function updateToast(toastId, title, message, type) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        // Update type
+        toast.className = `toast show ${type}`;
+        
+        // Update content
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-times-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle',
+            loading: 'fa-spinner fa-spin'
+        };
+        
+        toast.querySelector('.toast-icon i').className = `fas ${icons[type]}`;
+        toast.querySelector('.toast-title').textContent = title;
+        toast.querySelector('.toast-message').textContent = message;
+        
+        // Add progress bar if not loading
+        if (type !== 'loading' && !toast.querySelector('.toast-progress')) {
+            const progress = document.createElement('div');
+            progress.className = 'toast-progress';
+            toast.appendChild(progress);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => closeToast(toastId), 5000);
+        }
+    }
+}
+
+// ============================================
 // HELPER FUNCTIONS
 // ============================================
 
@@ -49,12 +135,12 @@ function switchTab(tab) {
 function saveToken() {
     const token = document.getElementById('github-token').value.trim();
     if (!token) {
-        alert('❌ Please enter a GitHub token');
+        showToast('Invalid Token', 'Please enter a valid GitHub token', 'warning');
         return;
     }
     localStorage.setItem('github_token', token);
     updateTokenStatus();
-    alert('✅ GitHub token saved successfully!');
+    showToast('Token Saved!', 'GitHub authentication token saved successfully', 'success');
 }
 
 function updateTokenStatus() {
@@ -153,13 +239,13 @@ async function handleUpload(event, type) {
     const files = fileInput.files;
 
     if (!day || !number || files.length === 0) {
-        alert('❌ Please fill all fields and select files');
+        showToast('Missing Information', 'Please fill all fields and select files to upload', 'warning');
         return;
     }
 
     const token = getGitHubToken();
     if (!token) {
-        alert('❌ GitHub token not found. Please save it first!');
+        showToast('Authentication Required', 'GitHub token not found. Please save your token first!', 'error');
         return;
     }
 
@@ -171,6 +257,8 @@ async function handleUpload(event, type) {
     progressPanel.classList.add('show');
     progressBar.style.width = '0%';
     progressText.textContent = 'Starting upload...';
+    
+    const uploadToast = showToast('Upload Started', `Uploading ${files.length} file(s) to ${type} Day ${day}/${type} ${number}...`, 'loading', 0);
 
     try {
         const owner = 'Akhinoor14';
@@ -253,6 +341,7 @@ async function handleUpload(event, type) {
         
         if (failCount === 0) {
             progressText.textContent = `✅ Successfully uploaded ${successCount} file(s)!`;
+            updateToast(uploadToast, 'Upload Complete!', `Successfully uploaded ${successCount} file(s) to ${type} Day ${day}`, 'success');
             
             // Log success
             console.log('Upload complete:', uploadedFiles);
@@ -262,23 +351,28 @@ async function handleUpload(event, type) {
                 event.target.reset();
                 clearFiles(prefix);
                 
-                // Show success with redirect option
-                const viewProjects = confirm(`✅ Upload complete!\n${successCount} file(s) uploaded to GitHub.\n\nPath: ${type}/Day ${day}/${type} ${number}/\n\n📌 Click OK to view your projects now, or Cancel to continue uploading.`);
-                
-                if (viewProjects) {
-                    window.location.href = 'projects.html';
+                // Show clickable redirect toast
+                const redirectToast = document.getElementById(showToast(
+                    'View Your Projects?',
+                    'Click this notification to view uploaded files',
+                    'info',
+                    10000
+                ));
+                if (redirectToast) {
+                    redirectToast.style.cursor = 'pointer';
+                    redirectToast.onclick = () => window.location.href = 'projects.html';
                 }
             }, 2000);
         } else {
             progressText.textContent = `⚠️ Uploaded ${successCount} file(s), ${failCount} failed`;
-            alert(`⚠️ Upload partially complete:\n✅ Success: ${successCount}\n❌ Failed: ${failCount}\n\nCheck console for details.`);
+            updateToast(uploadToast, 'Upload Incomplete', `${successCount} succeeded, ${failCount} failed - Check console`, 'warning');
         }
 
     } catch (error) {
         progressText.textContent = '❌ Upload failed: ' + error.message;
         progressBar.style.width = '0%';
+        updateToast(uploadToast, 'Upload Failed', error.message, 'error');
         console.error('Upload error:', error);
-        alert('❌ Upload failed: ' + error.message);
     }
 }
 
@@ -295,18 +389,18 @@ async function handleSoloUpload(event) {
     const commitMsg = document.getElementById('solo-commit-msg').value.trim();
 
     if (!mode) {
-        alert('❌ Please select upload mode (New Project or Add to Existing)');
+        showToast('Upload Mode Required', 'Please select upload mode (New Project or Add to Existing)', 'warning');
         return;
     }
 
     if (files.length === 0) {
-        alert('❌ Please select at least one file');
+        showToast('No Files Selected', 'Please select at least one file to upload', 'warning');
         return;
     }
 
     const token = getGitHubToken();
     if (!token) {
-        alert('❌ GitHub token not found. Please save it first!');
+        showToast('Authentication Required', 'GitHub token not found. Please save your token first!', 'error');
         return;
     }
 
@@ -317,13 +411,13 @@ async function handleSoloUpload(event) {
     if (isNewProject) {
         projectName = document.getElementById('solo-project-name').value.trim();
         if (!projectName) {
-            alert('❌ Please enter a project name');
+            showToast('Project Name Required', 'Please enter a project name', 'warning');
             return;
         }
     } else {
         projectName = document.getElementById('solo-project-select').value;
         if (!projectName) {
-            alert('❌ Please select an existing project');
+            showToast('Project Selection Required', 'Please select an existing project', 'warning');
             return;
         }
     }
@@ -539,28 +633,95 @@ function toggleSoloMode() {
 // QUESTION UPLOAD - COMPLETE IMPLEMENTATION
 // ============================================
 
+function toggleQuestionType() {
+    const type = document.getElementById('question-type').value;
+    const cwHwFields = document.getElementById('question-cw-hw-fields');
+    const soloFields = document.getElementById('question-solo-fields');
+    
+    if (type === 'CW' || type === 'HW') {
+        cwHwFields.style.display = 'block';
+        soloFields.style.display = 'none';
+        loadQuestionWorkNumbers();
+    } else if (type === 'SOLO') {
+        cwHwFields.style.display = 'none';
+        soloFields.style.display = 'block';
+        loadSoloProjectsForQuestion();
+    } else {
+        cwHwFields.style.display = 'none';
+        soloFields.style.display = 'none';
+    }
+}
+
+async function loadSoloProjectsForQuestion() {
+    const token = getGitHubToken();
+    if (!token) return;
+    
+    const select = document.getElementById('question-solo-project');
+    select.innerHTML = '<option value="">Loading...</option>';
+    
+    try {
+        const response = await fetch('https://api.github.com/repos/Akhinoor14/SOLIDWORKS-Projects/contents/Solo-Projects', {
+            headers: { 
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load projects');
+        
+        const folders = await response.json();
+        select.innerHTML = '<option value="">-- Select Project --</option>';
+        
+        folders.forEach(folder => {
+            if (folder.type === 'dir') {
+                select.innerHTML += `<option value="${folder.name}">${folder.name}</option>`;
+            }
+        });
+    } catch (error) {
+        select.innerHTML = '<option value="">Failed to load projects</option>';
+        console.error('Error loading projects:', error);
+    }
+}
+
 async function handleQuestionUpload(event) {
     event.preventDefault();
     
     const type = document.getElementById('question-type').value;
-    const daySelect = document.getElementById('question-day');
-    const workNumberSelect = document.getElementById('question-work-number');
     const fileInput = document.getElementById('question-files');
     const fileNameInput = document.getElementById('question-filename');
-    
-    const day = daySelect.value;
-    const workNumber = workNumberSelect.value;
     const file = fileInput.files[0];
     const fileName = fileNameInput.value.trim() || 'Question.pdf';
 
-    if (!type || !day || !workNumber || !file) {
-        alert('❌ Please fill all fields and select a file');
+    if (!type || !file) {
+        showToast('Missing Information', 'Please select type and file', 'warning');
         return;
+    }
+
+    // Different validation for CW/HW vs Solo
+    let path;
+    if (type === 'SOLO') {
+        const project = document.getElementById('question-solo-project').value;
+        if (!project) {
+            showToast('Project Required', 'Please select a Solo Project', 'warning');
+            return;
+        }
+        path = `Solo-Projects/${project}/${fileName}`;
+    } else {
+        const daySelect = document.getElementById('question-day');
+        const workNumberSelect = document.getElementById('question-work-number');
+        const day = daySelect.value;
+        const workNumber = workNumberSelect.value;
+        
+        if (!day || !workNumber) {
+            showToast('Missing Fields', 'Please fill all fields (Day and Work Number)', 'warning');
+            return;
+        }
+        path = `${type}/${day}/${workNumber}/${fileName}`;
     }
 
     const token = getGitHubToken();
     if (!token) {
-        alert('❌ GitHub token not found. Please save it first!');
+        showToast('Authentication Required', 'GitHub token not found. Please save your token first!', 'error');
         return;
     }
 
@@ -575,10 +736,6 @@ async function handleQuestionUpload(event) {
     try {
         const owner = 'Akhinoor14';
         const repo = 'SOLIDWORKS-Projects';
-        const folderPath = type; // CW or HW
-        
-        // Path: CW/Day 01/CW1/Question.pdf
-        const path = `${folderPath}/${day}/${workNumber}/${fileName}`;
         
         progressText.textContent = `Uploading ${fileName}...`;
         progressBar.style.width = '30%';
@@ -606,7 +763,9 @@ async function handleQuestionUpload(event) {
         
         // Upload question file
         const uploadData = {
-            message: `Upload question for ${type} ${day}/${workNumber}`,
+            message: type === 'SOLO' 
+                ? `Upload problem for ${path.split('/')[1]}`
+                : `Upload question for ${type} ${path.split('/')[1]}/${path.split('/')[2]}`,
             content: content,
             branch: 'main'
         };
@@ -637,9 +796,15 @@ async function handleQuestionUpload(event) {
                 event.target.reset();
                 clearFiles('question');
                 document.getElementById('question-filename').value = '';
+                document.getElementById('question-cw-hw-fields').style.display = 'none';
+                document.getElementById('question-solo-fields').style.display = 'none';
                 
                 // Show success with redirect option
-                const viewProjects = confirm(`✅ Question uploaded to GitHub!\n\nPath: ${path}\n\n📌 The question will appear in the "${workNumber}" section of ${type} Day ${day}.\n\nClick OK to view your projects now, or Cancel to continue uploading.`);
+                const message = type === 'SOLO'
+                    ? `✅ Problem uploaded to Solo Project!\n\nPath: ${path}\n\n📌 The problem will appear in the "${path.split('/')[1]}" project.\n\nClick OK to view your projects now, or Cancel to continue uploading.`
+                    : `✅ Question uploaded to GitHub!\n\nPath: ${path}\n\n📌 The question will appear in the "${path.split('/')[2]}" section of ${type} ${path.split('/')[1]}.\n\nClick OK to view your projects now, or Cancel to continue uploading.`;
+                
+                const viewProjects = confirm(message);
                 
                 if (viewProjects) {
                     window.location.href = 'projects.html';
@@ -657,34 +822,46 @@ async function handleQuestionUpload(event) {
     }
 }
 
-// Auto-generate question filename based on Day, Work Number, and file extension
+// Auto-generate question filename based on type (CW/HW or Solo)
 function updateQuestionFileName() {
     const type = document.getElementById('question-type').value;
-    const daySelect = document.getElementById('question-day');
-    const workNumberSelect = document.getElementById('question-work-number');
     const fileInput = document.getElementById('question-files');
     const fileNameInput = document.getElementById('question-filename');
-    
-    const day = daySelect ? daySelect.value : '';
-    const workNumber = workNumberSelect ? workNumberSelect.value : '';
     const file = fileInput ? fileInput.files[0] : null;
     
-    if (day && workNumber) {
-        // Get file extension from uploaded file or default to .pdf
-        let extension = '.pdf';
-        if (file) {
-            const fileName = file.name;
-            const lastDot = fileName.lastIndexOf('.');
-            if (lastDot > -1) {
-                extension = fileName.substring(lastDot);
+    // Get file extension
+    let extension = '.pdf';
+    if (file) {
+        const fileName = file.name;
+        const lastDot = fileName.lastIndexOf('.');
+        if (lastDot > -1) {
+            extension = fileName.substring(lastDot);
+        }
+    }
+    
+    if (type === 'SOLO') {
+        // Solo Project: problem-project1.pdf
+        const project = document.getElementById('question-solo-project').value;
+        if (project) {
+            const projectNum = project.replace(/\D/g, ''); // Extract number
+            const generatedName = `problem-project${projectNum}${extension}`;
+            if (fileNameInput) {
+                fileNameInput.value = generatedName;
             }
         }
+    } else if (type === 'CW' || type === 'HW') {
+        // CW/HW: Day_01_CW1_Question.pdf
+        const daySelect = document.getElementById('question-day');
+        const workNumberSelect = document.getElementById('question-work-number');
+        const day = daySelect ? daySelect.value : '';
+        const workNumber = workNumberSelect ? workNumberSelect.value : '';
         
-        // Format: Day_01_CW1_Question.pdf
-        const dayFormatted = day.replace(' ', '_');
-        const generatedName = `${dayFormatted}_${workNumber}_Question${extension}`;
-        if (fileNameInput) {
-            fileNameInput.value = generatedName;
+        if (day && workNumber) {
+            const dayFormatted = day.replace(' ', '_');
+            const generatedName = `${dayFormatted}_${workNumber}_Question${extension}`;
+            if (fileNameInput) {
+                fileNameInput.value = generatedName;
+            }
         }
     }
 }
@@ -765,7 +942,7 @@ async function loadUpdateFiles(type) {
     }
 }
 
-async function selectUpdateFolder(type, folderName, folderPath) {
+async function selectUpdateFolder(type, folderName, folderPath, backPath = null) {
     const token = getGitHubToken();
     if (!token) {
         alert('❌ GitHub token not found!');
@@ -788,35 +965,58 @@ async function selectUpdateFolder(type, folderName, folderPath) {
         
         if (!response.ok) throw new Error('Failed to load folder contents');
         
-        const files = await response.json();
+        const items = await response.json();
+        
+        // Separate folders and files
+        const folders = items.filter(item => item.type === 'dir');
+        const files = items.filter(item => item.type === 'file');
         
         let html = `
             <div style="margin-bottom: 20px;">
-                <button class="btn btn-secondary btn-small" onclick="loadUpdateFiles('${type}')">
-                    <i class="fas fa-arrow-left"></i> Back to Folders
-                </button>
+                ${backPath 
+                    ? `<button class="btn btn-secondary btn-small" onclick="selectUpdateFolder('${type}', '${backPath.name}', '${backPath.path}')">
+                           <i class="fas fa-arrow-left"></i> Back
+                       </button>`
+                    : `<button class="btn btn-secondary btn-small" onclick="loadUpdateFiles('${type}')">
+                           <i class="fas fa-arrow-left"></i> Back to Folders
+                       </button>`
+                }
             </div>
-            <h4 style="color: #ff3333; margin-bottom: 15px;"><i class="fas fa-folder-open"></i> Files in ${folderName}</h4>
+            <h4 style="color: #ff3333; margin-bottom: 15px;"><i class="fas fa-folder-open"></i> ${folderName}</h4>
             <div style="display: grid; gap: 15px;">
         `;
         
-        files.forEach(file => {
-            if (file.type === 'file') {
-                html += `
-                    <div class="file-item">
-                        <div class="file-info">
-                            <i class="fas fa-file file-icon"></i>
-                            <div>
-                                <div class="file-name">${file.name}</div>
-                                <div class="file-size">${formatFileSize(file.size)}</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="showUpdateFileDialog('${file.path}', '${file.name}', '${file.sha}')">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
+        // Show subfolders first (for Solo Projects: CW/HW folders, then Day folders)
+        folders.forEach(folder => {
+            html += `
+                <div class="file-item" style="cursor: pointer; background: linear-gradient(135deg, rgba(204,0,0,0.1), rgba(255,51,51,0.05));" 
+                     onclick="selectUpdateFolder('${type}', '${folder.name}', '${folder.path}', {name: '${folderName}', path: '${folderPath}'})">
+                    <div class="file-info">
+                        <i class="fas fa-folder file-icon" style="color: #ffcc00;"></i>
+                        <div class="file-name">${folder.name}</div>
                     </div>
-                `;
-            }
+                    <i class="fas fa-chevron-right" style="color: #cc0000;"></i>
+                </div>
+            `;
+        });
+        
+        // Show files (including question/problem files)
+        files.forEach(file => {
+            const isQuestion = file.name.toLowerCase().includes('question') || file.name.toLowerCase().includes('problem');
+            html += `
+                <div class="file-item" ${isQuestion ? 'style="border-left: 3px solid #ffcc00;"' : ''}>
+                    <div class="file-info">
+                        <i class="fas ${isQuestion ? 'fa-question-circle' : 'fa-file'} file-icon" style="color: ${isQuestion ? '#ffcc00' : '#fff'};"></i>
+                        <div>
+                            <div class="file-name">${file.name} ${isQuestion ? '<span style="color: #ffcc00; font-size: 0.8rem;">(Question)</span>' : ''}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="showUpdateFileDialog('${file.path}', '${file.name}', '${file.sha}')">
+                        <i class="fas fa-edit"></i> Update
+                    </button>
+                </div>
+            `;
         });
         
         html += '</div>';
@@ -976,7 +1176,7 @@ async function loadDeleteFiles(type) {
     }
 }
 
-async function selectDeleteFolder(type, folderName, folderPath) {
+async function selectDeleteFolder(type, folderName, folderPath, backPath = null) {
     const token = getGitHubToken();
     if (!token) {
         alert('❌ GitHub token not found!');
@@ -999,33 +1199,56 @@ async function selectDeleteFolder(type, folderName, folderPath) {
         
         if (!response.ok) throw new Error('Failed to load folder contents');
         
-        const files = await response.json();
+        const items = await response.json();
+        
+        // Separate folders and files
+        const folders = items.filter(item => item.type === 'dir');
+        const files = items.filter(item => item.type === 'file');
         
         let html = `
             <div style="margin-bottom: 20px;">
-                <button class="btn btn-secondary btn-small" onclick="loadDeleteFiles('${type}')">
-                    <i class="fas fa-arrow-left"></i> Back to Folders
-                </button>
+                ${backPath 
+                    ? `<button class="btn btn-secondary btn-small" onclick="selectDeleteFolder('${type}', '${backPath.name}', '${backPath.path}')">
+                           <i class="fas fa-arrow-left"></i> Back
+                       </button>`
+                    : `<button class="btn btn-secondary btn-small" onclick="loadDeleteFiles('${type}')">
+                           <i class="fas fa-arrow-left"></i> Back to Folders
+                       </button>`
+                }
             </div>
-            <h4 style="color: #dc3545; margin-bottom: 15px;"><i class="fas fa-folder-open"></i> Files in ${folderName}</h4>
+            <h4 style="color: #dc3545; margin-bottom: 15px;"><i class="fas fa-folder-open"></i> ${folderName}</h4>
             <div style="display: grid; gap: 15px;">
         `;
         
+        // Show subfolders first (for Solo Projects: CW/HW folders, then Day folders)
+        folders.forEach(folder => {
+            html += `
+                <div class="file-item" style="cursor: pointer; background: linear-gradient(135deg, rgba(220,53,69,0.1), rgba(200,35,51,0.05));" 
+                     onclick="selectDeleteFolder('${type}', '${folder.name}', '${folder.path}', {name: '${folderName}', path: '${folderPath}'})">
+                    <div class="file-info">
+                        <i class="fas fa-folder file-icon" style="color: #ffcc00;"></i>
+                        <div class="file-name">${folder.name}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #dc3545;"></i>
+                </div>
+            `;
+        });
+        
+        // Show files with checkboxes (including question/problem files)
         files.forEach(file => {
-            if (file.type === 'file') {
-                html += `
-                    <div class="file-item">
-                        <div class="file-info">
-                            <input type="checkbox" class="delete-file-checkbox" data-path="${file.path}" data-sha="${file.sha}" data-name="${file.name}" style="width: 20px; height: 20px; cursor: pointer; margin-right: 10px;">
-                            <i class="fas fa-file file-icon"></i>
-                            <div>
-                                <div class="file-name">${file.name}</div>
-                                <div class="file-size">${formatFileSize(file.size)}</div>
-                            </div>
+            const isQuestion = file.name.toLowerCase().includes('question') || file.name.toLowerCase().includes('problem');
+            html += `
+                <div class="file-item" ${isQuestion ? 'style="border-left: 3px solid #ffcc00;"' : ''}>
+                    <div class="file-info">
+                        <input type="checkbox" class="delete-file-checkbox" data-path="${file.path}" data-sha="${file.sha}" data-name="${file.name}" style="width: 20px; height: 20px; cursor: pointer; margin-right: 10px;">
+                        <i class="fas ${isQuestion ? 'fa-question-circle' : 'fa-file'} file-icon" style="color: ${isQuestion ? '#ffcc00' : '#fff'};"></i>
+                        <div>
+                            <div class="file-name">${file.name} ${isQuestion ? '<span style="color: #ffcc00; font-size: 0.8rem;">(Question)</span>' : ''}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
                         </div>
                     </div>
-                `;
-            }
+                </div>
+            `;
         });
         
         html += `

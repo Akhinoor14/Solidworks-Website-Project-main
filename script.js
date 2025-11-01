@@ -1557,8 +1557,8 @@ function openSolidworksWindow(type) {
                     <button class="sw-action-btn" onclick="window.open('${repoUrl}', '_blank')">
                         <i class="fab fa-github"></i> Open in GitHub
                     </button>
-                    ${isAdmin ? `<button class="sw-action-btn" onclick="window.location.href='only-boss-uploads.html'">
-                        <i class='fas fa-upload'></i> Upload Files
+                    ${isAdmin ? `<button class="sw-action-btn" onclick="window.open('upload-manager.html', '_blank')">
+                        <i class='fas fa-upload'></i> Upload Manager
                     </button>` : ''}
                     <button class="sw-action-btn" onclick="refreshSolidworksContent('${type}')" title="Refresh from GitHub">
                         <i class="fas fa-sync-alt"></i> Refresh
@@ -2135,8 +2135,13 @@ async function refreshSolidworksContent(type) {
     showToast('Refreshed', `${type.toUpperCase()} content updated from GitHub`);
 }
 
-// Upload to SOLIDWORKS - Full Upload System
+// Upload to SOLIDWORKS - DISABLED (Use upload-manager.html instead)
 async function uploadToSolidworks(type) {
+    // Redirect to upload manager instead of showing internal dialog
+    alert('📢 Please use the Upload Manager page for all file uploads!\n\nClick the "Upload Manager" button in the header.');
+    return;
+    
+    /* DISABLED - Use upload-manager.html
     const token = getGitHubToken();
     if (!token) {
         showUploadDialog(type, 'needToken');
@@ -2144,6 +2149,7 @@ async function uploadToSolidworks(type) {
     }
     
     showUploadDialog(type, 'upload');
+    */
 }
 
 // Show upload dialog
