@@ -7,7 +7,7 @@
     // Configuration
     const CONFIG = {
         imageFolder: './images/',
-        interval: 30000, // 30 seconds
+        interval: 7000, // 7 seconds
         transitionDuration: 600, // 600ms fade
         useGitHubAPI: true // Try GitHub API first, then fallback to HEAD requests
     };
