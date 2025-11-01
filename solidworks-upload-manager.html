@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLIDWORKS Upload Manager • Only Boss</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Session Guard */
+        .session-redirect {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .redirect-message {
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.2), rgba(153, 0, 0, 0.3));
+            border: 2px solid rgba(204, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.8));
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 8px 15px;
+            background: rgba(204, 0, 0, 0.1);
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(204, 0, 0, 0.2);
+            color: #cc0000;
+        }
+
+        .page-header h1 {
+            color: #cc0000;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-header p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+        }
+
+        /* GitHub Token Panel */
+        .token-panel {
+            background: rgba(204, 0, 0, 0.1);
+            border: 1px solid rgba(204, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .token-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .token-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00cc00;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .token-indicator.invalid {
+            background: #cc0000;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .token-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .change-token-btn {
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+            color: #cc0000;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .change-token-btn:hover {
+            background: rgba(204, 0, 0, 0.3);
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 160px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.4), rgba(10, 0, 0, 0.6));
+            border: 2px solid rgba(204, 0, 0, 0.2);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn i {
+            font-size: 1.3rem;
+        }
+
+        .tab-btn:hover {
+            border-color: rgba(204, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #cc0000, #990000);
+            border-color: #cc0000;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Upload Panel */
+        .upload-panel {
+            background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.8));
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .panel-title {
+            color: #cc0000;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Form Elements */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            padding: 12px 18px;
+            background: rgba(20, 0, 0, 0.4);
+            border: 2px solid rgba(204, 0, 0, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #cc0000;
+            background: rgba(20, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.2);
+        }
+
+        .form-control option {
+            background: #1a0000;
+            color: #fff;
+        }
+
+        .form-hint {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* File Upload Zone */
+        .file-upload-zone {
+            border: 3px dashed rgba(204, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 50px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(20, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .file-upload-zone.drag-over {
+            border-color: #cc0000;
+            background: rgba(204, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            color: rgba(204, 0, 0, 0.6);
+            margin-bottom: 15px;
+        }
+
+        .file-upload-zone.drag-over .upload-icon {
+            color: #cc0000;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Selected Files List */
+        .selected-files {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(204, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: #cc0000;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .file-size {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .remove-file-btn {
+            background: rgba(204, 0, 0, 0.2);
+            border: 1px solid rgba(204, 0, 0, 0.4);
+            color: #ff6666;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .remove-file-btn:hover {
+            background: rgba(204, 0, 0, 0.4);
+            color: #ff3333;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #cc0000, #990000);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dd0000, #aa0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(255, 153, 0, 0.1);
+            border: 1px solid rgba(255, 153, 0, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #ffaa33;
+        }
+
+        .warning-box strong {
+            color: #ff9900;
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.success {
+            background: rgba(0, 200, 0, 0.2);
+            border: 1px solid rgba(0, 200, 0, 0.4);
+            color: #00ff00;
+        }
+
+        .message.error {
+            background: rgba(200, 0, 0, 0.2);
+            border: 1px solid rgba(200, 0, 0, 0.4);
+            color: #ff6666;
+        }
+
+        .message.info {
+            background: rgba(0, 100, 200, 0.2);
+            border: 1px solid rgba(0, 100, 200, 0.4);
+            color: #66ccff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Session Guard -->
+    <script>
+        if (!sessionStorage.getItem('admin_session')) {
+            document.body.innerHTML = `
+                <div class="session-redirect">
+                    <div class="redirect-message">
+                        <h2>🔒 Access Denied</h2>
+                        <p>Admin login required.</p>
+                        <p style="margin-top: 15px;">Redirecting...</p>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => window.location.href = 'only-boss.html', 2000);
+        }
+    </script>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-top">
+                <a href="project-management-hub.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Hub
+                </a>
+            </div>
+            <h1>
+                <i class="fas fa-cube"></i>
+                SOLIDWORKS Upload Manager
+            </h1>
+            <p>Complete project management - Upload, Update, Delete with auto README & GitHub sync</p>
+        </div>
+
+        <!-- GitHub Token Panel -->
+        <div class="token-panel">
+            <div class="token-status">
+                <div class="token-info">
+                    <div class="token-indicator" id="tokenIndicator"></div>
+                    <span class="token-text" id="tokenStatusText">Checking GitHub token...</span>
+                </div>
+                <button class="change-token-btn" onclick="manageGitHubToken()">
+                    <i class="fas fa-key"></i> Manage Token
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('upload-cw')">
+                <i class="fas fa-book"></i>
+                <span>Upload CW</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('upload-hw')">
+                <i class="fas fa-home"></i>
+                <span>Upload HW</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('upload-solo')">
+                <i class="fas fa-star"></i>
+                <span>Solo Projects</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('upload-question')">
+                <i class="fas fa-question-circle"></i>
+                <span>Questions</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('update-files')">
+                <i class="fas fa-sync-alt"></i>
+                <span>Update</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('delete-files')">
+                <i class="fas fa-trash-alt"></i>
+                <span>Delete</span>
+            </button>
+        </div>
+
+        <!-- Tab Content: Upload CW -->
+        <div class="tab-content active" id="upload-cw">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-folder-plus"></i>
+                    Upload Class Work (CW) Files
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Select Day</label>
+                        <select id="cwDay" class="form-control">
+                            <option value="">-- Choose Day --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="file-upload-zone" id="cwUploadZone" onclick="document.getElementById('cwFileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Drag & Drop SOLIDWORKS Files Here</div>
+                    <div class="upload-hint">or click to browse (.SLDPRT, .SLDASM, .SLDDRW)</div>
+                    <input type="file" id="cwFileInput" class="file-input" multiple accept=".SLDPRT,.SLDASM,.SLDDRW,.sldprt,.sldasm,.slddrw">
+                </div>
+
+                <div class="selected-files" id="cwFilesList"></div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFiles('cw')">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                    <button class="btn btn-primary" id="cwUploadBtn" onclick="uploadFiles('cw')" disabled>
+                        <i class="fas fa-upload"></i> Upload to GitHub
+                    </button>
+                </div>
+
+                <div class="message" id="cwMessage"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Upload HW -->
+        <div class="tab-content" id="upload-hw">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-folder-plus"></i>
+                    Upload Home Work (HW) Files
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Select Day</label>
+                        <select id="hwDay" class="form-control">
+                            <option value="">-- Choose Day --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="file-upload-zone" id="hwUploadZone" onclick="document.getElementById('hwFileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Drag & Drop SOLIDWORKS Files Here</div>
+                    <div class="upload-hint">or click to browse (.SLDPRT, .SLDASM, .SLDDRW)</div>
+                    <input type="file" id="hwFileInput" class="file-input" multiple accept=".SLDPRT,.SLDASM,.SLDDRW,.sldprt,.sldasm,.slddrw">
+                </div>
+
+                <div class="selected-files" id="hwFilesList"></div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFiles('hw')">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                    <button class="btn btn-primary" id="hwUploadBtn" onclick="uploadFiles('hw')" disabled>
+                        <i class="fas fa-upload"></i> Upload to GitHub
+                    </button>
+                </div>
+
+                <div class="message" id="hwMessage"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Solo Projects -->
+        <div class="tab-content" id="upload-solo">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-star"></i>
+                    Solo Projects Management
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Project Name</label>
+                        <input type="text" id="soloProjectName" class="form-control" placeholder="e.g., Project 1">
+                        <span class="form-hint">Enter project folder name</span>
+                    </div>
+                </div>
+
+                <div class="file-upload-zone" id="soloUploadZone" onclick="document.getElementById('soloFileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Drag & Drop Project Files Here</div>
+                    <div class="upload-hint">SOLIDWORKS files + Images/PDFs</div>
+                    <input type="file" id="soloFileInput" class="file-input" multiple accept=".SLDPRT,.SLDASM,.SLDDRW,.sldprt,.sldasm,.slddrw,.pdf,.png,.jpg,.jpeg">
+                </div>
+
+                <div class="selected-files" id="soloFilesList"></div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFiles('solo')">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                    <button class="btn btn-primary" id="soloUploadBtn" onclick="uploadFiles('solo')" disabled>
+                        <i class="fas fa-upload"></i> Upload Project
+                    </button>
+                </div>
+
+                <div class="message" id="soloMessage"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Upload Questions -->
+        <div class="tab-content" id="upload-question">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-file-pdf"></i>
+                    Upload Question Documents
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Select Day</label>
+                        <select id="questionDay" class="form-control">
+                            <option value="">-- Choose Day --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Type</label>
+                        <select id="questionType" class="form-control">
+                            <option value="CW">Class Work</option>
+                            <option value="HW">Home Work</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="file-upload-zone" id="questionUploadZone" onclick="document.getElementById('questionFileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <div class="upload-text">Upload Question File</div>
+                    <div class="upload-hint">PDF, PNG, or JPG</div>
+                    <input type="file" id="questionFileInput" class="file-input" accept=".pdf,.png,.jpg,.jpeg">
+                </div>
+
+                <div class="selected-files" id="questionFilesList"></div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFiles('question')">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <button class="btn btn-primary" id="questionUploadBtn" onclick="uploadFiles('question')" disabled>
+                        <i class="fas fa-upload"></i> Upload Question
+                    </button>
+                </div>
+
+                <div class="message" id="questionMessage"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Update Files -->
+        <div class="tab-content" id="update-files">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-sync-alt"></i>
+                    Update Existing Files
+                </h3>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Project Type</label>
+                        <select id="updateType" class="form-control">
+                            <option value="">-- Choose Type --</option>
+                            <option value="CW">Class Work</option>
+                            <option value="HW">Home Work</option>
+                            <option value="Solo">Solo Projects</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Day/Project</label>
+                        <select id="updateDay" class="form-control" disabled>
+                            <option value="">-- First select type --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-file"></i> Select File to Replace</label>
+                    <select id="updateFile" class="form-control" disabled>
+                        <option value="">-- First select day/project --</option>
+                    </select>
+                </div>
+
+                <div class="file-upload-zone" id="updateUploadZone" onclick="document.getElementById('updateFileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="upload-text">Upload New Version</div>
+                    <div class="upload-hint">Select file above first</div>
+                    <input type="file" id="updateFileInput" class="file-input" disabled>
+                </div>
+
+                <div class="selected-files" id="updateFilesList"></div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFiles('update')">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <button class="btn btn-primary" id="updateBtn" onclick="updateFile()" disabled>
+                        <i class="fas fa-save"></i> Update File
+                    </button>
+                </div>
+
+                <div class="message" id="updateMessage"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Delete Files -->
+        <div class="tab-content" id="delete-files">
+            <div class="upload-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Files
+                </h3>
+
+                <div class="warning-box">
+                    <strong>⚠️ Warning:</strong> Deleted files cannot be recovered. Use with caution!
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> Project Type</label>
+                        <select id="deleteType" class="form-control">
+                            <option value="">-- Choose Type --</option>
+                            <option value="CW">Class Work</option>
+                            <option value="HW">Home Work</option>
+                            <option value="Solo">Solo Projects</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Day/Project</label>
+                        <select id="deleteDay" class="form-control" disabled>
+                            <option value="">-- First select type --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-file"></i> Select File to Delete</label>
+                    <select id="deleteFile" class="form-control" disabled>
+                        <option value="">-- First select day/project --</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearDeleteSelection()">
+                        <i class="fas fa-times"></i> Clear Selection
+                    </button>
+                    <button class="btn btn-primary" id="deleteBtn" onclick="confirmDelete()" disabled style="background: linear-gradient(135deg, #990000, #660000);">
+                        <i class="fas fa-trash-alt"></i> Delete File
+                    </button>
+                </div>
+
+                <div class="message" id="deleteMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="github-uploader.js"></script>
+    <script src="website-updater.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDayDropdowns();
+            setupFileUploadZones();
+            checkGitHubToken();
+        });
+
+        // Populate day dropdowns
+        function populateDayDropdowns() {
+            const dropdowns = ['cwDay', 'hwDay', 'questionDay'];
+            dropdowns.forEach(id => {
+                const select = document.getElementById(id);
+                for (let i = 1; i <= 30; i++) {
+                    const day = `Day ${String(i).padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = day;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        // Setup file upload zones
+        function setupFileUploadZones() {
+            const zones = [
+                { zone: 'cwUploadZone', input: 'cwFileInput', type: 'cw' },
+                { zone: 'hwUploadZone', input: 'hwFileInput', type: 'hw' },
+                { zone: 'soloUploadZone', input: 'soloFileInput', type: 'solo' },
+                { zone: 'questionUploadZone', input: 'questionFileInput', type: 'question' }
+            ];
+
+            zones.forEach(({ zone, input, type }) => {
+                const zoneEl = document.getElementById(zone);
+                const inputEl = document.getElementById(input);
+
+                // Drag & drop
+                zoneEl.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zoneEl.classList.add('drag-over');
+                });
+
+                zoneEl.addEventListener('dragleave', () => {
+                    zoneEl.classList.remove('drag-over');
+                });
+
+                zoneEl.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zoneEl.classList.remove('drag-over');
+                    inputEl.files = e.dataTransfer.files;
+                    handleFileSelection(type);
+                });
+
+                // File input change
+                inputEl.addEventListener('change', () => handleFileSelection(type));
+            });
+        }
+
+        // Handle file selection
+        function handleFileSelection(type) {
+            const input = document.getElementById(type + 'FileInput');
+            const list = document.getElementById(type + 'FilesList');
+            const btn = document.getElementById(type + 'UploadBtn');
+            
+            const files = Array.from(input.files);
+            if (files.length === 0) {
+                list.innerHTML = '';
+                if (btn) btn.disabled = true;
+                return;
+            }
+
+            // Display files
+            list.innerHTML = files.map((file, i) => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="fas fa-cube"></i></div>
+                        <div class="file-details">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${(file.size / 1024).toFixed(2)} KB</div>
+                        </div>
+                    </div>
+                    <button class="remove-file-btn" onclick="removeFile('${type}', ${i})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            // Enable upload button if day/project selected
+            const daySelected = type === 'solo' 
+                ? document.getElementById('soloProjectName').value 
+                : document.getElementById(type + 'Day').value;
+            
+            if (btn) btn.disabled = !daySelected || files.length === 0;
+        }
+
+        // Clear files
+        function clearFiles(type) {
+            document.getElementById(type + 'FileInput').value = '';
+            document.getElementById(type + 'FilesList').innerHTML = '';
+            const btn = document.getElementById(type + 'UploadBtn');
+            if (btn) btn.disabled = true;
+        }
+
+        // Switch tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Check GitHub token
+        function checkGitHubToken() {
+            const token = localStorage.getItem('github_token');
+            const indicator = document.getElementById('tokenIndicator');
+            const statusText = document.getElementById('tokenStatusText');
+
+            if (!token) {
+                indicator.classList.add('invalid');
+                statusText.textContent = 'No GitHub token. Click "Manage Token" to add one.';
+            } else {
+                statusText.textContent = 'GitHub token saved ✓';
+            }
+        }
+
+        // Manage GitHub token
+        function manageGitHubToken() {
+            // This will use existing script.js token management
+            if (typeof uploadToSolidworks === 'function') {
+                uploadToSolidworks('cw'); // Triggers token dialog from script.js
+            } else {
+                alert('Token management integration pending. Please add token via existing upload system.');
+            }
+        }
+
+        // Upload files (delegates to script.js)
+        function uploadFiles(type) {
+            showMessage(type, 'Upload integration with script.js pending...', 'info');
+            // Will integrate with performFileUpload(), performSoloProjectUpload() etc from script.js
+        }
+
+        // Show message
+        function showMessage(type, text, messageType) {
+            const messageEl = document.getElementById(type + 'Message');
+            messageEl.className = `message ${messageType} show`;
+            messageEl.innerHTML = `<i class="fas fa-${messageType === 'success' ? 'check-circle' : 'info-circle'}"></i> ${text}`;
+            setTimeout(() => messageEl.classList.remove('show'), 5000);
+        }
+
+        // Placeholder functions
+        function removeFile(type, index) { /* TODO */ }
+        function updateFile() { /* TODO */ }
+        function confirmDelete() { /* TODO */ }
+        function clearDeleteSelection() { /* TODO */ }
+    </script>
+</body>
+</html>
