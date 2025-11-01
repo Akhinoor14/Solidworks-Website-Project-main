@@ -149,6 +149,61 @@
         const savePasswordBtn = document.getElementById('savePasswordBtn');
         const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
         const passwordChangeStatus = document.getElementById('passwordChangeStatus');
+        
+        // GitHub config elements
+        const githubTokenInput = document.getElementById('githubToken');
+        const githubRepoInput = document.getElementById('githubRepo');
+        const saveGitHubConfigBtn = document.getElementById('saveGitHubConfig');
+        const githubConfigStatus = document.getElementById('githubConfigStatus');
+        
+        // Load existing GitHub config
+        if (githubTokenInput && githubRepoInput) {
+            const savedToken = localStorage.getItem('github_token');
+            const savedRepo = localStorage.getItem('github_repo') || 'Akhinoor14/Solidworks-Website-Project-main';
+            if (savedToken) githubTokenInput.value = savedToken;
+            githubRepoInput.value = savedRepo;
+        }
+        
+        // Save GitHub config
+        if (saveGitHubConfigBtn) {
+            saveGitHubConfigBtn.addEventListener('click', () => {
+                const token = githubTokenInput.value.trim();
+                const repo = githubRepoInput.value.trim();
+                
+                if (!token) {
+                    showGitHubConfigStatus('❌ Please enter a GitHub token', 'error');
+                    return;
+                }
+                
+                if (!repo || !repo.includes('/')) {
+                    showGitHubConfigStatus('❌ Invalid repo format (use: owner/repo)', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('github_token', token);
+                localStorage.setItem('github_repo', repo);
+                showGitHubConfigStatus('✅ GitHub config saved successfully!', 'success');
+            });
+        }
+        
+        function showGitHubConfigStatus(message, type) {
+            if (!githubConfigStatus) return;
+            githubConfigStatus.textContent = message;
+            githubConfigStatus.style.display = 'block';
+            githubConfigStatus.style.background = type === 'success' 
+                ? 'rgba(0, 200, 0, 0.2)' 
+                : 'rgba(200, 0, 0, 0.2)';
+            githubConfigStatus.style.border = type === 'success'
+                ? '1px solid rgba(0, 200, 0, 0.4)'
+                : '1px solid rgba(200, 0, 0, 0.4)';
+            githubConfigStatus.style.color = type === 'success' ? '#00ff00' : '#ff6666';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    githubConfigStatus.style.display = 'none';
+                }, 3000);
+            }
+        }
 
         // Toggle password change panel
         settingsBtn.addEventListener('click', () => {
@@ -160,8 +215,14 @@
                 confirmPasswordInput.value = '';
                 passwordChangeStatus.style.display = 'none';
             }
-            // Focus on current password input for better UX
-            setTimeout(() => currentPasswordInput.focus(), 100);
+            // Focus on GitHub token input for better UX
+            setTimeout(() => {
+                if (githubTokenInput && !githubTokenInput.value) {
+                    githubTokenInput.focus();
+                } else {
+                    currentPasswordInput.focus();
+                }
+            }, 100);
         });
 
         // Cancel button
@@ -266,29 +327,30 @@
     const progressFill = document.getElementById('progressFill');
 
     let selectedFiles = [];
-    let existingPhotos = []; // Will be fetched from slideshow config
+    let existingPhotos = []; // Will be fetched from GitHub API
 
-    // Fetch existing photos from profile-slideshow.js
+    // Fetch existing photos from GitHub API (used for upload numbering)
     async function fetchExistingPhotos() {
+        const githubToken = localStorage.getItem('githubToken');
+        const githubRepo = localStorage.getItem('githubRepo');
+        
+        if (!githubToken || !githubRepo) {
+            console.log('ℹ️ GitHub not configured, starting from PP1.jpg');
+            existingPhotos = [];
+            return;
+        }
+
         try {
-            const response = await fetch('./profile-slideshow.js');
-            const text = await response.text();
-            const match = text.match(/photos:\s*\[([\s\S]*?)\]/);
-            if (match) {
-                const photosStr = match[1];
-                existingPhotos = photosStr
-                    .split(',')
-                    .map(line => line.trim().replace(/['"]/g, '').replace(/\/\/.*/g, ''))
-                    .filter(name => name && name.endsWith('.jpg'));
-                console.log('📋 Existing photos:', existingPhotos);
-            }
+            const photos = await fetchGitHubPhotos(githubToken, githubRepo);
+            existingPhotos = photos.map(p => p.name);
+            console.log(`📋 Found ${existingPhotos.length} existing photos on GitHub:`, existingPhotos);
         } catch (err) {
-            console.warn('⚠️ Could not fetch existing photos:', err);
-            existingPhotos = ['PP.jpg']; // Default fallback
+            console.warn('⚠️ Could not fetch existing photos from GitHub:', err);
+            existingPhotos = [];
         }
     }
 
-    // Initialize
+    // Initialize - fetch on page load
     fetchExistingPhotos();
 
     // Click to select files
@@ -397,13 +459,15 @@
         showStatus('🚀 Preparing upload...', 'info');
 
         try {
-            // Simulate upload process (replace with actual GitHub API)
+            // Upload to GitHub
             await uploadToGitHub();
             
             showStatus(`✅ Successfully uploaded ${selectedFiles.length} photo(s)!`, 'success');
             
-            // Update slideshow config
-            await updateSlideshowConfig();
+            // Refresh gallery to show new photos
+            if (typeof loadGallery === 'function') {
+                setTimeout(() => loadGallery(), 1000);
+            }
             
             // Clear after success
             setTimeout(() => {
@@ -423,9 +487,20 @@
         }
     });
 
-    // Upload files to GitHub (simulation - needs GitHub API token)
+    // Upload files to GitHub - REAL implementation
     async function uploadToGitHub() {
         const totalFiles = selectedFiles.length;
+        
+        // Get GitHub credentials from localStorage (consistent naming)
+        const githubToken = localStorage.getItem('githubToken');
+        const githubRepo = localStorage.getItem('githubRepo');
+        
+        if (!githubToken || !githubRepo) {
+            throw new Error('GitHub credentials not configured. Please set up in Settings first.');
+        }
+        
+        // Refresh existing photos count before upload
+        await fetchExistingPhotos();
         
         for (let i = 0; i < totalFiles; i++) {
             const file = selectedFiles[i];
@@ -434,13 +509,7 @@
             showStatus(`📤 Uploading ${i + 1}/${totalFiles}: ${newName}...`, 'info');
             updateProgress((i / totalFiles) * 100);
             
-            // IMPORTANT: This is a simulation
-            // In production, you need to:
-            // 1. Convert file to base64
-            // 2. Use GitHub API with your personal access token
-            // 3. Upload to: PUT /repos/:owner/:repo/contents/images/:filename
-            
-            await simulateUpload(file, newName);
+            await realGitHubUpload(file, newName, githubToken, githubRepo);
             
             existingPhotos.push(newName);
         }
@@ -448,41 +517,45 @@
         updateProgress(100);
     }
 
-    // Simulate upload delay (replace with real GitHub API call)
-    function simulateUpload(file, newName) {
-        return new Promise((resolve) => {
-            // In real implementation:
-            // const reader = new FileReader();
-            // reader.onload = async () => {
-            //     const base64Content = reader.result.split(',')[1];
-            //     await fetch(`https://api.github.com/repos/USERNAME/REPO/contents/images/${newName}`, {
-            //         method: 'PUT',
-            //         headers: {
-            //             'Authorization': 'token YOUR_GITHUB_TOKEN',
-            //             'Content-Type': 'application/json'
-            //         },
-            //         body: JSON.stringify({
-            //             message: `Add profile photo ${newName}`,
-            //             content: base64Content
-            //         })
-            //     });
-            // };
-            // reader.readAsDataURL(file);
-            
-            // Simulation only
-            setTimeout(resolve, 1000);
+    // Real GitHub API upload
+    function realGitHubUpload(file, newName, token, repo) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const base64Content = reader.result.split(',')[1];
+                    
+                    const response = await fetch(`https://api.github.com/repos/${repo}/contents/images/${newName}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            message: `Add profile photo ${newName}`,
+                            content: base64Content,
+                            branch: 'main'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`GitHub API error: ${errorData.message || response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log(`✅ Uploaded ${newName}:`, result.content.html_url);
+                    resolve(result);
+                    
+                } catch (error) {
+                    console.error(`❌ Upload failed for ${newName}:`, error);
+                    reject(error);
+                }
+            };
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
         });
-    }
-
-    // Update profile-slideshow.js config
-    async function updateSlideshowConfig() {
-        showStatus('📝 Updating slideshow configuration...', 'info');
-        
-        // In production, update profile-slideshow.js via GitHub API
-        // For now, just log the new config
-        console.log('📋 Updated photo list:', existingPhotos);
-        
-        showStatus('✅ Configuration updated! Reload page to see changes.', 'success');
     }
 
     // Show status message
@@ -500,6 +573,323 @@
     // Update progress bar
     function updateProgress(percent) {
         progressFill.style.width = `${percent}%`;
+    }
+
+    // ========== PHOTO GALLERY & DELETE SYSTEM ==========
+    
+    const photoGallery = document.getElementById('photoGallery');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const galleryStatus = document.getElementById('galleryStatus');
+    const refreshGalleryBtn = document.getElementById('refreshGallery');
+    const deleteModal = document.getElementById('deleteModal');
+    const deletePreviewImg = document.getElementById('deletePreviewImg');
+    const deleteFileName = document.getElementById('deleteFileName');
+    const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+    const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+    
+    let currentDeleteTarget = null;
+
+    // Load and display gallery
+    async function loadGallery() {
+        const githubToken = localStorage.getItem('githubToken');
+        const githubRepo = localStorage.getItem('githubRepo');
+        
+        if (!githubToken || !githubRepo) {
+            galleryStatus.textContent = '⚠️ Configure GitHub credentials in Settings first';
+            galleryStatus.style.color = '#ffaa66';
+            photoGallery.style.display = 'block';
+            return;
+        }
+
+        try {
+            galleryStatus.textContent = '🔍 Loading photos from GitHub...';
+            galleryStatus.style.color = 'rgba(255,255,255,0.6)';
+            photoGallery.style.display = 'block';
+            
+            const photos = await fetchGitHubPhotos(githubToken, githubRepo);
+            
+            if (photos.length === 0) {
+                galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">📭 No photos uploaded yet</div>';
+                galleryStatus.textContent = '';
+                return;
+            }
+            
+            existingPhotos = photos.map(p => p.name); // Update global list
+            
+            galleryGrid.innerHTML = photos.map(photo => `
+                <div class="gallery-photo" data-filename="${photo.name}">
+                    <img src="${photo.download_url}" alt="${photo.name}" loading="lazy">
+                    <div class="gallery-photo-info">
+                        <div class="gallery-photo-name">${photo.name}</div>
+                        <div class="gallery-photo-actions">
+                            <button class="gallery-btn gallery-btn-view" onclick="window.open('${photo.download_url}', '_blank')">
+                                👁️ View
+                            </button>
+                            <button class="gallery-btn gallery-btn-delete" data-photo='${JSON.stringify(photo)}'>
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            galleryStatus.textContent = `✅ Loaded ${photos.length} photo${photos.length > 1 ? 's' : ''}`;
+            galleryStatus.style.color = '#00ff00';
+            
+            // Attach delete handlers
+            document.querySelectorAll('.gallery-btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const photoData = JSON.parse(this.dataset.photo);
+                    showDeleteConfirmation(photoData);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Gallery load error:', error);
+            galleryStatus.textContent = `❌ Failed to load: ${error.message}`;
+            galleryStatus.style.color = '#ff6666';
+        }
+    }
+
+    // Fetch photos from GitHub API
+    async function fetchGitHubPhotos(token, repo) {
+        const [owner, repoName] = repo.split('/');
+        const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/images`;
+        
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
+        
+        const files = await response.json();
+        
+        // Filter and sort profile photos (PP*.jpg, including PP.jpg)
+        return files
+            .filter(file => file.name.match(/^PP\d*\.jpg$/i) && file.type === 'file')
+            .sort((a, b) => {
+                // PP.jpg comes first (no number = 0), then PP1, PP2, etc.
+                const numA = parseInt(a.name.match(/\d+/)?.[0] || '0');
+                const numB = parseInt(b.name.match(/\d+/)?.[0] || '0');
+                return numA - numB;
+            });
+    }
+
+    // Show delete confirmation modal
+    function showDeleteConfirmation(photo) {
+        currentDeleteTarget = photo;
+        deletePreviewImg.src = photo.download_url;
+        deleteFileName.textContent = photo.name;
+        deleteModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Hide delete confirmation modal
+    function hideDeleteConfirmation() {
+        deleteModal.style.display = 'none';
+        document.body.style.overflow = '';
+        currentDeleteTarget = null;
+    }
+
+    // Delete photo from GitHub and renumber
+    async function deletePhotoAndRenumber() {
+        if (!currentDeleteTarget) return;
+        
+        const githubToken = localStorage.getItem('githubToken');
+        const githubRepo = localStorage.getItem('githubRepo');
+        
+        if (!githubToken || !githubRepo) {
+            alert('❌ GitHub credentials not configured');
+            hideDeleteConfirmation();
+            return;
+        }
+        
+        try {
+            deleteConfirmBtn.disabled = true;
+            deleteConfirmBtn.textContent = '⏳ Deleting...';
+            
+            const photoToDelete = currentDeleteTarget.name;
+            const photoNumber = parseInt(photoToDelete.match(/\d+/)?.[0] || '0');
+            
+            console.log(`🗑️ Deleting ${photoToDelete}...`);
+            
+            // Step 1: Delete the photo
+            await deleteFromGitHub(currentDeleteTarget, githubToken, githubRepo);
+            
+            // Step 2: Get all remaining photos
+            const remainingPhotos = await fetchGitHubPhotos(githubToken, githubRepo);
+            
+            // Step 3: Renumber photos to fill gaps
+            await renumberPhotos(remainingPhotos, githubToken, githubRepo);
+            
+            hideDeleteConfirmation();
+            
+            showStatus(`✅ Deleted ${photoToDelete} and renumbered photos!`, 'success');
+            
+            // Reload gallery
+            setTimeout(() => {
+                loadGallery();
+                hideStatus();
+            }, 2000);
+            
+            // Notify slideshow to refresh (if on home page)
+            try {
+                if (window.opener && window.opener.profileSlideshow) {
+                    window.opener.profileSlideshow.refresh();
+                }
+            } catch (e) {
+                // Ignore if slideshow not available
+            }
+            
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert(`❌ Delete failed: ${error.message}`);
+            deleteConfirmBtn.disabled = false;
+            deleteConfirmBtn.textContent = '🗑️ Delete';
+        }
+    }
+
+    // Delete file from GitHub
+    async function deleteFromGitHub(photo, token, repo) {
+        const [owner, repoName] = repo.split('/');
+        const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/images/${photo.name}`;
+        
+        const response = await fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                message: `Delete profile photo ${photo.name}`,
+                sha: photo.sha,
+                branch: 'main'
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || response.statusText);
+        }
+        
+        console.log(`✅ Deleted ${photo.name} from GitHub`);
+    }
+
+    // Renumber photos to fill gaps (PP5 deleted → PP6 becomes PP5)
+    async function renumberPhotos(photos, token, repo) {
+        console.log(`🔢 Renumbering ${photos.length} photos...`);
+        
+        for (let i = 0; i < photos.length; i++) {
+            const currentName = photos[i].name;
+            const expectedName = `PP${i + 1}.jpg`;
+            
+            if (currentName !== expectedName) {
+                console.log(`  Renaming ${currentName} → ${expectedName}`);
+                await renameOnGitHub(photos[i], expectedName, token, repo);
+            }
+        }
+        
+        console.log('✅ Renumbering complete!');
+    }
+
+    // Rename file on GitHub (delete old + create new)
+    async function renameOnGitHub(photo, newName, token, repo) {
+        const [owner, repoName] = repo.split('/');
+        
+        // Step 1: Get file content
+        const getResponse = await fetch(photo.url, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!getResponse.ok) {
+            throw new Error(`Failed to get ${photo.name}`);
+        }
+        
+        const fileData = await getResponse.json();
+        
+        // Step 2: Create file with new name
+        const createResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/${newName}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                message: `Rename ${photo.name} to ${newName}`,
+                content: fileData.content,
+                branch: 'main'
+            })
+        });
+        
+        if (!createResponse.ok) {
+            const errorData = await createResponse.json();
+            throw new Error(`Failed to create ${newName}: ${errorData.message}`);
+        }
+        
+        // Step 3: Delete old file
+        const deleteResponse = await fetch(photo.url, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                message: `Remove old ${photo.name}`,
+                sha: photo.sha,
+                branch: 'main'
+            })
+        });
+        
+        if (!deleteResponse.ok) {
+            console.warn(`⚠️ Failed to delete old ${photo.name}, but new file created`);
+        }
+    }
+
+    // Event listeners
+    if (refreshGalleryBtn) {
+        refreshGalleryBtn.addEventListener('click', loadGallery);
+    }
+    
+    if (deleteCancelBtn) {
+        deleteCancelBtn.addEventListener('click', hideDeleteConfirmation);
+    }
+    
+    if (deleteConfirmBtn) {
+        deleteConfirmBtn.addEventListener('click', deletePhotoAndRenumber);
+    }
+    
+    // Close modal on background click
+    if (deleteModal) {
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                hideDeleteConfirmation();
+            }
+        });
+    }
+    
+    // Load gallery on page load
+    if (mainContainer && photoGallery) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'style' && mainContainer.style.display !== 'none') {
+                    loadGallery();
+                    observer.disconnect();
+                }
+            });
+        });
+        
+        observer.observe(mainContainer, { attributes: true });
     }
 
     } // End initializeUploader
