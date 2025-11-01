@@ -354,6 +354,50 @@
             }
         }
     </style>
+
+    <!-- Modern UI extras: variables, card accents, animations -->
+    <style>
+        :root{
+            --accent:#cc0000;
+            --accent-2:#ff5555;
+            --bg-panel: rgba(10,10,10,0.85);
+            --muted: rgba(255,255,255,0.6);
+            --glass: rgba(255,255,255,0.04);
+        }
+
+        /* Password panel entrance */
+        .password-panel{ transform: translateY(-12px) scale(0.995); opacity: 0; transition: transform 280ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease-in-out; }
+        .password-panel.open{ transform: translateY(0) scale(1); opacity: 1; }
+
+        /* Modern button styles */
+        .password-btn, .header-btn, .btn-upload, .btn-clear, .logout-btn{
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        .password-btn{ border-radius: 12px; padding: 12px 16px; font-size:1rem; }
+
+        /* Upload area highlight */
+        .upload-area{ background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015)); border-style: dashed; }
+        .upload-area:hover{ transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.45); }
+
+        /* File list modern cards */
+        .file-list{ max-height: 240px; overflow: auto; padding-right: 6px; }
+        .file-item{ padding: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); border-radius: 8px; margin-bottom: 8px; align-items: center; }
+        .file-item .remove-btn{ padding: 6px 10px; border-radius: 6px; }
+
+        /* Small helpers */
+        .muted{ color: var(--muted); }
+
+        /* Header and toolbar styling */
+        .uploader-header h1 { font-size: 1.2rem; color: var(--accent); }
+        .toolbar .header-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 8px 12px; border-radius: 10px; display:flex; align-items:center; gap:8px; }
+        .toolbar .header-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+
+        /* File enter animation */
+        .file-item { transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease; }
+        .file-item.file-enter { transform: translateX(10px) scale(0.995); opacity: 0; animation: fileEnter 320ms forwards; }
+        @keyframes fileEnter { to { transform: translateX(0) scale(1); opacity: 1; } }
+    </style>
 </head>
 <body>
     <!-- Password Screen (overlay) -->
@@ -390,18 +434,16 @@
 
     <!-- Main Upload Interface (hidden by default) -->
     <div class="container" id="mainContainer" style="display: none;">
-            <div class="header-btns" style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
-                <h1 style="margin: 0; flex: 1;">🖼️ Profile Photo Uploader</h1>
-                <button id="settingsBtn" class="header-btn" style="background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 1.1rem;">⚙️</span> <span>Settings</span>
-                </button>
-                <button id="backBtn" class="header-btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 1.1rem;">⬅️</span> <span>Back</span>
-                </button>
-                <button id="logoutBtn" class="header-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 1.1rem;">🚪</span> <span>Logout</span>
-                </button>
-            </div>
+            <div class="uploader-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <h1 style="margin:0;">🖼️ Profile Photo Uploader</h1>
+                    <div class="muted" style="font-size:0.9rem;">Private · Auto-rename</div>
+                </div>
+                <div class="toolbar" style="display:flex; gap:10px; align-items:center;">
+                    <button id="backBtn" class="header-btn" title="Back" aria-label="Back">⬅️ Back</button>
+                    <button id="settingsBtn" class="header-btn" title="Settings" aria-label="Settings">⚙️ Settings</button>
+                    <button id="logoutBtn" class="header-btn" title="Logout" aria-label="Logout">🚪 Logout</button>
+                </div>
             </div>
         <p class="subtitle">Private Upload Interface - Auto-rename & GitHub Sync</p>
 

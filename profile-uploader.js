@@ -34,6 +34,8 @@
                 document.body.style.overflow = 'hidden';
 
                 const panel = document.querySelector('.password-panel') || passwordScreen;
+                // animate panel in
+                try { panel.classList.add('open'); } catch (e) {}
                 // hide underlying main container completely while overlay is active
                 try {
                     if (mainContainer) {
@@ -360,6 +362,11 @@
             reader.readAsDataURL(file);
             
             fileList.appendChild(fileItem);
+            // animate new file item
+            try {
+                fileItem.classList.add('file-enter');
+                setTimeout(() => fileItem.classList.remove('file-enter'), 600);
+            } catch (err) {}
         });
     }
 
