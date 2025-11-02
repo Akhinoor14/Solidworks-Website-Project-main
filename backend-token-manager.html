@@ -260,6 +260,199 @@
         .loading i {
             animation: spin 1s linear infinite;
         }
+
+        /* Analytics Styles */
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .token-detail-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .token-detail-card.active {
+            border-left-color: #28a745;
+        }
+
+        .token-detail-card.rate-limited {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+
+        .token-detail-card.invalid {
+            border-left-color: #dc3545;
+            background: #ffe6e6;
+        }
+
+        .token-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .token-id {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .token-status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rate-limited {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-invalid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .token-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .endpoints-list {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .endpoint-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            margin: 3px 0;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .endpoint-path {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+        }
+
+        .endpoint-count {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .request-log-item {
+            display: grid;
+            grid-template-columns: 160px 1fr 150px 80px;
+            gap: 10px;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            align-items: center;
+        }
+
+        .log-timestamp {
+            color: #6c757d;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-endpoint {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .log-token {
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+        }
+
+        .log-status {
+            text-align: center;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .status-200 {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-404 {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-500 {
+            background: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -336,6 +529,38 @@
                 <button class="btn btn-danger" onclick="clearAllTokens()">
                     <i class="fas fa-trash"></i> Clear All Tokens
                 </button>
+            </div>
+        </div>
+
+        <!-- Token Analytics Section (NEW) -->
+        <div class="admin-section" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+            <div class="section-title" style="color: #2c3e50;">
+                <i class="fas fa-chart-line"></i> Token Analytics & Live Monitoring
+            </div>
+            <div class="button-group" style="margin-bottom: 15px;">
+                <button class="btn btn-primary" onclick="loadTokenAnalytics()">
+                    <i class="fas fa-sync-alt"></i> Refresh Analytics
+                </button>
+            </div>
+            
+            <!-- Summary Stats -->
+            <div id="analyticsSummary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <!-- Detailed Token Stats -->
+            <div id="tokenAnalyticsDetails">
+                <p style="color: #999; text-align: center; padding: 20px;">Click "Refresh Analytics" to load token usage data</p>
+            </div>
+
+            <!-- Recent Requests Log -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid rgba(0,0,0,0.1);">
+                <h3 style="color: #2c3e50; margin-bottom: 15px;">
+                    <i class="fas fa-history"></i> Recent API Requests (Last 20)
+                </h3>
+                <div id="recentRequestsLog" style="max-height: 400px; overflow-y: auto; background: white; border-radius: 8px; padding: 15px;">
+                    <p style="color: #999; text-align: center;">No data yet</p>
+                </div>
             </div>
         </div>
 
@@ -517,6 +742,187 @@
             } catch (error) {
                 showAlert('Error: ' + error.message, 'error');
             }
+        }
+
+        async function loadTokenAnalytics() {
+            const password = document.getElementById('adminPassword').value.trim();
+            
+            if (!password) {
+                showAlert('Please enter admin password to view analytics', 'error');
+                return;
+            }
+
+            try {
+                // Load summary stats
+                const statsResponse = await fetch(`${BACKEND_URL}/admin/stats`, {
+                    headers: {
+                        'X-Admin-Password': password
+                    }
+                });
+
+                // Load detailed token analytics
+                const detailsResponse = await fetch(`${BACKEND_URL}/admin/token-details`, {
+                    headers: {
+                        'X-Admin-Password': password
+                    }
+                });
+
+                if (!statsResponse.ok || !detailsResponse.ok) {
+                    showAlert('Failed to load analytics. Check admin password.', 'error');
+                    return;
+                }
+
+                const stats = await statsResponse.json();
+                const details = await detailsResponse.json();
+
+                // Display summary stats
+                displaySummaryStats(stats);
+
+                // Display detailed token stats
+                displayTokenDetails(details.tokens);
+
+                // Display recent requests log
+                displayRecentRequests(stats.recent_requests);
+
+                showAlert('Analytics loaded successfully', 'success');
+
+            } catch (error) {
+                showAlert('Error loading analytics: ' + error.message, 'error');
+            }
+        }
+
+        function displaySummaryStats(stats) {
+            const summaryDiv = document.getElementById('analyticsSummary');
+            
+            summaryDiv.innerHTML = `
+                <div class="stat-card">
+                    <span class="stat-value">${stats.tokens.count}</span>
+                    <span class="stat-label">Total Tokens</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" style="color: #28a745;">${stats.tokens.active}</span>
+                    <span class="stat-label">Active</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" style="color: #ffc107;">${stats.tokens.rate_limited || 0}</span>
+                    <span class="stat-label">Rate Limited</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" style="color: #dc3545;">${stats.tokens.invalid || 0}</span>
+                    <span class="stat-label">Invalid</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">${stats.total_requests || 0}</span>
+                    <span class="stat-label">Total Requests</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" style="color: #28a745;">${stats.success_count || 0}</span>
+                    <span class="stat-label">Success</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" style="color: #dc3545;">${stats.error_count || 0}</span>
+                    <span class="stat-label">Errors</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">${stats.tokens.effective_limit.toLocaleString()}</span>
+                    <span class="stat-label">API Limit/hr</span>
+                </div>
+            `;
+        }
+
+        function displayTokenDetails(tokens) {
+            const detailsDiv = document.getElementById('tokenAnalyticsDetails');
+            
+            if (!tokens || tokens.length === 0) {
+                detailsDiv.innerHTML = '<p style="color: #999; text-align: center;">No token data available</p>';
+                return;
+            }
+
+            let html = '<h3 style="color: #2c3e50; margin-bottom: 15px;"><i class="fas fa-key"></i> Detailed Token Statistics</h3>';
+            
+            tokens.forEach(token => {
+                const statusClass = token.status === 'active' ? 'active' : 
+                                  token.status === 'rate_limited' ? 'rate-limited' : 'invalid';
+                const badgeClass = token.status === 'active' ? 'badge-active' : 
+                                  token.status === 'rate_limited' ? 'badge-rate-limited' : 'badge-invalid';
+                
+                html += `
+                    <div class="token-detail-card ${statusClass}">
+                        <div class="token-header">
+                            <div class="token-id">${token.token_id}</div>
+                            <div class="token-status-badge ${badgeClass}">${token.status}</div>
+                        </div>
+                        
+                        <div class="token-metrics">
+                            <div class="metric-item">
+                                <span class="metric-value">${token.usage_count}</span>
+                                <div class="metric-label">Total Uses</div>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-value" style="color: #28a745;">${token.success_count}</span>
+                                <div class="metric-label">Success</div>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-value" style="color: #dc3545;">${token.error_count}</span>
+                                <div class="metric-label">Errors</div>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-value">${token.rate_limit.remaining}</span>
+                                <div class="metric-label">Rate Remaining</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 10px;">
+                            <strong>Last Used:</strong> <span style="color: #666;">${token.last_used}</span>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Rate Limit Reset:</strong> <span style="color: #666;">${token.rate_limit.reset}</span>
+                        </div>
+
+                        ${token.top_endpoints && token.top_endpoints.length > 0 ? `
+                            <div class="endpoints-list">
+                                <strong style="display: block; margin-bottom: 8px; color: #495057;">
+                                    <i class="fas fa-route"></i> Top Endpoints Used:
+                                </strong>
+                                ${token.top_endpoints.map(([endpoint, count]) => `
+                                    <div class="endpoint-item">
+                                        <span class="endpoint-path">${endpoint}</span>
+                                        <span class="endpoint-count">${count} calls</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            detailsDiv.innerHTML = html;
+        }
+
+        function displayRecentRequests(requests) {
+            const logDiv = document.getElementById('recentRequestsLog');
+            
+            if (!requests || requests.length === 0) {
+                logDiv.innerHTML = '<p style="color: #999; text-align: center;">No recent requests</p>';
+                return;
+            }
+
+            let html = '';
+            requests.reverse().forEach(req => {
+                const statusClass = req.status >= 200 && req.status < 300 ? 'status-200' :
+                                  req.status >= 400 && req.status < 500 ? 'status-404' : 'status-500';
+                
+                html += `
+                    <div class="request-log-item">
+                        <div class="log-timestamp">${req.time_str}</div>
+                        <div class="log-endpoint" title="${req.endpoint}">${req.endpoint}</div>
+                        <div class="log-token">${req.token}</div>
+                        <div class="log-status ${statusClass}">${req.status}</div>
+                    </div>
+                `;
+            });
+
+            logDiv.innerHTML = html;
         }
 
         // Check server health on page load

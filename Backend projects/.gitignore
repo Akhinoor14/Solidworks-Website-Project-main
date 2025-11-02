@@ -1,0 +1,37 @@
+# Secure Backend - Important Files to Ignore
+# ==========================================
+# These files contain sensitive data and should NEVER be committed to GitHub!
+
+# Environment variables (contains SECRET_KEY and ADMIN_PASSWORD)
+.env
+
+# Encrypted tokens file
+tokens.enc
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test files
+test_*.py
