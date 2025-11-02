@@ -8,13 +8,16 @@
     const CONFIG = {
         imageFolder: './images/',
         interval: 7000, // 7 seconds
-        transitionDuration: 600, // 600ms fade
-        useGitHubAPI: true // Try GitHub API first, then fallback to HEAD requests
+        transitionDuration: 800, // 800ms smooth fade
+        useGitHubAPI: true, // Try GitHub API first, then fallback to HEAD requests
+        preloadImages: true, // Preload next image for instant switch
+        easing: 'cubic-bezier(0.4, 0.0, 0.2, 1)' // Material Design smooth easing
     };
 
     let detectedPhotos = [];
     let currentIndex = 0;
     let intervalId = null;
+    let preloadedImages = new Map(); // Cache for preloaded images
 
     // Get the profile photo element
     function getProfilePhoto() {
@@ -147,7 +150,29 @@
         return detectedPhotos;
     }
 
-    // Shuffle to next photo with fade effect
+    // Preload an image for instant switching
+    function preloadImage(photoName) {
+        if (!CONFIG.preloadImages) return;
+        
+        const photoPath = CONFIG.imageFolder + photoName;
+        
+        // Skip if already preloaded
+        if (preloadedImages.has(photoPath)) return;
+        
+        const img = new Image();
+        img.src = photoPath;
+        preloadedImages.set(photoPath, img);
+    }
+
+    // Preload next image in sequence
+    function preloadNextImage() {
+        if (detectedPhotos.length <= 1) return;
+        
+        const nextIndex = (currentIndex + 1) % detectedPhotos.length;
+        preloadImage(detectedPhotos[nextIndex]);
+    }
+
+    // Shuffle to next photo with smooth fade effect
     function shufflePhoto() {
         const img = getProfilePhoto();
         if (!img || detectedPhotos.length <= 1) return;
@@ -158,14 +183,19 @@
 
         console.log(`🔄 Shuffling to photo ${currentIndex + 1}/${detectedPhotos.length}:`, nextPhoto);
 
-        // Fade out
-        img.style.transition = `opacity ${CONFIG.transitionDuration}ms ease-in-out`;
+        // Apply smooth transition with custom easing
+        img.style.transition = `opacity ${CONFIG.transitionDuration}ms ${CONFIG.easing}`;
         img.style.opacity = '0';
 
-        // Change image and fade in
+        // Change image and fade in (image already preloaded for instant display)
         setTimeout(() => {
             img.src = nextPhoto;
+            // Force reflow to ensure transition works
+            void img.offsetWidth;
             img.style.opacity = '1';
+            
+            // Preload the next image after current one loads
+            preloadNextImage();
         }, CONFIG.transitionDuration);
     }
 
@@ -185,9 +215,18 @@
             return;
         }
 
+        // Preload all images for smooth transitions
+        if (CONFIG.preloadImages) {
+            console.log('⏳ Preloading images for smooth transitions...');
+            detectedPhotos.forEach(photo => preloadImage(photo));
+        }
+
         console.log(`✅ Profile slideshow started with ${detectedPhotos.length} photos (${CONFIG.interval/1000}s interval)`);
         
-        // Shuffle every 30 seconds
+        // Initialize smooth transition on profile photo
+        img.style.transition = `opacity ${CONFIG.transitionDuration}ms ${CONFIG.easing}`;
+        
+        // Shuffle at configured interval
         intervalId = setInterval(shufflePhoto, CONFIG.interval);
     }
 

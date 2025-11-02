@@ -7,6 +7,7 @@ let __cvZoom = 100;
 /**
  * Open CV in new browser tab
  * - Shows PDF directly in browser's built-in PDF viewer
+ * - Browser toolbar includes: Download, Print, Zoom controls
  * - No complex modal or iframe issues  
  * - Works on all modern browsers
  */
@@ -17,8 +18,14 @@ function openCVViewer() {
         // CV file path (relative to website root)
         const pdfPath = './CV/2313014 CV.pdf';
         
-        // Open PDF in new tab
-        const newTab = window.open(pdfPath, '_blank');
+        // Force browser to view (not download) by using embedded viewer
+        // toolbar=1: Shows browser's PDF toolbar (includes download, print, zoom)
+        // navpanes=1: Shows page thumbnails sidebar
+        // scrollbar=1: Enables scrolling
+        const viewerUrl = `${pdfPath}#toolbar=1&navpanes=1&scrollbar=1`;
+        
+        // Open PDF in new tab with viewer parameters
+        const newTab = window.open(viewerUrl, '_blank');
         
         if (newTab) {
             // Successfully opened in new tab
@@ -31,7 +38,7 @@ function openCVViewer() {
             // Show helpful message
             if (confirm('Popup blocked! Click OK to open CV in current tab, or Cancel to stay here.')) {
                 // User wants to open in same tab
-                window.location.href = pdfPath;
+                window.location.href = viewerUrl;
             }
         }
         
