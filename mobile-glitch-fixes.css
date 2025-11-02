@@ -47,6 +47,121 @@ body {
     .hero-bg-elements .gradient-orbs,
     #particles-canvas { display: none !important; }
 
+    /* MOBILE HAMBURGER MENU - GUARANTEED FIX */
+    /* Force hamburger to show */
+    .hamburger {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 32px !important;
+        height: 26px !important;
+        cursor: pointer !important;
+        z-index: 10001 !important;
+        position: relative !important;
+    }
+
+    .hamburger .bar {
+        width: 100% !important;
+        height: 3px !important;
+        background: #00ff88 !important;
+        border-radius: 3px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    /* Hamburger active (X) animation */
+    .hamburger.active .bar:nth-child(1) {
+        transform: translateY(11px) rotate(45deg) !important;
+    }
+
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0 !important;
+    }
+
+    .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg) !important;
+    }
+
+    /* Mobile menu - default hidden */
+    .nav-menu {
+        display: flex !important;
+        position: fixed !important;
+        top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: calc(100vh - 60px) !important;
+        background: linear-gradient(180deg, rgba(10,10,10,0.98), rgba(26,0,0,0.95)) !important;
+        backdrop-filter: blur(30px) !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 30px 20px !important;
+        gap: 12px !important;
+        overflow-y: auto !important;
+        z-index: 9998 !important;
+        transform: translateX(-100%) !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Menu open state */
+    .nav-menu.active,
+    .nav-menu.open {
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* Menu items */
+    .nav-item {
+        width: 100% !important;
+        max-width: 400px !important;
+        margin: 0 !important;
+    }
+
+    .nav-link {
+        display: block !important;
+        width: 100% !important;
+        padding: 16px 20px !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        color: #ffffff !important;
+        background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,255,136,0.04)) !important;
+        border: 1.5px solid rgba(0,255,136,0.25) !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease !important;
+        text-decoration: none !important;
+    }
+
+    .nav-link:hover,
+    .nav-link:active {
+        background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,255,136,0.08)) !important;
+        border-color: rgba(0,255,136,0.5) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 16px rgba(0,255,136,0.2) !important;
+    }
+
+    /* Crown icon for Only Boss */
+    .nav-crown {
+        background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05)) !important;
+        border-color: rgba(255,215,0,0.3) !important;
+    }
+
+    .nav-crown:hover {
+        background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1)) !important;
+        border-color: rgba(255,215,0,0.5) !important;
+    }
+
+    /* Theme toggle in mobile menu */
+    .theme-toggle {
+        width: 48px !important;
+        height: 48px !important;
+        margin: 10px auto !important;
+    }
+
     /* Improve mobile menu tap targets and spacing */
     .nav-menu { gap: 12px !important; padding: 20px 16px !important; }
     .nav-link { padding: 14px 12px !important; font-size: 1.05rem !important; }
@@ -553,33 +668,62 @@ body {
         text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6) !important;
     }
 
+    /* PROFILE PIC FIX - Hide markers on mobile to prevent overlap */
+    .engineering-markers {
+        display: none !important;
+    }
+
+    .profile-card-3d::before {
+        display: none !important;
+    }
+
+    .frame-glow {
+        display: none !important;
+    }
+
     /* Profile image - proper sizing and centering */
     .profile-container {
-        max-width: 240px !important;
-        width: 240px !important;
-        height: 240px !important;
+        max-width: 260px !important;
+        width: 260px !important;
+        height: 260px !important;
         margin: 0 auto 24px !important;
         display: block !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
 
     .hero-image {
         width: 100% !important;
-        max-width: 240px !important;
-        height: 240px !important;
+        max-width: 260px !important;
+        height: 260px !important;
         margin: 0 auto !important;
         display: block !important;
+        position: relative !important;
+    }
+
+    .profile-image-wrapper {
+        width: 260px !important;
+        height: 260px !important;
+        margin: 0 auto !important;
+        position: relative !important;
     }
 
     .profile-frame {
-        width: 240px !important;
-        height: 240px !important;
+        width: 260px !important;
+        height: 260px !important;
+        margin: 0 auto !important;
+        position: relative !important;
     }
 
     #profile-photo-wrapper {
-        width: 240px !important;
-        height: 240px !important;
+        width: 260px !important;
+        height: 260px !important;
         border-radius: 50% !important;
         overflow: hidden !important;
+        display: block !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        z-index: 2 !important;
     }
 
     #profile-photo,
@@ -588,8 +732,9 @@ body {
         height: 100% !important;
         object-fit: cover !important;
         border-radius: 50% !important;
-        border: 3px solid rgba(204, 0, 0, 0.5) !important;
-        box-shadow: 0 8px 24px rgba(204, 0, 0, 0.4) !important;
+        border: 4px solid rgba(204, 0, 0, 0.6) !important;
+        box-shadow: 0 8px 28px rgba(204, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+        display: block !important;
     }
 
     /* Button text clarity */

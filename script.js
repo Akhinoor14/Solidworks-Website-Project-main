@@ -8390,67 +8390,117 @@ window.performCentralDelete = performCentralDelete;
 
 
 // ==============================
-// Mobile navbar toggle behavior
+// Mobile navbar toggle behavior - GUARANTEED FIX
 // ==============================
-try {
-    document.addEventListener('DOMContentLoaded', () => {
+(function() {
+    console.log('🔧 Initializing mobile hamburger menu...');
+    
+    function initMobileMenu() {
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
-        if (hamburger && navMenu) {
-            const toggle = () => {
-                const isOpen = !navMenu.classList.contains('open');
-                navMenu.classList.toggle('open', isOpen);
-                navMenu.classList.toggle('active', isOpen); // for mobile-optimized.css slide-in
-                hamburger.classList.toggle('active', isOpen);
-                document.body.style.overflow = isOpen ? 'hidden' : '';
-                hamburger.setAttribute('aria-expanded', String(isOpen));
-            };
-
-            hamburger.setAttribute('role', 'button');
-            hamburger.setAttribute('tabindex', '0');
-            hamburger.setAttribute('aria-label', 'Toggle navigation menu');
-            hamburger.setAttribute('aria-expanded', 'false');
-
-            hamburger.addEventListener('click', toggle);
-            hamburger.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-            });
-
-            // Close on link click
-            navMenu.addEventListener('click', (e) => {
-                const link = e.target.closest('a');
-                if (link) {
-                    navMenu.classList.remove('open', 'active');
-                    hamburger.classList.remove('active');
-                    document.body.style.overflow = '';
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            // Close on ESC
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    navMenu.classList.remove('open', 'active');
-                    hamburger.classList.remove('active');
-                    document.body.style.overflow = '';
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            // Auto-close when resizing to desktop
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    navMenu.classList.remove('open', 'active');
-                    hamburger.classList.remove('active');
-                    document.body.style.overflow = '';
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
+        
+        if (!hamburger) {
+            console.warn('⚠️ Hamburger not found');
+            return;
         }
-    });
-} catch (e) {
-    console.warn('Navbar toggle init failed:', e.message);
-}
+        
+        if (!navMenu) {
+            console.warn('⚠️ Nav menu not found');
+            return;
+        }
+        
+        console.log('✅ Hamburger and nav-menu found');
+        
+        // Open menu
+        function openMenu() {
+            console.log('📂 Opening menu...');
+            hamburger.classList.add('active');
+            navMenu.classList.add('open');
+            navMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            hamburger.setAttribute('aria-expanded', 'true');
+        }
+        
+        // Close menu
+        function closeMenu() {
+            console.log('📁 Closing menu...');
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('open');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            hamburger.setAttribute('aria-expanded', 'false');
+        }
+        
+        // Toggle menu
+        function toggleMenu(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🔄 Toggle clicked');
+            
+            const isOpen = navMenu.classList.contains('open') || navMenu.classList.contains('active');
+            if (isOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        }
+        
+        // Setup attributes
+        hamburger.setAttribute('role', 'button');
+        hamburger.setAttribute('tabindex', '0');
+        hamburger.setAttribute('aria-label', 'Toggle navigation menu');
+        hamburger.setAttribute('aria-expanded', 'false');
+        
+        // Click handler
+        hamburger.addEventListener('click', toggleMenu);
+        
+        // Touch handler for mobile
+        hamburger.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            toggleMenu(e);
+        }, { passive: false });
+        
+        // Keyboard handler
+        hamburger.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleMenu(e);
+            }
+        });
+        
+        // Close on nav link click
+        const navLinks = navMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                console.log('🔗 Link clicked, closing menu');
+                closeMenu();
+            });
+        });
+        
+        // Close on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+        
+        // Auto-close on desktop resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                closeMenu();
+            }
+        });
+        
+        console.log('✅ Mobile menu initialized successfully');
+    }
+    
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileMenu);
+    } else {
+        initMobileMenu();
+    }
+})();
 
 
 
