@@ -41,6 +41,26 @@ body {
    ========================= */
 
 @media (max-width: 768px) {
+    /* PRIORITY 0: Mobile nav & declutter */
+    /* Hide heavy background effects to reduce visual clutter */
+    .hero-bg-elements .geometric-shapes,
+    .hero-bg-elements .gradient-orbs,
+    #particles-canvas { display: none !important; }
+
+    /* Improve mobile menu tap targets and spacing */
+    .nav-menu { gap: 12px !important; padding: 20px 16px !important; }
+    .nav-link { padding: 14px 12px !important; font-size: 1.05rem !important; }
+
+    /* Increase breathing room in hero */
+    .hero-container { padding: 0 16px !important; }
+    .hero-content { gap: 20px !important; }
+    .hero-title { margin-bottom: 8px !important; }
+    .hero-description { line-height: 1.7 !important; margin: 6px 0 14px !important; }
+
+    /* Reduce visual noise in expertise cards on mobile */
+    .expertise-showcase { gap: 14px !important; }
+    .expertise-card { padding: 12px !important; }
+    .expertise-info { gap: 4px !important; }
     /* Navbar absolutely must be fixed correctly */
     .navbar {
         position: fixed !important;

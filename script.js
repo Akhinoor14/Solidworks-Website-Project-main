@@ -8397,8 +8397,54 @@ try {
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
         if (hamburger && navMenu) {
-            hamburger.addEventListener('click', () => {
-                navMenu.classList.toggle('open');
+            const toggle = () => {
+                const isOpen = !navMenu.classList.contains('open');
+                navMenu.classList.toggle('open', isOpen);
+                navMenu.classList.toggle('active', isOpen); // for mobile-optimized.css slide-in
+                hamburger.classList.toggle('active', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+                hamburger.setAttribute('aria-expanded', String(isOpen));
+            };
+
+            hamburger.setAttribute('role', 'button');
+            hamburger.setAttribute('tabindex', '0');
+            hamburger.setAttribute('aria-label', 'Toggle navigation menu');
+            hamburger.setAttribute('aria-expanded', 'false');
+
+            hamburger.addEventListener('click', toggle);
+            hamburger.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            });
+
+            // Close on link click
+            navMenu.addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                if (link) {
+                    navMenu.classList.remove('open', 'active');
+                    hamburger.classList.remove('active');
+                    document.body.style.overflow = '';
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close on ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    navMenu.classList.remove('open', 'active');
+                    hamburger.classList.remove('active');
+                    document.body.style.overflow = '';
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Auto-close when resizing to desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    navMenu.classList.remove('open', 'active');
+                    hamburger.classList.remove('active');
+                    document.body.style.overflow = '';
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
             });
         }
     });
