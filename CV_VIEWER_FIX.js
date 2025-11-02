@@ -108,21 +108,68 @@ function openCVViewer() {
         viewerContainer.style.cssText = `
             flex: 1;
             position: relative;
-            overflow: hidden;
+            overflow: auto;
             background: #2a2a2a;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
         `;
         
-        // Embed PDF using <embed> tag (most reliable for viewing)
-        const pdfEmbed = document.createElement('embed');
-        pdfEmbed.src = `${pdfPath}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`;
-        pdfEmbed.type = 'application/pdf';
-        pdfEmbed.style.cssText = `
-            width: 100%;
-            height: 100%;
-            border: none;
-        `;
+        // Detect if mobile (iOS/Android may not support PDF embed)
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        viewerContainer.appendChild(pdfEmbed);
+        if (isMobile) {
+            // Mobile fallback: show message + download/open link
+            const mobileMsg = document.createElement('div');
+            mobileMsg.style.cssText = `
+                background: rgba(255,255,255,0.1);
+                border: 2px solid #00ff88;
+                border-radius: 12px;
+                padding: 30px;
+                max-width: 500px;
+                text-align: center;
+                color: white;
+            `;
+            mobileMsg.innerHTML = `
+                <h3 style="color: #00ff88; margin-top: 0;">📱 Mobile Device Detected</h3>
+                <p style="line-height: 1.6; margin: 20px 0;">PDF viewing is limited on mobile browsers. Please download or open in a new tab.</p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="./CV/2313014 CV.pdf" target="_blank" style="
+                        padding: 12px 24px;
+                        background: #00ff88;
+                        color: #000;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        display: inline-block;
+                    ">🔗 Open in New Tab</a>
+                    <a href="./CV/2313014 CV.pdf" download="Md_Akhinoor_Islam_CV.pdf" style="
+                        padding: 12px 24px;
+                        background: transparent;
+                        color: #00ff88;
+                        border: 2px solid #00ff88;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        display: inline-block;
+                    ">📥 Download PDF</a>
+                </div>
+            `;
+            viewerContainer.appendChild(mobileMsg);
+        } else {
+            // Desktop: Embed PDF using <embed> tag (most reliable for viewing)
+            const pdfEmbed = document.createElement('embed');
+            pdfEmbed.src = `${pdfPath}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`;
+            pdfEmbed.type = 'application/pdf';
+            pdfEmbed.style.cssText = `
+                width: 100%;
+                height: 100%;
+                border: none;
+                min-height: 600px;
+            `;
+            viewerContainer.appendChild(pdfEmbed);
+        }
         
         // Assemble modal
         modal.appendChild(header);
