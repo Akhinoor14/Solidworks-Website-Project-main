@@ -540,6 +540,8 @@ body {
         height: 240px !important;
         margin: 0 auto 24px !important;
         display: block !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
     }
 
     .hero-image {
@@ -548,6 +550,21 @@ body {
         height: 240px !important;
         margin: 0 auto !important;
         display: block !important;
+        border-radius: 50% !important;
+    }
+
+    .profile-frame {
+        width: 240px !important;
+        height: 240px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+    }
+
+    #profile-photo-wrapper {
+        width: 240px !important;
+        height: 240px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
     }
 
     #profile-photo,
