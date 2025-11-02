@@ -469,6 +469,94 @@
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   }
+
+  /* Contact page specific fixes */
+  .quick-contact-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+  }
+  .quick-contact-actions .quick-action {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 1rem !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+  }
+  .quick-contact-actions .quick-action i {
+    font-size: 1.5rem !important;
+    min-width: 32px !important;
+    text-align: center !important;
+  }
+  
+  .contact-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .contact-info {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .contact-item {
+    display: grid !important;
+    grid-template-columns: 44px 1fr !important;
+    align-items: start !important;
+    gap: 12px !important;
+    padding: 14px !important;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+  }
+  .contact-icon {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    color: #ff9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 44px !important;
+  }
+  .contact-details {
+    text-align: left !important;
+  }
+  .contact-details h4 {
+    font-size: 1rem !important;
+    margin: 0 0 4px 0 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+  }
+  .contact-details a,
+  .contact-details p {
+    font-size: 0.95rem !important;
+    color: rgba(255,255,255,0.8) !important;
+    text-decoration: none !important;
+    line-height: 1.5 !important;
+    word-break: break-word !important;
+  }
+  .contact-details a:active {
+    color: #00ff88 !important;
+  }
+  
+  .contact-form {
+    width: 100% !important;
+  }
+  .contact-form .form-group {
+    margin-bottom: 16px !important;
+  }
+  .contact-form input,
+  .contact-form textarea {
+    width: 100% !important;
+    padding: 12px 14px !important;
+    font-size: 1rem !important;
+    border-radius: 10px !important;
+  }
+  .contact-form textarea {
+    min-height: 120px !important;
+  }
   
   .expertise-card h4, .skill-category h4 {
     font-size: 1.1rem;
