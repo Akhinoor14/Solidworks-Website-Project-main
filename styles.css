@@ -2536,7 +2536,20 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 }
 
 .hamburger {
-    display: none;
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 28px !important;
+        height: 20px !important;
+        cursor: pointer !important;
+        z-index: 10001 !important;
+        position: relative !important;
+    }
 }
 
 .hamburger .bar {
@@ -8725,7 +8738,18 @@ h1, h2, h3, h4, h5, h6, p, span, div {
    =============================== */
 @media (max-width: 768px) {
     /* Navbar */
-    .hamburger { display: flex; }
+    .hamburger { 
+        display: flex !important; 
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    .hamburger .bar {
+        display: block !important;
+        width: 100% !important;
+        height: 3px !important;
+        background: #fff !important;
+        margin: 0 !important;
+    }
     .nav-menu {
         display: none;
         position: absolute;
