@@ -111,6 +111,9 @@
     align-items: center;
 }
 
+/* Hide mobile quick icons on desktop by default; mobile CSS will show them */
+.nav-quick-icons { display: none; }
+
 .nav-item { display: flex; align-items: center; }
 
 .nav-link {

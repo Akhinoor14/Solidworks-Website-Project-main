@@ -220,13 +220,21 @@
   .hero-text {
     order: 2 !important;
     width: 100% !important;
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 10px !important;
   }
   .hero-image { 
     order: 1 !important; 
-    margin: 0 auto 16px !important; 
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    align-self: center !important;
+    margin: 0 auto 12px !important; 
     width: 100% !important;
     max-width: 200px !important;
   }
+  .hero-image::before { display: none !important; }
   .hero-title { 
     font-size: clamp(1.6rem, 6vw, 2rem) !important; 
     line-height: 1.2 !important; 
@@ -313,12 +321,50 @@
   }
   .hero-buttons .btn { width: 100% !important; }
 
-  /* Expertise showcase: compact 2-column grid */
+  /* Expertise showcase: single column for mobile readability */
   .expertise-showcase { 
     display: grid !important; 
-    grid-template-columns: repeat(2, 1fr) !important; 
-    gap: 12px !important; 
-    padding: 0 12px 16px !important; 
+    grid-template-columns: 1fr !important; 
+    gap: 14px !important; 
+    padding: 0 12px 20px !important; 
+  }
+
+  /* Expertise cards: structured layout with icon + text */
+  .expertise-showcase .expertise-card {
+    display: grid !important;
+    grid-template-columns: 48px 1fr !important;
+    align-items: start !important;
+    gap: 14px !important;
+    padding: 16px !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 14px !important;
+    min-height: auto !important;
+  }
+  .expertise-showcase .expertise-icon { 
+    font-size: 1.75rem !important; 
+    line-height: 1 !important; 
+    text-align: center !important; 
+    color: #ff9999 !important;
+    min-width: 48px !important;
+    margin-top: 2px !important;
+  }
+  .expertise-showcase .expertise-info { 
+    text-align: left !important; 
+  }
+  .expertise-showcase .expertise-info h4 { 
+    font-size: 1.1rem !important; 
+    font-weight: 600 !important;
+    margin: 0 0 5px 0 !important; 
+    color: #fff !important; 
+    line-height: 1.4 !important; 
+    letter-spacing: 0.2px !important; 
+  }
+  .expertise-showcase .expertise-info p { 
+    font-size: 0.95rem !important; 
+    color: rgba(255,255,255,0.8) !important; 
+    margin: 0 !important; 
+    line-height: 1.5 !important; 
   }
 
   /* Hide scroll indicator on mobile */
