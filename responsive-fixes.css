@@ -1,0 +1,616 @@
+/* ========================================
+   RESPONSIVE UI FIXES & IMPROVEMENTS
+   Desktop + Mobile Optimized
+   ======================================== */
+
+/* =========================
+   MOBILE-FIRST BASE FIXES
+   ========================= */
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Better touch targets for mobile */
+button, a, input, textarea, select {
+    min-height: 44px; /* Apple HIG recommendation */
+    min-width: 44px;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* =========================
+   NAVBAR MOBILE FIXES
+   ========================= */
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 8px 15px;
+    }
+
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 60px;
+        flex-direction: column;
+        background-color: rgba(10, 10, 10, 0.98);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(20px);
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+        padding: 20px 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-item {
+        margin: 10px 0;
+    }
+
+    .hamburger {
+        display: block;
+        cursor: pointer;
+    }
+
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+}
+
+/* =========================
+   HERO SECTION RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 0 40px;
+        min-height: auto;
+    }
+
+    .hero-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .hero-text h1 {
+        font-size: 2rem !important;
+        line-height: 1.2;
+    }
+
+    .hero-text .subtitle {
+        font-size: 1.1rem !important;
+    }
+
+    .hero-text p {
+        font-size: 0.95rem !important;
+    }
+
+    /* Profile image mobile */
+    .profile-container {
+        width: 200px !important;
+        height: 200px !important;
+        margin: 0 auto;
+    }
+
+    #profile-photo {
+        width: 200px !important;
+        height: 200px !important;
+    }
+
+    /* Buttons mobile */
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+}
+
+/* =========================
+   CONTACT FORM MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    .contact-content {
+        flex-direction: column !important;
+        gap: 30px;
+    }
+
+    .contact-info,
+    .contact-form {
+        width: 100% !important;
+    }
+
+    .contact-item {
+        padding: 15px !important;
+    }
+
+    .quick-contact-actions {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .quick-action {
+        padding: 14px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .quick-action i {
+        font-size: 1.3rem !important;
+    }
+}
+
+/* =========================
+   PROJECTS GRID RESPONSIVE
+   ========================= */
+
+@media (max-width: 1200px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+    }
+
+    .project-card {
+        padding: 20px !important;
+    }
+
+    .project-card h3 {
+        font-size: 1.3rem !important;
+    }
+
+    .project-tags {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tag {
+        font-size: 0.75rem !important;
+        padding: 4px 10px !important;
+    }
+}
+
+/* =========================
+   FOOTER MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 30px 20px !important;
+    }
+
+    .social-links {
+        margin-top: 15px;
+        gap: 15px;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem !important;
+    }
+}
+
+/* =========================
+   CV VIEWER MODAL MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    #cv-viewer-modal h2 {
+        font-size: 1.2rem !important;
+    }
+
+    #cv-viewer-modal button {
+        padding: 8px 16px !important;
+        font-size: 0.9rem !important;
+    }
+
+    #cv-viewer-modal embed {
+        min-height: 60vh;
+    }
+}
+
+/* =========================
+   IMPROVED TOUCH INTERACTIONS
+   ========================= */
+
+@media (hover: none) {
+    /* Remove hover effects on touch devices */
+    .project-card:hover {
+        transform: none !important;
+    }
+
+    /* Active states instead */
+    .project-card:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .quick-action:active {
+        transform: translateY(2px);
+    }
+}
+
+/* =========================
+   FLOATING BOSS PORTAL MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    .fab-boss-portal {
+        width: 56px !important;
+        height: 56px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        font-size: 24px !important;
+    }
+}
+
+/* =========================
+   BETTER TEXT READABILITY
+   ========================= */
+
+@media (max-width: 768px) {
+    body {
+        font-size: 16px !important; /* Prevent zoom on input focus */
+    }
+
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    h2 {
+        font-size: 1.75rem !important;
+    }
+
+    h3 {
+        font-size: 1.5rem !important;
+    }
+
+    h4 {
+        font-size: 1.25rem !important;
+    }
+
+    p, li {
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+    }
+}
+
+/* =========================
+   FORM INPUTS MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    input,
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevent iOS zoom */
+        padding: 14px !important;
+        border-radius: 8px !important;
+    }
+
+    textarea {
+        min-height: 120px !important;
+    }
+}
+
+/* =========================
+   CONTAINER PADDING MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+    .container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    section {
+        padding: 40px 0 !important;
+    }
+}
+
+/* =========================
+   TABLE RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table th,
+    table td {
+        white-space: nowrap;
+        padding: 10px 8px !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* =========================
+   ABOUT PAGE RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+    .about-content {
+        flex-direction: column !important;
+    }
+
+    .about-image,
+    .about-text {
+        width: 100% !important;
+    }
+
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+    }
+
+    .skill-item {
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* =========================
+   IMPROVE SCROLLBAR
+   ========================= */
+
+/* Better scrollbar for webkit browsers */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 136, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 136, 0.5);
+}
+
+/* =========================
+   LANDSCAPE MOBILE FIXES
+   ========================= */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 40px 0;
+    }
+
+    .profile-container {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    #profile-photo {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+
+/* =========================
+   TABLET SPECIFIC (768px - 1024px)
+   ========================= */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 90%;
+    }
+
+    .hero-text h1 {
+        font-size: 2.5rem !important;
+    }
+
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .contact-content {
+        flex-direction: column;
+    }
+}
+
+/* =========================
+   LARGE DESKTOP (1400px+)
+   ========================= */
+
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+
+    .projects-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* =========================
+   DARK MODE SPECIFIC FIXES
+   ========================= */
+
+[data-theme="dark"] .btn {
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+/* =========================
+   ACCESSIBILITY IMPROVEMENTS
+   ========================= */
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 2px solid #00ff88;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Better contrast for links */
+a {
+    text-decoration-skip-ink: auto;
+}
+
+/* =========================
+   PRINT STYLES
+   ========================= */
+
+@media print {
+    .navbar,
+    .fab-boss-portal,
+    .hamburger,
+    button,
+    .social-links {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    a {
+        color: black;
+        text-decoration: underline;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+}
+
+/* =========================
+   SAFE AREA FOR NOTCHED DEVICES
+   ========================= */
+
+@supports (padding: max(0px)) {
+    body {
+        padding-left: min(0px, env(safe-area-inset-left));
+        padding-right: min(0px, env(safe-area-inset-right));
+    }
+
+    .navbar {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+}
+
+/* =========================
+   LOADING STATE IMPROVEMENTS
+   ========================= */
+
+.loading {
+    pointer-events: none;
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Skeleton loading for better UX */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* =========================
+   PERFORMANCE OPTIMIZATIONS
+   ========================= */
+
+/* GPU acceleration for smooth animations */
+.project-card,
+.btn,
+.quick-action,
+#profile-photo {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Optimize images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Lazy loading images */
+img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+img[loading="lazy"].loaded {
+    opacity: 1;
+}
