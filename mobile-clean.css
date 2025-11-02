@@ -50,6 +50,34 @@
     visibility: visible !important; 
   }
 
+  /* Quick icon row (mobile-only) */
+  .nav-quick-icons {
+    position: absolute !important;
+    right: 12px !important;
+    top: calc(10px + env(safe-area-inset-top)) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    z-index: 20000 !important;
+    pointer-events: auto !important;
+  }
+  .nav-icon {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    text-decoration: none !important;
+    transition: transform .2s ease, background .2s ease, border-color .2s ease !important;
+  }
+  .nav-icon:active { transform: scale(0.94) !important; background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.3) !important; }
+  .nav-icon.nav-crown { color: #ffd700 !important; border-color: rgba(255,215,0,0.45) !important; background: rgba(255,215,0,0.08) !important; }
+
   /* Hamburger - visible top-left, large tap area */
   .hamburger { 
     display: flex !important; 
@@ -58,10 +86,10 @@
     width: 32px !important; 
     height: 24px !important; 
     cursor: pointer !important; 
-    z-index: 10001 !important; 
+    z-index: 20000 !important; 
     position: absolute !important;
     left: 12px !important;
-    top: 18px !important;
+    top: calc(10px + env(safe-area-inset-top)) !important;
     padding: 8px !important; /* bigger touch target */
     box-sizing: content-box !important;
     pointer-events: auto !important;
@@ -225,6 +253,11 @@
     display: block !important; 
     visibility: visible !important;
   }
+
+  /* Ensure theme toggle never intercepts clicks when menu closed */
+  body:not(.nav-open) .nav-menu .theme-toggle { pointer-events: none !important; }
+  /* For safety: hide any stray theme toggle placed outside menu on mobile */
+  .navbar > .theme-toggle { display: none !important; }
 
   /* Layout spacing below fixed navbar */
   body { padding-top: 60px; }
