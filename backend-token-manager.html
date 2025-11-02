@@ -578,11 +578,67 @@
                 <li>Frontend automatically uses backend proxy (no user action needed)</li>
             </ol>
         </div>
+
+        <!-- Troubleshooting Section -->
+        <div class="admin-section" style="background: #fff3cd; border-left: 4px solid #ffc107;">
+            <div class="section-title" style="color: #856404;">
+                <i class="fas fa-exclamation-triangle"></i> Troubleshooting "Failed to fetch" Error
+            </div>
+            <div style="color: #333; line-height: 1.8;">
+                <p style="margin-bottom: 15px; font-weight: 600; color: #856404;">
+                    ⚠️ If you see "Error connecting to backend: Failed to fetch", the backend server is not running.
+                </p>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="color: #0066cc; margin-bottom: 10px;">
+                        <i class="fas fa-play-circle"></i> Quick Start (Option 1 - Easiest)
+                    </h4>
+                    <p style="margin-bottom: 5px;">1. Open File Explorer</p>
+                    <p style="margin-bottom: 5px;">2. Navigate to <code>Backend projects</code> folder</p>
+                    <p style="margin-bottom: 5px;">3. Double-click <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">start-server.bat</code></p>
+                    <p style="color: #28a745; font-weight: 600; margin-top: 10px;">✅ Server will start automatically!</p>
+                </div>
+
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="color: #0066cc; margin-bottom: 10px;">
+                        <i class="fas fa-terminal"></i> Manual Start (Option 2)
+                    </h4>
+                    <p style="margin-bottom: 10px;">Open terminal and run:</p>
+                    <pre style="background: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 6px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px;">cd "Backend projects"
+python secure-proxy-server.py</pre>
+                    <p style="color: #28a745; font-weight: 600; margin-top: 10px;">
+                        ✅ Wait for: "Running on http://localhost:5000"
+                    </p>
+                </div>
+
+                <div style="background: white; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #dc3545; margin-bottom: 10px;">
+                        <i class="fas fa-tools"></i> First Time Setup?
+                    </h4>
+                    <p style="margin-bottom: 10px;">If this is your first time, run setup first:</p>
+                    <pre style="background: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 6px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px;">cd "Backend projects"
+pip install -r requirements.txt
+python setup-tokens.py
+python secure-proxy-server.py</pre>
+                </div>
+
+                <p style="margin-top: 15px; padding: 10px; background: #d4edda; border-radius: 6px; color: #155724; border: 1px solid #c3e6cb;">
+                    <i class="fas fa-book"></i> <strong>Need detailed guide?</strong> 
+                    Check <code>Backend projects/START_BACKEND_SERVER.md</code> for complete instructions.
+                </p>
+            </div>
+        </div>
     </div>
 
     <script src="github-proxy-config.js"></script>
     <script>
-        const BACKEND_URL = GITHUB_PROXY_CONFIG.PROXY_URL || 'http://localhost:5000';
+        // Backend URL with proper fallback
+        const BACKEND_URL = (typeof GITHUB_PROXY_CONFIG !== 'undefined' && GITHUB_PROXY_CONFIG.PROXY_URL) 
+            ? GITHUB_PROXY_CONFIG.PROXY_URL 
+            : 'http://localhost:5000';
+
+        console.log('🔧 Backend Token Manager loaded');
+        console.log('🌐 Backend URL:', BACKEND_URL);
 
         function showAlert(message, type = 'info') {
             const alertContainer = document.getElementById('alertContainer');
@@ -608,19 +664,44 @@
             statusValue.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
             try {
-                const response = await fetch(`${BACKEND_URL}/health`);
+                console.log('🔍 Checking backend health at:', `${BACKEND_URL}/health`);
+                
+                const response = await fetch(`${BACKEND_URL}/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
                 const data = await response.json();
+                console.log('✅ Health check response:', data);
 
                 if (response.ok) {
                     statusValue.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Online</span>';
                     tokensCount.textContent = data.tokens_active ? 'Active' : 'Not loaded';
                     rateLimit.textContent = `${data.effective_limit} req/hour`;
+                    showAlert('Backend server is online and ready!', 'success');
                 } else {
                     statusValue.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Error</span>';
+                    showAlert(`Backend error: ${data.error || 'Unknown error'}`, 'error');
                 }
             } catch (error) {
+                console.error('❌ Backend connection failed:', error);
                 statusValue.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Offline</span>';
-                showAlert('Backend server is not running. Start it with: python secure-proxy-server.py', 'error');
+                
+                // Better error messages
+                let errorMsg = 'Backend server is not running. ';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMsg += 'Cannot connect to ' + BACKEND_URL + '. ';
+                    errorMsg += 'Please start the server: cd "Backend projects" → python secure-proxy-server.py';
+                } else if (error.message.includes('CORS')) {
+                    errorMsg += 'CORS error. Make sure the backend server is running with CORS enabled.';
+                } else {
+                    errorMsg += error.message;
+                }
+                
+                showAlert(errorMsg, 'error');
             }
         }
 
@@ -630,11 +711,13 @@
 
             if (!password) {
                 showAlert('Please enter admin password', 'error');
+                document.getElementById('adminPassword').focus();
                 return;
             }
 
             if (!tokensText) {
                 showAlert('Please enter at least one token', 'error');
+                document.getElementById('newTokens').focus();
                 return;
             }
 
@@ -645,9 +728,12 @@
                 return;
             }
 
+            console.log(`🔐 Attempting to add ${tokens.length} token(s)...`);
+
             try {
                 const response = await fetch(`${BACKEND_URL}/admin/tokens`, {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Admin-Password': password
@@ -656,16 +742,37 @@
                 });
 
                 const data = await response.json();
+                console.log('📥 Server response:', data);
 
                 if (response.ok) {
                     showAlert(`Success! Added ${data.new_tokens_added} token(s). Total: ${data.total_tokens}`, 'success');
                     document.getElementById('newTokens').value = '';
-                    checkServerHealth();
+                    await checkServerHealth();
+                    await refreshTokenStats();
                 } else {
-                    showAlert(data.error || 'Failed to add tokens. Check admin password.', 'error');
+                    const errorMsg = data.error || 'Failed to add tokens. Check admin password.';
+                    console.error('❌ Server error:', errorMsg);
+                    showAlert(errorMsg, 'error');
                 }
             } catch (error) {
-                showAlert('Error connecting to backend: ' + error.message, 'error');
+                console.error('❌ Connection error:', error);
+                
+                // Better error messages
+                let errorMsg = 'Error connecting to backend: ';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMsg = '❌ Cannot connect to backend server!\n\n';
+                    errorMsg += '🔧 Solution:\n';
+                    errorMsg += '1. Open terminal in "Backend projects" folder\n';
+                    errorMsg += '2. Run: python secure-proxy-server.py\n';
+                    errorMsg += '3. Wait for "Running on http://localhost:5000"\n';
+                    errorMsg += '4. Then try again here';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMsg += 'Network error. Check if backend server is running.';
+                } else {
+                    errorMsg += error.message;
+                }
+                
+                showAlert(errorMsg, 'error');
             }
         }
 

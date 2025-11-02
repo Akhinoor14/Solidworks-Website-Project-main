@@ -36,9 +36,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', Fernet.generate_key().decode())
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'your_secure_admin_password_here')
 ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '*').split(',')
 PORT = int(os.getenv('PORT', 5000))
+HOST = os.getenv('HOST', '0.0.0.0')  # Allow external access in production
 
-# Enable CORS
-CORS(app, origins=ALLOWED_ORIGINS)
+# Enable CORS (Allow all origins for public API, but protect admin routes)
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
 
 # Encryption setup
 cipher = Fernet(SECRET_KEY.encode() if isinstance(SECRET_KEY, str) else SECRET_KEY)
@@ -447,6 +448,7 @@ if __name__ == '__main__':
     print("\n" + "="*70)
     print("🔐 SECURE GitHub API Proxy Server")
     print("="*70)
+    print(f"📡 Host: {HOST}")
     print(f"📡 Port: {PORT}")
     print(f"🔑 Tokens Loaded: {len(GITHUB_TOKENS)}")
     print(f"⚡ Effective Rate Limit: {len(GITHUB_TOKENS) * 5000 if GITHUB_TOKENS else 60} req/hour")
@@ -461,6 +463,8 @@ if __name__ == '__main__':
     print("   POST   /admin/tokens - Add tokens")
     print("   DELETE /admin/tokens - Clear tokens")
     print("   GET    /admin/stats  - View statistics")
+    print("   GET    /admin/token-details - Detailed token analytics")
     print("="*70 + "\n")
     
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+    # Use HOST from config (0.0.0.0 for production, 127.0.0.1 for local)
+    app.run(host=HOST, port=PORT, debug=False)

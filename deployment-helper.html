@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Backend Deployment Helper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .step h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .checklist li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Backend Deployment Helper</h1>
+        <p class="subtitle">Step-by-step guide to deploy your backend to Railway</p>
+
+        <!-- Step 1 -->
+        <div class="step">
+            <h2><span class="step-number">1</span> Create Railway Account</h2>
+            <p>Go to Railway and create an account using GitHub:</p>
+            <div class="code">https://railway.app</div>
+            <button class="btn" onclick="window.open('https://railway.app', '_blank')">
+                Open Railway →
+            </button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+            <h2><span class="step-number">2</span> Deploy Your Backend</h2>
+            <ul class="checklist">
+                <li>Click "New Project"</li>
+                <li>Select "Deploy from GitHub repo"</li>
+                <li>Choose: Solidworks-Website-Project-main</li>
+                <li>Set Root Directory: <strong>Backend projects</strong></li>
+                <li>Click "Deploy"</li>
+            </ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <h2><span class="step-number">3</span> Set Environment Variables</h2>
+            <p>In Railway Dashboard → Variables tab, add these:</p>
+            <div class="code">ADMIN_PASSWORD = YourPassword123
+PORT = 5000
+HOST = 0.0.0.0
+ALLOWED_ORIGINS = *</div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step">
+            <h2><span class="step-number">4</span> Get Your Backend URL</h2>
+            <p>Settings → Domains → Generate Domain</p>
+            <p>Enter your Railway URL here:</p>
+            <input type="text" id="railwayUrl" placeholder="https://your-app.up.railway.app" />
+            <button class="btn" onclick="testBackend()">
+                🧪 Test Backend Connection
+            </button>
+            <button class="btn" onclick="updateConfig()">
+                ✅ Update github-proxy-config.js
+            </button>
+            <div id="testResult" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step">
+            <h2><span class="step-number">5</span> Add GitHub Tokens</h2>
+            <p>Enter your admin password:</p>
+            <input type="password" id="adminPass" placeholder="Your ADMIN_PASSWORD from Railway" />
+            <p>Enter GitHub tokens (one per line):</p>
+            <textarea id="tokens" rows="5" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:6px;font-family:monospace;"></textarea>
+            <button class="btn" onclick="addTokens()">
+                🔑 Add Tokens to Backend
+            </button>
+            <div id="tokenResult" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- Final Test -->
+        <div class="step success">
+            <h2>✅ Final Test</h2>
+            <p>Click to verify everything is working:</p>
+            <button class="btn" onclick="finalTest()">
+                🎯 Run Complete Test
+            </button>
+            <div id="finalResult" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let backendUrl = '';
+
+        async function testBackend() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            const resultDiv = document.getElementById('testResult');
+            
+            if (!url) {
+                resultDiv.innerHTML = '<div class="step error">Please enter your Railway URL</div>';
+                return;
+            }
+
+            backendUrl = url.replace(/\/$/, ''); // Remove trailing slash
+            resultDiv.innerHTML = '<div class="step warning">Testing connection...</div>';
+
+            try {
+                const response = await fetch(`${backendUrl}/health`);
+                const data = await response.json();
+
+                if (response.ok && data.status === 'healthy') {
+                    resultDiv.innerHTML = `
+                        <div class="step success">
+                            <h3>✅ Backend is ONLINE!</h3>
+                            <p>Status: ${data.status}</p>
+                            <p>Tokens Active: ${data.tokens_active}</p>
+                            <p>Rate Limit: ${data.effective_limit} req/hour</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="step error">Backend responded but not healthy</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="step error">
+                        <h3>❌ Connection Failed</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure:</p>
+                        <ul>
+                            <li>Backend is deployed on Railway</li>
+                            <li>URL is correct (with https://)</li>
+                            <li>CORS is enabled (ALLOWED_ORIGINS=*)</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        function updateConfig() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            if (!url) {
+                alert('Please enter Railway URL first');
+                return;
+            }
+
+            const code = `// In github-proxy-config.js, update line 34:
+PROXY_URL: '${url}',`;
+
+            alert('Copy this code and update github-proxy-config.js:\n\n' + code);
+            navigator.clipboard.writeText(url);
+            document.getElementById('testResult').innerHTML += `
+                <div class="step success">
+                    <p>✅ URL copied to clipboard!</p>
+                    <p>Now update <strong>github-proxy-config.js</strong> line 34</p>
+                </div>
+            `;
+        }
+
+        async function addTokens() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            const password = document.getElementById('adminPass').value.trim();
+            const tokensText = document.getElementById('tokens').value.trim();
+            const resultDiv = document.getElementById('tokenResult');
+
+            if (!url || !password || !tokensText) {
+                resultDiv.innerHTML = '<div class="step error">Please fill all fields</div>';
+                return;
+            }
+
+            const tokens = tokensText.split('\n').map(t => t.trim()).filter(t => t.length > 20);
+            
+            if (tokens.length === 0) {
+                resultDiv.innerHTML = '<div class="step error">No valid tokens found</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="step warning">Adding tokens...</div>';
+
+            try {
+                const response = await fetch(`${url}/admin/tokens`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Password': password
+                    },
+                    body: JSON.stringify({ tokens })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="step success">
+                            <h3>✅ Tokens Added Successfully!</h3>
+                            <p>New tokens: ${data.new_tokens_added}</p>
+                            <p>Total tokens: ${data.total_tokens}</p>
+                        </div>
+                    `;
+                    document.getElementById('tokens').value = '';
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="step error">
+                            <h3>❌ Failed to Add Tokens</h3>
+                            <p>${data.error || 'Unknown error'}</p>
+                            <p>Check your admin password</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="step error">
+                        <h3>❌ Request Failed</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function finalTest() {
+            const url = document.getElementById('railwayUrl').value.trim();
+            const resultDiv = document.getElementById('finalResult');
+
+            if (!url) {
+                resultDiv.innerHTML = '<div class="step error">Please set Railway URL first</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="step warning">Running tests...</div>';
+
+            let html = '<div class="step success"><h3>Test Results:</h3><ul>';
+
+            // Test 1: Health check
+            try {
+                const health = await fetch(`${url}/health`);
+                const healthData = await health.json();
+                html += `<li>✅ Backend Health: ${healthData.status}</li>`;
+                html += `<li>✅ Tokens Active: ${healthData.tokens_active}</li>`;
+                html += `<li>✅ Rate Limit: ${healthData.effective_limit}/hour</li>`;
+            } catch (e) {
+                html += `<li>❌ Health check failed: ${e.message}</li>`;
+            }
+
+            // Test 2: GitHub API proxy
+            try {
+                const api = await fetch(`${url}/api/github/users/Akhinoor14`);
+                const apiData = await api.json();
+                html += `<li>✅ API Proxy Working (Got user: ${apiData.login})</li>`;
+            } catch (e) {
+                html += `<li>❌ API proxy failed: ${e.message}</li>`;
+            }
+
+            html += '</ul><h3>🎉 Deployment Complete!</h3><p>Your backend is ready to use!</p></div>';
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

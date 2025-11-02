@@ -1,0 +1,46 @@
+@echo off
+echo.
+echo ================================================
+echo   Backend Server Startup Script
+echo ================================================
+echo.
+
+REM Change to Backend projects directory
+cd /d "%~dp0"
+
+echo [1/3] Checking Python installation...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: Python is not installed or not in PATH
+    echo Please install Python from https://python.org
+    pause
+    exit /b 1
+)
+echo ✓ Python found
+
+echo.
+echo [2/3] Checking dependencies...
+pip show flask >nul 2>&1
+if errorlevel 1 (
+    echo Installing dependencies...
+    pip install -r requirements.txt
+    if errorlevel 1 (
+        echo ERROR: Failed to install dependencies
+        pause
+        exit /b 1
+    )
+)
+echo ✓ Dependencies OK
+
+echo.
+echo [3/3] Starting backend server...
+echo.
+echo ================================================
+echo   Server will start at http://localhost:5000
+echo   Press Ctrl+C to stop the server
+echo ================================================
+echo.
+
+python secure-proxy-server.py
+
+pause
