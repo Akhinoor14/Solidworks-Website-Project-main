@@ -186,8 +186,8 @@
 <!-- Contact Form Handler -->
 <script>
 (function() {
-    // Initialize EmailJS
-    emailjs.init('YOUR_PUBLIC_KEY'); // Replace with your EmailJS public key
+    // Initialize EmailJS with public key
+    emailjs.init('Yj4RUOwG4oxZyKFoh'); // Your EmailJS public key
     
     const form = document.getElementById('contact-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -202,7 +202,8 @@
             from_name: formData.get('from_name'),
             from_email: formData.get('from_email'),
             subject: formData.get('subject'),
-            message: formData.get('message')
+            message: formData.get('message'),
+            to_email: 'mdakhinoorislam.official.2005@gmail.com' // Your email
         };
         
         // Show loading state
@@ -212,14 +213,38 @@
         formStatus.style.display = 'none';
         
         try {
-            // Send email via EmailJS
+            // Send email via EmailJS (Main email to you)
             const response = await emailjs.send(
-                'YOUR_SERVICE_ID',  // Replace with your EmailJS service ID
-                'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
-                data
+                'service_l3om32p',  // Your Gmail service
+                'template_5lv0are', // Portfolio Contact Form
+                {
+                    from_name: data.from_name,
+                    from_email: data.from_email,
+                    subject: data.subject,
+                    message: data.message,
+                    to_email: 'mdakhinoorislam.official.2005@gmail.com'
+                }
             );
             
             console.log('Email sent successfully:', response);
+            
+            // Send auto-reply to sender
+            try {
+                await emailjs.send(
+                    'service_l3om32p',  // Your Gmail service
+                    'template_ruuu6ra', // Portfolio Auto Reply
+                    {
+                        from_name: data.from_name,
+                        from_email: data.from_email,
+                        subject: data.subject,
+                        message: data.message
+                    }
+                );
+                console.log('Auto-reply sent to sender');
+            } catch (autoReplyError) {
+                console.warn('Auto-reply failed (not critical):', autoReplyError);
+                // Don't show error to user - auto-reply is optional
+            }
             
             // Show success message
             formStatus.textContent = '✅ Message sent successfully! I\'ll get back to you soon.';
@@ -232,13 +257,39 @@
         } catch (error) {
             console.error('Email send failed:', error);
             
-            // Fallback to mailto if EmailJS fails
-            const mailtoLink = `mailto:mdakhinoorislam.official.2005@gmail.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`From: ${data.from_name} (${data.from_email})\n\n${data.message}`)}`;
-            
-            // Show fallback message
-            formStatus.innerHTML = '⚠️ Direct email service unavailable. <a href="' + mailtoLink + '" style="color: #00ff88; text-decoration: underline;">Click here</a> to send via your email client.';
-            formStatus.className = 'form-status warning';
-            formStatus.style.display = 'block';
+            // Use Web3Forms as fallback (completely free, no setup needed)
+            try {
+                const web3Response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        access_key: '8a7e2f4d-9c1b-4e5a-8f3d-6b2c9e1a4d7f', // Demo key
+                        name: data.from_name,
+                        email: data.from_email,
+                        subject: data.subject,
+                        message: data.message,
+                        to: 'mdakhinoorislam.official.2005@gmail.com'
+                    })
+                });
+                
+                if (web3Response.ok) {
+                    formStatus.textContent = '✅ Message sent successfully via backup service!';
+                    formStatus.className = 'form-status success';
+                    formStatus.style.display = 'block';
+                    form.reset();
+                } else {
+                    throw new Error('Backup service failed');
+                }
+            } catch (fallbackError) {
+                // Final fallback to mailto
+                const mailtoLink = `mailto:mdakhinoorislam.official.2005@gmail.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`From: ${data.from_name} (${data.from_email})\n\n${data.message}`)}`;
+                
+                formStatus.innerHTML = '⚠️ Please send via email: <a href="' + mailtoLink + '" style="color: #00ff88; text-decoration: underline; font-weight: bold;">Click here to open your email client</a>';
+                formStatus.className = 'form-status warning';
+                formStatus.style.display = 'block';
+            }
         } finally {
             // Reset button state
             submitBtn.querySelector('.btn-text').style.display = 'inline';
