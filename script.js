@@ -8390,54 +8390,106 @@ window.performCentralDelete = performCentralDelete;
 
 
 // ==============================
-// Mobile navbar toggle behavior - GUARANTEED FIX
+// Mobile navbar toggle behavior - GUARANTEED FIX V2
 // ==============================
 (function() {
-    console.log('🔧 Initializing mobile hamburger menu...');
+    console.log('🔧 Initializing mobile hamburger menu V2...');
     
     function initMobileMenu() {
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
         
+        console.log('Hamburger element:', hamburger);
+        console.log('Nav menu element:', navMenu);
+        
         if (!hamburger) {
-            console.warn('⚠️ Hamburger not found');
+            console.error('❌ Hamburger not found in DOM!');
             return;
         }
         
         if (!navMenu) {
-            console.warn('⚠️ Nav menu not found');
+            console.error('❌ Nav menu not found in DOM!');
             return;
         }
         
-        console.log('✅ Hamburger and nav-menu found');
+        console.log('✅ Both elements found!');
+        console.log('Nav menu classes:', navMenu.className);
+        console.log('Nav menu computed display:', window.getComputedStyle(navMenu).display);
         
-        // Open menu
+        // Open menu with inline styles for maximum override
         function openMenu() {
-            console.log('📂 Opening menu...');
+            console.log('📂 OPENING menu...');
+            
+            // Add classes
             hamburger.classList.add('active');
             navMenu.classList.add('open');
             navMenu.classList.add('active');
+            
+            // Force inline styles to override everything
+            navMenu.style.cssText = `
+                display: flex !important;
+                position: fixed !important;
+                top: 60px !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                height: calc(100vh - 60px) !important;
+                background: linear-gradient(180deg, rgba(10,10,10,0.98), rgba(26,0,0,0.95)) !important;
+                backdrop-filter: blur(30px) !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                padding: 30px 20px !important;
+                gap: 12px !important;
+                overflow-y: auto !important;
+                z-index: 9998 !important;
+                transform: translateX(0) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            `;
+            
             document.body.style.overflow = 'hidden';
             hamburger.setAttribute('aria-expanded', 'true');
+            
+            console.log('✅ Menu opened! Classes:', navMenu.className);
+            console.log('✅ Menu style:', navMenu.style.cssText);
         }
         
         // Close menu
         function closeMenu() {
-            console.log('📁 Closing menu...');
+            console.log('📁 CLOSING menu...');
+            
             hamburger.classList.remove('active');
             navMenu.classList.remove('open');
             navMenu.classList.remove('active');
+            
+            // Reset inline styles
+            navMenu.style.cssText = `
+                transform: translateX(-100%) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+            `;
+            
             document.body.style.overflow = '';
             hamburger.setAttribute('aria-expanded', 'false');
+            
+            console.log('✅ Menu closed!');
         }
         
         // Toggle menu
         function toggleMenu(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🔄 Toggle clicked');
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            console.log('🔄 TOGGLE CLICKED!');
+            console.log('Current classes:', navMenu.className);
             
             const isOpen = navMenu.classList.contains('open') || navMenu.classList.contains('active');
+            console.log('Is menu open?', isOpen);
+            
             if (isOpen) {
                 closeMenu();
             } else {
@@ -8451,18 +8503,28 @@ window.performCentralDelete = performCentralDelete;
         hamburger.setAttribute('aria-label', 'Toggle navigation menu');
         hamburger.setAttribute('aria-expanded', 'false');
         
+        // Remove all existing listeners to avoid duplicates
+        const newHamburger = hamburger.cloneNode(true);
+        hamburger.parentNode.replaceChild(newHamburger, hamburger);
+        const freshHamburger = document.querySelector('.hamburger');
+        
         // Click handler
-        hamburger.addEventListener('click', toggleMenu);
+        freshHamburger.addEventListener('click', function(e) {
+            console.log('👆 Hamburger CLICKED!');
+            toggleMenu(e);
+        });
         
         // Touch handler for mobile
-        hamburger.addEventListener('touchstart', function(e) {
+        freshHamburger.addEventListener('touchstart', function(e) {
+            console.log('👆 Hamburger TOUCHED!');
             e.preventDefault();
             toggleMenu(e);
         }, { passive: false });
         
         // Keyboard handler
-        hamburger.addEventListener('keydown', function(e) {
+        freshHamburger.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
+                console.log('⌨️ Hamburger keyboard activated!');
                 e.preventDefault();
                 toggleMenu(e);
             }
@@ -8470,6 +8532,7 @@ window.performCentralDelete = performCentralDelete;
         
         // Close on nav link click
         const navLinks = navMenu.querySelectorAll('.nav-link');
+        console.log('Found', navLinks.length, 'nav links');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
                 console.log('🔗 Link clicked, closing menu');
@@ -8480,6 +8543,7 @@ window.performCentralDelete = performCentralDelete;
         // Close on ESC key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                console.log('⎋ ESC pressed, closing menu');
                 closeMenu();
             }
         });
@@ -8487,19 +8551,31 @@ window.performCentralDelete = performCentralDelete;
         // Auto-close on desktop resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
+                console.log('🖥️ Desktop size, closing menu');
                 closeMenu();
             }
         });
         
-        console.log('✅ Mobile menu initialized successfully');
+        // Set initial aria state
+        freshHamburger.setAttribute('role', 'button');
+        freshHamburger.setAttribute('tabindex', '0');
+        freshHamburger.setAttribute('aria-label', 'Toggle navigation menu');
+        freshHamburger.setAttribute('aria-expanded', 'false');
+        
+        console.log('✅ Mobile menu initialized successfully!');
+        console.log('📱 Try clicking the hamburger icon now!');
     }
     
     // Initialize on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initMobileMenu);
     } else {
+        // DOM already loaded
         initMobileMenu();
     }
+    
+    // Also try after a short delay to ensure all CSS is loaded
+    setTimeout(initMobileMenu, 500);
 })();
 
 
