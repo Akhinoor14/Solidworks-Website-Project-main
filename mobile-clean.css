@@ -207,14 +207,14 @@
 
   /* Layout spacing below fixed navbar */
   body { padding-top: calc(60px + env(safe-area-inset-top)); }
-  .hero, #home.hero { padding-top: 24px; }
+  .hero, #home.hero { padding-top: 8px; }
 
   /* Hero: stack and center */
   .hero-content { 
     display: flex !important; 
     flex-direction: column !important; 
     align-items: center !important; 
-    gap: 16px !important; 
+    gap: 12px !important; 
     padding: 0 12px !important;
   }
   .hero-text {
@@ -225,7 +225,7 @@
     order: 1 !important; 
     margin: 0 auto 16px !important; 
     width: 100% !important;
-    max-width: 220px !important;
+    max-width: 200px !important;
   }
   .hero-title { 
     font-size: clamp(1.6rem, 6vw, 2rem) !important; 
@@ -256,11 +256,11 @@
     order: 1 !important; 
     margin: 0 auto 16px !important; 
     width: 100% !important;
-    max-width: 220px !important;
+    max-width: 200px !important;
   }
   .profile-container, .profile-image-wrapper, .profile-frame, #profile-photo-wrapper { 
-    width: 200px !important; 
-    height: 200px !important; 
+    width: 180px !important; 
+    height: 180px !important; 
     margin: 0 auto !important; 
     display: block !important;
   }
@@ -275,6 +275,8 @@
     border-radius: 50% !important; 
     display: block !important; 
   }
+  /* Ensure text never overlaps the avatar on first paint */
+  .hero-text { margin-top: 8px !important; }
 
   /* Projects grid */
   .projects-grid, .project-grid, .grid { 
