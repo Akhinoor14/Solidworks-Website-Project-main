@@ -115,16 +115,22 @@ body {
         transform: translateX(-100%) !important;
         opacity: 0 !important;
         visibility: hidden !important;
+        pointer-events: none !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     /* Menu open state */
     .nav-menu.active,
-    .nav-menu.open {
+    .nav-menu.open,
+    body.nav-open .nav-menu {
         transform: translateX(0) !important;
         opacity: 1 !important;
         visibility: visible !important;
+        pointer-events: auto !important;
     }
+
+    /* Overlay fallback style (in case inline styles are stripped) */
+    #nav-overlay { position: fixed !important; inset: 0 !important; background: rgba(0,0,0,0.4) !important; z-index: 9997 !important; display: none; }
 
     /* Menu items */
     .nav-item {
