@@ -29,8 +29,8 @@ const GITHUB_PROXY_CONFIG = {
     
     // Backend proxy server URL
     // Local development: http://localhost:5000
-    // Production: https://your-proxy-server.railway.app
-    PROXY_URL: 'http://localhost:5000',
+    // Production: https://solidworks-website-project-main-production.up.railway.app
+    PROXY_URL: 'https://solidworks-website-project-main-production.up.railway.app',
     
     // Auto-fallback to direct GitHub API if proxy fails
     AUTO_FALLBACK: true,
