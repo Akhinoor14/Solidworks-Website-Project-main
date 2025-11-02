@@ -29,7 +29,6 @@
     padding: 0 16px !important; 
     visibility: visible !important;
     position: relative !important;
-    padding-left: 56px !important; /* reserve space for absolute hamburger */
   }
   .nav-logo { 
     display: flex !important; 
@@ -43,6 +42,8 @@
     color: #fff !important; 
     text-decoration: none !important; 
   }
+  /* Hide 'Home' text next to logo on mobile to declutter */
+  .nav-logo a span { display: none !important; }
   .brand-logo { 
     width: 24px !important; 
     height: 24px !important; 
@@ -53,17 +54,20 @@
   /* Quick icon row (mobile-only) */
   .nav-quick-icons {
     position: absolute !important;
+    left: 56px !important; /* leave space for logo */
     right: 12px !important;
     top: calc(10px + env(safe-area-inset-top)) !important;
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(44px, 1fr)) !important;
+    gap: 8px !important;
     align-items: center !important;
-    gap: 10px !important;
     z-index: 20000 !important;
     pointer-events: auto !important;
   }
   .nav-icon {
-    width: 36px !important;
-    height: 36px !important;
+    width: 100% !important;
+    min-width: 44px !important;
+    height: 44px !important; /* 44x44 touch target */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -77,66 +81,15 @@
   }
   .nav-icon:active { transform: scale(0.94) !important; background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.3) !important; }
   .nav-icon.nav-crown { color: #ffd700 !important; border-color: rgba(255,215,0,0.45) !important; background: rgba(255,215,0,0.08) !important; }
+  /* Ensure Home icon is visible on mobile */
+  .nav-quick-icons .nav-icon[href="index.html"] { display: flex !important; }
+  
 
-  /* Hamburger - visible top-left, large tap area */
-  .hamburger { 
-    display: flex !important; 
-    flex-direction: column !important; 
-    justify-content: space-between !important; 
-    width: 32px !important; 
-    height: 24px !important; 
-    cursor: pointer !important; 
-    z-index: 20000 !important; 
-    position: absolute !important;
-    left: 12px !important;
-    top: calc(10px + env(safe-area-inset-top)) !important;
-    padding: 8px !important; /* bigger touch target */
-    box-sizing: content-box !important;
-    pointer-events: auto !important;
-  }
-  .hamburger .bar { 
-    width: 100% !important; 
-    height: 3px !important; 
-    background: #fff !important; 
-    border-radius: 2px !important; 
-    transition: transform .3s ease, opacity .3s ease !important; 
-    box-shadow: 0 0 8px rgba(255,255,255,0.6) !important;
-  }
-  .hamburger.active .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
-  .hamburger.active .bar:nth-child(2) { opacity: 0; }
-  .hamburger.active .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+  /* Hide hamburger on mobile */
+  .hamburger { display: none !important; }
 
-  /* Mobile menu (off-canvas) */
-  .nav-menu { 
-    position: fixed !important; 
-    top: 60px !important; 
-    left: 0 !important; 
-    right: 0 !important; 
-    bottom: 0 !important; 
-    display: flex !important; 
-    flex-direction: column !important; 
-    gap: 12px !important; 
-    padding: 20px 16px !important; 
-    background: rgba(10,10,10,0.98) !important; 
-    backdrop-filter: blur(18px) !important; 
-    transform: translateX(-100%) !important; 
-    opacity: 0 !important; 
-    visibility: hidden !important; 
-    pointer-events: none !important; 
-    transition: transform .3s ease, opacity .3s ease, visibility .3s !important; 
-    z-index: 9998 !important; 
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-  body.nav-open .nav-menu, 
-  .nav-menu.open, 
-  .nav-menu.active { 
-    transform: translateX(0) !important; 
-    opacity: 1 !important; 
-    visibility: visible !important; 
-    pointer-events: auto !important; 
-    display: flex !important;
-  }
+  /* Hide slide menu on mobile */
+  .nav-menu { display: none !important; }
   .nav-item { 
     width: 100% !important; 
     opacity: 0;
@@ -241,18 +194,8 @@
     transform: scale(1.02);
   }
 
-  /* Overlay */
-  #nav-overlay { 
-    position: fixed !important; 
-    inset: 0 !important; 
-    background: rgba(0,0,0,0.4) !important; 
-    z-index: 9997 !important; 
-    display: none !important; 
-  }
-  body.nav-open #nav-overlay { 
-    display: block !important; 
-    visibility: visible !important;
-  }
+  /* No overlay */
+  #nav-overlay { display: none !important; }
 
   /* Ensure theme toggle never intercepts clicks when menu closed */
   body:not(.nav-open) .nav-menu .theme-toggle { pointer-events: none !important; }
@@ -261,15 +204,15 @@
 
   /* Layout spacing below fixed navbar */
   body { padding-top: 60px; }
-  .hero, #home.hero { padding-top: 32px; }
+  .hero, #home.hero { padding-top: 24px; }
 
   /* Hero: stack and center */
   .hero-content { 
     display: flex !important; 
     flex-direction: column !important; 
     align-items: center !important; 
-    gap: 24px !important; 
-    padding: 0 16px !important;
+    gap: 16px !important; 
+    padding: 0 12px !important;
   }
   .hero-text {
     order: 2 !important;
@@ -277,27 +220,28 @@
   }
   .hero-image { 
     order: 1 !important; 
-    margin: 0 auto 20px !important; 
+    margin: 0 auto 16px !important; 
     width: 100% !important;
-    max-width: 280px !important;
+    max-width: 220px !important;
   }
   .hero-title { 
-    font-size: 1.9rem !important; 
-    line-height: 1.3 !important; 
+    font-size: clamp(1.6rem, 6vw, 2rem) !important; 
+    line-height: 1.2 !important; 
     text-align: center !important; 
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
   }
   .hero-subtitle { 
-    font-size: 1rem !important; 
+    font-size: clamp(0.95rem, 3.5vw, 1.05rem) !important; 
     text-align: center !important; 
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
   }
   .hero-description { 
     font-size: .95rem !important; 
-    padding: 0 12px !important; 
+    padding: 0 8px !important; 
     text-align: center !important; 
-    line-height: 1.6 !important;
-    margin-bottom: 16px !important;
+    line-height: 1.55 !important;
+    margin: 0 auto 12px !important;
+    max-width: 640px !important;
   }
 
   /* Reduce heavy background visuals */
@@ -307,13 +251,13 @@
   .engineering-markers, .frame-glow, .profile-card-3d::before { display: none !important; }
   .hero-image { 
     order: 1 !important; 
-    margin: 0 auto 20px !important; 
+    margin: 0 auto 16px !important; 
     width: 100% !important;
-    max-width: 280px !important;
+    max-width: 220px !important;
   }
   .profile-container, .profile-image-wrapper, .profile-frame, #profile-photo-wrapper { 
-    width: 240px !important; 
-    height: 240px !important; 
+    width: 200px !important; 
+    height: 200px !important; 
     margin: 0 auto !important; 
     display: block !important;
   }
@@ -336,6 +280,44 @@
     gap: 20px; 
     padding: 16px; 
   }
+
+  /* Tech stack: compact horizontal scroll */
+  .tech-stack-showcase {
+    display: flex !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    padding: 8px 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+  }
+  .tech-stack-showcase::-webkit-scrollbar { display: none; }
+  .tech-badge {
+    flex: 0 0 auto !important;
+    scroll-snap-align: start !important;
+    padding: 6px 12px !important;
+    border-radius: 999px !important;
+  }
+  .tech-name { font-size: 0.85rem !important; }
+
+  /* Hero buttons: full-width stack */
+  .hero-buttons { 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 10px !important; 
+    width: 100% !important; 
+  }
+  .hero-buttons .btn { width: 100% !important; }
+
+  /* Expertise showcase: compact 2-column grid */
+  .expertise-showcase { 
+    display: grid !important; 
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 12px !important; 
+    padding: 0 12px 16px !important; 
+  }
+
+  /* Hide scroll indicator on mobile */
+  .scroll-indicator { display: none !important; }
   
   .project-card { 
     padding: 20px; 
@@ -514,10 +496,10 @@
   
   /* Floating action button (FAB) */
   .fab-boss-portal {
+    display: none !important;
     width: 64px !important;
     height: 64px !important;
     border-radius: 50% !important;
-    display: flex !important;
     align-items: center;
     justify-content: center;
     position: fixed !important;
