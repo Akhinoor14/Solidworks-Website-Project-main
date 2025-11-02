@@ -1,0 +1,902 @@
+/* ========================================
+   MOBILE UI GLITCH FIXES
+   Critical fixes for all mobile issues
+   ======================================== */
+
+/* =========================
+   PRIORITY 1: Horizontal Scroll Fix
+   ========================= */
+
+/* Force prevent horizontal scroll globally */
+html {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+}
+
+body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    position: relative !important;
+}
+
+/* Fix all containers */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix specific elements that cause overflow */
+.hero-bg-elements,
+.geometric-shapes,
+.gradient-orbs,
+.particles-canvas {
+    max-width: 100vw !important;
+    overflow: hidden !important;
+}
+
+/* =========================
+   PRIORITY 2: Fixed Elements Mobile Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Navbar absolutely must be fixed correctly */
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        z-index: 9999 !important;
+        transform: translateZ(0); /* GPU acceleration */
+    }
+
+    /* Compensate for fixed navbar */
+    body {
+        padding-top: 60px !important;
+    }
+
+    .hero {
+        padding-top: 40px !important; /* Extra space below navbar */
+    }
+
+    /* Mobile menu positioning */
+    .nav-menu {
+        position: fixed !important;
+        top: 60px !important;
+        left: -100% !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        height: calc(100vh - 60px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 9998 !important;
+    }
+
+    .nav-menu.active {
+        left: 0 !important;
+    }
+
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+/* =========================
+   PRIORITY 3: Modal Glitch Fixes
+   ========================= */
+
+@media (max-width: 768px) {
+    /* All modals */
+    [class*="modal"],
+    [id*="modal"],
+    .modal-overlay,
+    .upload-dialog-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 10000 !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Modal content */
+    .modal-content,
+    .upload-dialog,
+    .github-browser-content {
+        width: 95% !important;
+        max-width: 95vw !important;
+        margin: 10px auto !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Modal close buttons */
+    .modal-close,
+    .close-browser,
+    [class*="close"] {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        z-index: 10001 !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+}
+
+/* =========================
+   PRIORITY 4: Image Overflow Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* All images */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+    }
+
+    /* Project images */
+    .project-card img,
+    .project-image img {
+        width: 100% !important;
+        max-height: 250px !important;
+        object-fit: cover !important;
+    }
+
+    /* Profile images */
+    .profile-image img,
+    #profile-photo,
+    .hero-image img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Gallery images */
+    .image-gallery img,
+    .gallery-item img {
+        max-width: 100% !important;
+    }
+}
+
+/* =========================
+   PRIORITY 5: Grid/Flex Overflow Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Force single column grids */
+    .grid,
+    .projects-grid,
+    .project-grid,
+    .skills-grid,
+    .expertise-showcase {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        width: 100% !important;
+    }
+
+    /* Stack flex containers */
+    .hero-content,
+    .about-content,
+    .contact-content {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    /* Tech badges */
+    .tech-stack-showcase {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+
+/* =========================
+   PRIORITY 6: Text Overflow Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Prevent text overflow */
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+    }
+
+    /* Title sizing */
+    .hero-title,
+    h1 {
+        font-size: clamp(1.6rem, 5vw, 2.2rem) !important;
+        line-height: 1.2 !important;
+    }
+
+    .hero-subtitle,
+    h2 {
+        font-size: clamp(1rem, 3vw, 1.3rem) !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Description text */
+    .hero-description,
+    p {
+        font-size: clamp(0.88rem, 2.5vw, 1rem) !important;
+        line-height: 1.6 !important;
+    }
+
+    /* FIX: Typing text overlap issue on mobile */
+    .hero-subtitle .typing-text {
+        display: inline-block !important;
+        position: relative !important;
+        padding: 0.5rem 0.8rem !important;
+        font-size: 0.95rem !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-align: center !important;
+        width: auto !important;
+        max-width: 100% !important;
+    }
+
+    /* Remove all pseudo-elements (no cursor, no animations) */
+    .hero-subtitle .typing-text::before,
+    .hero-subtitle .typing-text::after {
+        display: none !important;
+        content: none !important;
+    }
+}
+
+/* =========================
+   PRIORITY 7: Button/Input Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* All buttons full-width */
+    .btn,
+    button,
+    .hero-buttons .btn,
+    .submit-btn,
+    .github-action-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px 20px !important;
+        font-size: 1rem !important;
+        min-height: 52px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Button containers */
+    .hero-buttons,
+    .button-group,
+    .action-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    /* Form inputs */
+    input,
+    textarea,
+    select {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px !important;
+        font-size: 16px !important; /* Prevent iOS zoom */
+        box-sizing: border-box !important;
+    }
+
+    textarea {
+        min-height: 140px !important;
+        resize: vertical !important;
+    }
+}
+
+/* =========================
+   PRIORITY 8: Background Elements Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Hero background */
+    .hero-bg-elements {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+        z-index: 0 !important;
+    }
+
+    /* Geometric shapes */
+    .geometric-shapes {
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .shape {
+        max-width: 100px !important;
+        max-height: 100px !important;
+    }
+
+    /* Gradient orbs */
+    .gradient-orbs {
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .orb {
+        max-width: 150px !important;
+        max-height: 150px !important;
+    }
+
+    /* Particles canvas */
+    .particles-canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* =========================
+   PRIORITY 9: Z-Index Layering Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Proper z-index stacking */
+    .navbar {
+        z-index: 9999 !important;
+    }
+
+    .nav-menu {
+        z-index: 9998 !important;
+    }
+
+    .hamburger {
+        z-index: 10000 !important;
+    }
+
+    .modal-overlay,
+    [class*="modal"] {
+        z-index: 10001 !important;
+    }
+
+    .fab-boss-portal {
+        z-index: 9997 !important;
+    }
+
+    /* Content should be below navbar */
+    .hero,
+    .container,
+    main {
+        z-index: 1 !important;
+        position: relative !important;
+    }
+
+    /* Background elements lowest */
+    .hero-bg-elements {
+        z-index: 0 !important;
+    }
+}
+
+/* =========================
+   PRIORITY 10: Safe Area Fix (iPhone Notch)
+   ========================= */
+
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        /* Safe area insets */
+        .navbar {
+            padding-top: max(8px, env(safe-area-inset-top)) !important;
+            padding-left: max(15px, env(safe-area-inset-left)) !important;
+            padding-right: max(15px, env(safe-area-inset-right)) !important;
+        }
+
+        .hero,
+        .container,
+        section {
+            padding-left: max(15px, env(safe-area-inset-left)) !important;
+            padding-right: max(15px, env(safe-area-inset-right)) !important;
+        }
+
+        .footer {
+            padding-bottom: max(30px, calc(30px + env(safe-area-inset-bottom))) !important;
+        }
+
+        .nav-menu {
+            padding-left: max(20px, env(safe-area-inset-left)) !important;
+            padding-right: max(20px, env(safe-area-inset-right)) !important;
+        }
+    }
+}
+
+/* =========================
+   PRIORITY 11: Animation Performance
+   ========================= */
+
+@media (max-width: 768px) {
+    /* GPU acceleration for smooth animations */
+    .navbar,
+    .nav-menu,
+    .modal,
+    .project-card,
+    .btn,
+    .hero-image {
+        transform: translateZ(0) !important;
+        will-change: transform !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+    }
+
+    /* Disable heavy animations on low-power mode */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+/* =========================
+   PRIORITY 11.5: Mobile Text & Card Readability
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Enhanced text contrast and readability */
+    body {
+        color: rgba(255, 255, 255, 0.98) !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+    }
+
+    /* Project cards - better visibility on mobile */
+    .project-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a0000 100%) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.4) !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    /* Card text - high contrast */
+    .project-card h3,
+    .project-card .project-title {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 1.35rem !important;
+        line-height: 1.3 !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .project-card p,
+    .project-card .project-description {
+        color: rgba(255, 255, 255, 0.92) !important;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* SOLIDWORKS card - enhanced visibility */
+    .sw-card-title {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 1.4rem !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9) !important;
+        line-height: 1.25 !important;
+    }
+
+    .sw-intro {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-size: 1rem !important;
+        line-height: 1.7 !important;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    /* Profile section - clear visibility */
+    .hero-title {
+        color: #ffffff !important;
+        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .hero-subtitle {
+        background: linear-gradient(135deg, rgba(204,0,0,0.15), rgba(204,0,0,0.08)) !important;
+        border: 1.5px solid rgba(204, 0, 0, 0.35) !important;
+        box-shadow: 0 4px 16px rgba(204, 0, 0, 0.2) !important;
+    }
+
+    .typing-text {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .hero-description {
+        color: rgba(255, 255, 255, 0.92) !important;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Profile image - proper sizing and centering */
+    .profile-container {
+        max-width: 240px !important;
+        width: 240px !important;
+        height: 240px !important;
+        margin: 0 auto 24px !important;
+        display: block !important;
+    }
+
+    .hero-image {
+        width: 100% !important;
+        max-width: 240px !important;
+        height: 240px !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+
+    #profile-photo,
+    .hero-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 50% !important;
+        border: 3px solid rgba(204, 0, 0, 0.5) !important;
+        box-shadow: 0 8px 24px rgba(204, 0, 0, 0.4) !important;
+    }
+
+    /* Button text clarity */
+    .btn,
+    button,
+    .filter-btn {
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Tags and badges - better readability */
+    .project-tags span,
+    .tag {
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 0.4rem 0.8rem !important;
+        background: rgba(255, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 0, 0, 0.4) !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Links - clear and visible */
+    a {
+        color: rgba(255, 100, 100, 0.95) !important;
+        font-weight: 500 !important;
+    }
+
+    a:hover {
+        color: rgba(255, 150, 150, 1) !important;
+        text-shadow: 0 0 8px rgba(255, 0, 0, 0.4) !important;
+    }
+
+    /* Section titles - high visibility */
+    .section-title {
+        color: #ffffff !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        text-shadow: 0 3px 15px rgba(0, 0, 0, 0.8) !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .section-subtitle {
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-size: 1.05rem !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+    }
+}
+
+/* =========================
+   PRIORITY 12: Touch Target Size
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Minimum touch target 44×44px */
+    a,
+    button,
+    .btn,
+    .nav-link,
+    .social-link,
+    .tag,
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 12px !important;
+    }
+
+    /* Icon buttons */
+    .theme-toggle,
+    .modal-close,
+    .hamburger {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* =========================
+   PRIORITY 13: Specific Portal Fixes
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Only Boss Portal */
+    .fab-boss-portal {
+        bottom: 70px !important; /* Above browser UI */
+        right: 15px !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 24px !important;
+    }
+
+    /* GitHub Browser */
+    .github-browser-content {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        height: 85vh !important;
+        margin: 20px auto !important;
+    }
+
+    .github-browser-body {
+        grid-template-columns: 1fr !important;
+        overflow-x: hidden !important;
+    }
+
+    .file-explorer {
+        max-height: 250px !important;
+        overflow-y: auto !important;
+        border-bottom: 2px solid rgba(255, 0, 0, 0.3) !important;
+    }
+
+    /* Upload Manager */
+    .upload-manager {
+        width: 95% !important;
+        max-width: 95vw !important;
+        padding: 15px !important;
+    }
+
+    .upload-area {
+        padding: 30px 15px !important;
+        min-height: 150px !important;
+    }
+}
+
+/* =========================
+   PRIORITY 14: Table Responsiveness
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Tables scroll horizontally */
+    table {
+        display: block !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        max-width: 100vw !important;
+    }
+
+    /* Or convert to cards */
+    .responsive-table {
+        display: block !important;
+    }
+
+    .responsive-table thead {
+        display: none !important;
+    }
+
+    .responsive-table tbody,
+    .responsive-table tr,
+    .responsive-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .responsive-table tr {
+        margin-bottom: 15px !important;
+        border: 1px solid rgba(255, 0, 0, 0.2) !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
+    }
+}
+
+/* =========================
+   PRIORITY 15: Video/Iframe Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Responsive video containers */
+    video,
+    iframe,
+    embed,
+    object {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* 16:9 aspect ratio container */
+    .video-container {
+        position: relative !important;
+        padding-bottom: 56.25% !important; /* 16:9 */
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .video-container iframe,
+    .video-container video {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* =========================
+   PRIORITY 16: Code Block Fix
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Code blocks horizontal scroll */
+    pre,
+    code,
+    .code-viewer,
+    .hljs {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        white-space: pre !important;
+        word-wrap: normal !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Inline code */
+    code {
+        white-space: pre-wrap !important;
+        word-break: break-all !important;
+    }
+}
+
+/* =========================
+   PRIORITY 17: Landscape Mode Fix
+   ========================= */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    /* Adjust for landscape */
+    .navbar {
+        height: 50px !important;
+    }
+
+    body {
+        padding-top: 50px !important;
+    }
+
+    .hero {
+        padding-top: 30px !important;
+        padding-bottom: 30px !important;
+    }
+
+    .hero-content {
+        flex-direction: row !important;
+    }
+
+    .hero-image {
+        max-width: 35% !important;
+    }
+
+    .hero-text {
+        max-width: 65% !important;
+    }
+
+    .nav-menu {
+        top: 50px !important;
+        height: calc(100vh - 50px) !important;
+    }
+}
+
+/* =========================
+   PRIORITY 18: Scrollbar Style (Mobile Webkit)
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Thin scrollbars */
+    *::-webkit-scrollbar {
+        width: 6px !important;
+        height: 6px !important;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1) !important;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: rgba(0, 255, 136, 0.5) !important;
+        border-radius: 3px !important;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 255, 136, 0.7) !important;
+    }
+}
+
+/* =========================
+   PRIORITY 19: Form Validation Mobile
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Validation messages */
+    .error-message,
+    .success-message,
+    .form-error {
+        width: 100% !important;
+        padding: 12px !important;
+        margin: 8px 0 !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+    }
+
+    /* Invalid inputs */
+    input:invalid,
+    textarea:invalid {
+        border-color: rgba(255, 0, 0, 0.5) !important;
+    }
+
+    /* Valid inputs */
+    input:valid,
+    textarea:valid {
+        border-color: rgba(0, 255, 136, 0.5) !important;
+    }
+}
+
+/* =========================
+   PRIORITY 20: Loading States Mobile
+   ========================= */
+
+@media (max-width: 768px) {
+    /* Loading spinner */
+    .loading-spinner,
+    .spinner {
+        width: 40px !important;
+        height: 40px !important;
+        margin: 20px auto !important;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 10002 !important;
+    }
+
+    /* Skeleton loaders */
+    .skeleton {
+        width: 100% !important;
+        height: 20px !important;
+        margin: 10px 0 !important;
+        border-radius: 4px !important;
+    }
+}
