@@ -1,0 +1,706 @@
+/**
+ * Mobile Project Cards - Complete UX/UI Fix
+ * ===========================================
+ * Fixes all mobile issues with project card interface
+ * - Better positioning and spacing
+ * - Improved touch targets
+ * - Optimized card layout
+ * - Enhanced readability
+ * - Smooth animations
+ * - Perfect user experience on mobile devices
+ */
+
+/* ========================================
+   GLOBAL MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Remove horizontal scroll */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    /* Container padding adjustment */
+    .container {
+        padding: 0 15px !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ========================================
+   PROJECT SECTION MOBILE FIX
+   ======================================== */
+
+@media (max-width: 768px) {
+    #projects,
+    .projects-section {
+        padding: 40px 0 !important;
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    /* Section heading */
+    #projects h2,
+    .projects-section h2 {
+        font-size: 28px !important;
+        margin-bottom: 25px !important;
+        padding: 0 20px !important;
+        text-align: center !important;
+    }
+
+    /* Section description */
+    #projects p,
+    .projects-section > p {
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+        padding: 0 20px !important;
+        margin-bottom: 30px !important;
+        text-align: center !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARDS GRID - MOBILE LAYOUT
+   ======================================== */
+
+@media (max-width: 768px) {
+    .projects-grid,
+    .project-cards,
+    .cards-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+        padding: 0 15px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* ========================================
+   INDIVIDUAL PROJECT CARD - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-card,
+    .card {
+        /* Layout */
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        margin: 0 0 15px 0 !important;
+        
+        /* Spacing */
+        padding: 20px !important;
+        
+        /* Border & Shadow */
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        
+        /* Background */
+        background: #ffffff !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+        
+        /* Remove any float */
+        float: none !important;
+        
+        /* Remove transform issues */
+        transform: none !important;
+        
+        /* Prevent overflow */
+        overflow: hidden !important;
+    }
+
+    /* Card hover effect - optimized for mobile */
+    .project-card:active,
+    .card:active {
+        transform: scale(0.98) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARD IMAGE - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-card img,
+    .project-card .card-image,
+    .card img,
+    .card-image {
+        /* Size */
+        width: 100% !important;
+        height: 200px !important;
+        max-height: 200px !important;
+        
+        /* Display */
+        object-fit: cover !important;
+        object-position: center !important;
+        
+        /* Border radius */
+        border-radius: 8px !important;
+        
+        /* Spacing */
+        margin-bottom: 15px !important;
+        
+        /* Remove any weird sizing */
+        max-width: 100% !important;
+        min-height: auto !important;
+    }
+
+    /* Image container if exists */
+    .project-card .image-container,
+    .card .image-container {
+        width: 100% !important;
+        height: 200px !important;
+        overflow: hidden !important;
+        border-radius: 8px !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARD CONTENT - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-card .card-content,
+    .card-content,
+    .project-content {
+        /* Layout */
+        padding: 0 !important;
+        width: 100% !important;
+        
+        /* Text alignment */
+        text-align: left !important;
+        
+        /* Spacing */
+        margin-top: 10px !important;
+    }
+
+    /* Card Title */
+    .project-card h3,
+    .project-card .card-title,
+    .card h3,
+    .card-title {
+        /* Typography */
+        font-size: 20px !important;
+        font-weight: 600 !important;
+        line-height: 1.3 !important;
+        
+        /* Spacing */
+        margin: 0 0 10px 0 !important;
+        padding: 0 !important;
+        
+        /* Color */
+        color: #1a1a1a !important;
+        
+        /* Prevent overflow */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* Card Description */
+    .project-card p,
+    .project-card .card-description,
+    .card p,
+    .card-description {
+        /* Typography */
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        
+        /* Spacing */
+        margin: 0 0 15px 0 !important;
+        padding: 0 !important;
+        
+        /* Color */
+        color: #666666 !important;
+        
+        /* Limit lines for better UX */
+        display: -webkit-box !important;
+        -webkit-line-clamp: 3 !important;
+        line-clamp: 3 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARD TAGS/BADGES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-tags,
+    .card-tags,
+    .tags,
+    .badges {
+        /* Layout */
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        
+        /* Spacing */
+        margin: 10px 0 15px 0 !important;
+        padding: 0 !important;
+    }
+
+    .project-tag,
+    .card-tag,
+    .tag,
+    .badge {
+        /* Typography */
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        
+        /* Spacing */
+        padding: 4px 10px !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+        
+        /* Background */
+        background: #f0f0f0 !important;
+        color: #333333 !important;
+        
+        /* Display */
+        display: inline-block !important;
+        white-space: nowrap !important;
+    }
+
+    /* Tag colors */
+    .tag.primary,
+    .badge.primary {
+        background: #e3f2fd !important;
+        color: #1976d2 !important;
+    }
+
+    .tag.success,
+    .badge.success {
+        background: #e8f5e9 !important;
+        color: #388e3c !important;
+    }
+
+    .tag.warning,
+    .badge.warning {
+        background: #fff3e0 !important;
+        color: #f57c00 !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARD BUTTONS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-card .btn,
+    .project-card button,
+    .project-card a.button,
+    .card .btn,
+    .card button,
+    .card a.button {
+        /* Size - BIGGER for mobile touch */
+        width: 100% !important;
+        min-height: 48px !important;
+        
+        /* Typography */
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        
+        /* Spacing */
+        padding: 12px 20px !important;
+        margin: 5px 0 !important;
+        
+        /* Border */
+        border-radius: 8px !important;
+        border: none !important;
+        
+        /* Display */
+        display: block !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Transition */
+        transition: all 0.2s ease !important;
+        
+        /* Touch optimization */
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    /* Primary button */
+    .project-card .btn-primary,
+    .card .btn-primary {
+        background: #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    .project-card .btn-primary:active,
+    .card .btn-primary:active {
+        background: #1d4ed8 !important;
+        transform: scale(0.98) !important;
+    }
+
+    /* Secondary button */
+    .project-card .btn-secondary,
+    .card .btn-secondary {
+        background: #64748b !important;
+        color: #ffffff !important;
+    }
+
+    .project-card .btn-secondary:active,
+    .card .btn-secondary:active {
+        background: #475569 !important;
+    }
+
+    /* Button group */
+    .project-card .button-group,
+    .card .button-group,
+    .card-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 15px !important;
+        width: 100% !important;
+    }
+}
+
+/* ========================================
+   PROJECT CARD LINKS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-card a:not(.btn):not(.button),
+    .card a:not(.btn):not(.button) {
+        /* Typography */
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        
+        /* Color */
+        color: #2563eb !important;
+        
+        /* Spacing */
+        padding: 8px 0 !important;
+        
+        /* Display */
+        display: inline-block !important;
+        
+        /* Touch target */
+        min-height: 44px !important;
+        line-height: 28px !important;
+    }
+}
+
+/* ========================================
+   PROJECT MODAL/POPUP - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-modal,
+    .modal,
+    .popup {
+        /* Position */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        
+        /* Size */
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        
+        /* Display */
+        z-index: 9999 !important;
+        
+        /* Background */
+        background: rgba(0, 0, 0, 0.8) !important;
+        
+        /* Overflow */
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .project-modal .modal-content,
+    .modal .modal-content,
+    .popup-content {
+        /* Size */
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        
+        /* Spacing */
+        margin: 5vh auto !important;
+        padding: 20px !important;
+        
+        /* Border */
+        border-radius: 12px 12px 0 0 !important;
+        
+        /* Background */
+        background: #ffffff !important;
+        
+        /* Overflow */
+        overflow-y: auto !important;
+    }
+
+    /* Modal close button */
+    .modal-close,
+    .close-button {
+        /* Position */
+        position: absolute !important;
+        top: 15px !important;
+        right: 15px !important;
+        
+        /* Size - BIGGER for mobile */
+        width: 44px !important;
+        height: 44px !important;
+        
+        /* Typography */
+        font-size: 24px !important;
+        line-height: 44px !important;
+        
+        /* Display */
+        text-align: center !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Z-index */
+        z-index: 10000 !important;
+    }
+}
+
+/* ========================================
+   PROJECT FILTERS/CATEGORIES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-filters,
+    .project-categories,
+    .filter-buttons {
+        /* Display */
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        
+        /* Spacing */
+        padding: 0 15px 20px 15px !important;
+        margin-bottom: 20px !important;
+        
+        /* Justify */
+        justify-content: center !important;
+    }
+
+    .filter-btn,
+    .category-btn {
+        /* Size */
+        padding: 10px 20px !important;
+        min-height: 44px !important;
+        
+        /* Typography */
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        
+        /* Border */
+        border-radius: 20px !important;
+        border: 2px solid #e5e7eb !important;
+        
+        /* Background */
+        background: #ffffff !important;
+        color: #374151 !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Transition */
+        transition: all 0.2s ease !important;
+    }
+
+    .filter-btn.active,
+    .category-btn.active {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+    }
+}
+
+/* ========================================
+   LOADING STATES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .loading,
+    .skeleton,
+    .placeholder {
+        /* Size */
+        width: 100% !important;
+        height: 300px !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+        
+        /* Background */
+        background: linear-gradient(
+            90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%
+        ) !important;
+        background-size: 200% 100% !important;
+        
+        /* Animation */
+        animation: loading 1.5s infinite !important;
+    }
+
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+}
+
+/* ========================================
+   EMPTY STATES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .no-projects,
+    .empty-state {
+        /* Spacing */
+        padding: 60px 20px !important;
+        
+        /* Text */
+        text-align: center !important;
+        
+        /* Typography */
+        font-size: 16px !important;
+        color: #9ca3af !important;
+    }
+}
+
+/* ========================================
+   SMOOTH SCROLLING & PERFORMANCE
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth !important;
+    }
+
+    /* GPU acceleration for better performance */
+    .project-card,
+    .card {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        will-change: transform !important;
+    }
+
+    /* Reduce animations on low-end devices */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ========================================
+   SPECIFIC MOBILE SIZES
+   ======================================== */
+
+/* Small phones (320px - 375px) */
+@media (max-width: 375px) {
+    .project-card,
+    .card {
+        padding: 15px !important;
+    }
+
+    .project-card h3,
+    .card h3 {
+        font-size: 18px !important;
+    }
+
+    .project-card img,
+    .card img {
+        height: 180px !important;
+    }
+}
+
+/* Medium phones (376px - 414px) */
+@media (min-width: 376px) and (max-width: 414px) {
+    .project-card,
+    .card {
+        padding: 18px !important;
+    }
+}
+
+/* Large phones (415px - 768px) */
+@media (min-width: 415px) and (max-width: 768px) {
+    .project-card,
+    .card {
+        padding: 20px !important;
+    }
+
+    /* 2 column layout for larger phones in landscape */
+    @media (orientation: landscape) {
+        .projects-grid,
+        .project-cards {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 15px !important;
+        }
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY IMPROVEMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Focus states for keyboard navigation */
+    .project-card:focus,
+    .card:focus,
+    button:focus,
+    a:focus {
+        outline: 3px solid #2563eb !important;
+        outline-offset: 2px !important;
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .project-card,
+        .card {
+            border: 2px solid #000000 !important;
+        }
+    }
+}
+
+/* ========================================
+   PRINT STYLES - MOBILE
+   ======================================== */
+
+@media print {
+    .project-card,
+    .card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+}

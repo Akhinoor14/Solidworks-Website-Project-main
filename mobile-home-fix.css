@@ -1,0 +1,927 @@
+/**
+ * Mobile Home Page - Complete UX/UI Fix
+ * ======================================
+ * Fixes all mobile issues with home/hero section
+ * - Perfect hero section layout
+ * - Optimized profile image display
+ * - Better text positioning and readability
+ * - Touch-friendly buttons
+ * - Smooth animations
+ * - Professional mobile experience
+ */
+
+/* ========================================
+   HERO SECTION - MOBILE FIX
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero,
+    #home {
+        /* Layout */
+        min-height: 100vh !important;
+        padding: 80px 0 40px 0 !important;
+        
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        /* Overflow */
+        overflow-x: hidden !important;
+        
+        /* Position for background */
+        position: relative !important;
+    }
+
+    /* Hero container */
+    .hero-container {
+        /* Width */
+        width: 100% !important;
+        max-width: 100% !important;
+        
+        /* Spacing */
+        padding: 0 20px !important;
+        margin: 0 auto !important;
+        
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+
+    /* Hero content */
+    .hero-content {
+        /* Layout */
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        gap: 30px !important;
+        
+        /* Width */
+        width: 100% !important;
+        
+        /* Alignment */
+        align-items: center !important;
+        text-align: center !important;
+    }
+}
+
+/* ========================================
+   PROFILE IMAGE - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero-image,
+    .profile-container {
+        /* Size */
+        width: 100% !important;
+        max-width: 280px !important;
+        
+        /* Spacing */
+        margin: 0 auto !important;
+        padding: 0 !important;
+        
+        /* Order - Show first */
+        order: -1 !important;
+    }
+
+    .profile-card-3d {
+        /* Size */
+        width: 100% !important;
+        height: auto !important;
+        
+        /* Spacing */
+        padding: 0 !important;
+    }
+
+    .profile-image-wrapper {
+        /* Size */
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    .profile-frame {
+        /* Size */
+        width: 100% !important;
+        height: 100% !important;
+        
+        /* Border */
+        border-radius: 50% !important;
+        
+        /* Overflow */
+        overflow: hidden !important;
+    }
+
+    #profile-photo-wrapper,
+    #profile-photo {
+        /* Size */
+        width: 100% !important;
+        height: 100% !important;
+        
+        /* Display */
+        object-fit: cover !important;
+        object-position: center !important;
+        
+        /* Border */
+        border-radius: 50% !important;
+    }
+
+    /* Engineering markers - hide on mobile */
+    .engineering-markers {
+        display: none !important;
+    }
+
+    /* Frame glow - reduce on mobile */
+    .frame-glow {
+        opacity: 0.3 !important;
+    }
+}
+
+/* ========================================
+   HERO TEXT - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero-text {
+        /* Width */
+        width: 100% !important;
+        
+        /* Alignment */
+        text-align: center !important;
+    }
+
+    .hero-text-wrapper {
+        /* Spacing */
+        padding: 0 !important;
+        
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    /* Hero Title */
+    .hero-title {
+        /* Typography */
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        
+        /* Spacing */
+        margin: 0 0 15px 0 !important;
+        
+        /* Color */
+        color: #1a1a1a !important;
+    }
+
+    .hero-title .title-line {
+        /* Display */
+        display: block !important;
+        
+        /* Spacing */
+        margin-bottom: 5px !important;
+    }
+
+    .hero-title .word {
+        /* Spacing */
+        margin-right: 8px !important;
+    }
+
+    .hero-title .highlight {
+        /* Typography */
+        font-size: 36px !important;
+        
+        /* Display */
+        display: inline-block !important;
+        
+        /* Color - Gradient */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+
+    /* Highlight underline */
+    .highlight-underline {
+        /* Size */
+        height: 3px !important;
+        
+        /* Spacing */
+        margin-top: 5px !important;
+        
+        /* Background */
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        
+        /* Border */
+        border-radius: 2px !important;
+    }
+
+    /* Hero Subtitle */
+    .hero-subtitle {
+        /* Typography */
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        line-height: 1.5 !important;
+        
+        /* Spacing */
+        margin: 0 0 15px 0 !important;
+        padding: 0 10px !important;
+        
+        /* Color */
+        color: #666666 !important;
+    }
+
+    /* Hero Description */
+    .hero-description {
+        /* Typography */
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+        
+        /* Spacing */
+        margin: 0 0 25px 0 !important;
+        padding: 0 10px !important;
+        
+        /* Color */
+        color: #4a5568 !important;
+        
+        /* Max lines */
+        display: -webkit-box !important;
+        -webkit-line-clamp: 4 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .description-text {
+        /* Display */
+        display: block !important;
+    }
+
+    .text-highlight {
+        /* Color */
+        color: #667eea !important;
+        
+        /* Weight */
+        font-weight: 600 !important;
+    }
+}
+
+/* ========================================
+   TECH STACK BADGES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .tech-stack-showcase {
+        /* Display */
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        
+        /* Justify */
+        justify-content: center !important;
+        
+        /* Spacing */
+        margin: 20px 0 !important;
+        padding: 0 !important;
+    }
+
+    .tech-badge {
+        /* Size */
+        min-width: auto !important;
+        padding: 8px 14px !important;
+        
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        
+        /* Background */
+        background: rgba(102, 126, 234, 0.1) !important;
+        
+        /* Border */
+        border: 1px solid rgba(102, 126, 234, 0.2) !important;
+        border-radius: 20px !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+    }
+
+    .tech-badge:active {
+        transform: scale(0.95) !important;
+        background: rgba(102, 126, 234, 0.2) !important;
+    }
+
+    .tech-icon {
+        /* Size */
+        font-size: 14px !important;
+        
+        /* Color */
+        color: #667eea !important;
+    }
+
+    .tech-name {
+        /* Typography */
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        
+        /* Color */
+        color: #4a5568 !important;
+    }
+
+    /* Hide pulse animation on mobile */
+    .tech-pulse {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   HERO BUTTONS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero-buttons {
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        
+        /* Width */
+        width: 100% !important;
+        max-width: 100% !important;
+        
+        /* Spacing */
+        margin: 25px 0 0 0 !important;
+        padding: 0 !important;
+    }
+
+    .hero-buttons .btn {
+        /* Size - BIGGER for mobile touch */
+        width: 100% !important;
+        min-height: 52px !important;
+        
+        /* Typography */
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        
+        /* Spacing */
+        padding: 14px 24px !important;
+        
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+        border: none !important;
+        
+        /* Transition */
+        transition: all 0.2s ease !important;
+        
+        /* Touch optimization */
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    /* Primary button */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.97) !important;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+    }
+
+    /* Secondary button */
+    .btn-secondary {
+        background: #ffffff !important;
+        color: #667eea !important;
+        border: 2px solid #667eea !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .btn-secondary:active {
+        transform: scale(0.97) !important;
+        background: #f7fafc !important;
+    }
+
+    /* Outline button */
+    .btn-outline {
+        background: transparent !important;
+        color: #4a5568 !important;
+        border: 2px solid #e2e8f0 !important;
+    }
+
+    .btn-outline:active {
+        transform: scale(0.97) !important;
+        background: #f7fafc !important;
+    }
+
+    /* Button text & icon */
+    .btn-text {
+        /* Display */
+        display: inline-block !important;
+    }
+
+    .btn-icon {
+        /* Size */
+        font-size: 18px !important;
+        
+        /* Display */
+        display: inline-block !important;
+    }
+
+    /* Hide button effects on mobile */
+    .btn-hover-effect,
+    .btn-ripple {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   EXPERTISE SHOWCASE - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .expertise-showcase {
+        /* Display */
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        
+        /* Spacing */
+        margin-top: 40px !important;
+        padding: 0 !important;
+        
+        /* Width */
+        width: 100% !important;
+    }
+
+    .expertise-card {
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
+        
+        /* Spacing */
+        padding: 20px !important;
+        
+        /* Background */
+        background: #ffffff !important;
+        
+        /* Border */
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        
+        /* Shadow */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        
+        /* Transition */
+        transition: all 0.2s ease !important;
+    }
+
+    .expertise-card:active {
+        transform: scale(0.98) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .expertise-icon {
+        /* Size */
+        width: 50px !important;
+        height: 50px !important;
+        
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        /* Background */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+        
+        /* Font */
+        font-size: 24px !important;
+        color: #ffffff !important;
+        
+        /* Flex shrink */
+        flex-shrink: 0 !important;
+    }
+
+    .expertise-info {
+        /* Flex */
+        flex: 1 !important;
+        
+        /* Text */
+        text-align: left !important;
+    }
+
+    .expertise-info h4 {
+        /* Typography */
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        
+        /* Spacing */
+        margin: 0 0 5px 0 !important;
+        
+        /* Color */
+        color: #1a1a1a !important;
+    }
+
+    .expertise-info p {
+        /* Typography */
+        font-size: 13px !important;
+        
+        /* Spacing */
+        margin: 0 !important;
+        
+        /* Color */
+        color: #718096 !important;
+    }
+}
+
+/* ========================================
+   BACKGROUND ELEMENTS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero-bg-elements {
+        /* Position */
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        
+        /* Z-index */
+        z-index: -1 !important;
+        
+        /* Overflow */
+        overflow: hidden !important;
+        
+        /* Opacity - reduce on mobile */
+        opacity: 0.3 !important;
+    }
+
+    /* Geometric shapes - simplify */
+    .geometric-shapes {
+        display: none !important;
+    }
+
+    /* Gradient orbs - reduce */
+    .gradient-orbs {
+        opacity: 0.5 !important;
+    }
+
+    .orb {
+        /* Size - smaller on mobile */
+        width: 200px !important;
+        height: 200px !important;
+        
+        /* Filter */
+        filter: blur(60px) !important;
+    }
+
+    /* Particles canvas - hide on mobile for performance */
+    .particles-canvas {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   ANIMATIONS - MOBILE OPTIMIZED
+   ======================================== */
+
+@media (max-width: 768px) {
+    .animate-on-load {
+        /* Animation */
+        animation: fadeInUp 0.6s ease forwards !important;
+        opacity: 0 !important;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger animation delays */
+    .animate-on-load:nth-child(1) {
+        animation-delay: 0.1s !important;
+    }
+
+    .animate-on-load:nth-child(2) {
+        animation-delay: 0.2s !important;
+    }
+
+    .animate-on-load:nth-child(3) {
+        animation-delay: 0.3s !important;
+    }
+
+    .animate-on-load:nth-child(4) {
+        animation-delay: 0.4s !important;
+    }
+
+    .animate-on-load:nth-child(5) {
+        animation-delay: 0.5s !important;
+    }
+}
+
+/* ========================================
+   SCROLL INDICATOR - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .scroll-indicator,
+    .scroll-down {
+        /* Position */
+        position: absolute !important;
+        bottom: 30px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 8px !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Animation */
+        animation: bounce 2s infinite !important;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+        40% {
+            transform: translateX(-50%) translateY(-10px);
+        }
+        60% {
+            transform: translateX(-50%) translateY(-5px);
+        }
+    }
+
+    .scroll-indicator i {
+        /* Size */
+        font-size: 24px !important;
+        
+        /* Color */
+        color: #667eea !important;
+    }
+}
+
+/* ========================================
+   SPECIFIC MOBILE SIZES
+   ======================================== */
+
+/* Small phones (320px - 375px) */
+@media (max-width: 375px) {
+    .hero-title {
+        font-size: 28px !important;
+    }
+
+    .hero-title .highlight {
+        font-size: 32px !important;
+    }
+
+    .hero-description {
+        font-size: 14px !important;
+        -webkit-line-clamp: 3 !important;
+    }
+
+    .profile-container {
+        max-width: 240px !important;
+    }
+
+    .tech-badge {
+        padding: 6px 12px !important;
+    }
+
+    .tech-name {
+        font-size: 11px !important;
+    }
+
+    .hero-buttons .btn {
+        min-height: 48px !important;
+        padding: 12px 20px !important;
+    }
+}
+
+/* Medium phones (376px - 414px) */
+@media (min-width: 376px) and (max-width: 414px) {
+    .hero-title {
+        font-size: 30px !important;
+    }
+
+    .hero-title .highlight {
+        font-size: 34px !important;
+    }
+
+    .profile-container {
+        max-width: 260px !important;
+    }
+}
+
+/* Large phones (415px - 768px) */
+@media (min-width: 415px) and (max-width: 768px) {
+    .hero-title {
+        font-size: 34px !important;
+    }
+
+    .hero-title .highlight {
+        font-size: 38px !important;
+    }
+
+    .profile-container {
+        max-width: 300px !important;
+    }
+
+    /* Landscape mode - side by side layout */
+    @media (orientation: landscape) {
+        .hero-content {
+            flex-direction: row !important;
+            gap: 40px !important;
+            align-items: center !important;
+        }
+
+        .hero-text {
+            flex: 1 !important;
+            text-align: left !important;
+        }
+
+        .hero-image {
+            flex-shrink: 0 !important;
+            max-width: 250px !important;
+        }
+
+        .hero-buttons {
+            flex-direction: row !important;
+            gap: 10px !important;
+        }
+
+        .hero-buttons .btn {
+            width: auto !important;
+            flex: 1 !important;
+        }
+
+        .expertise-showcase {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (If exists)
+   ======================================== */
+
+@media (max-width: 768px) {
+    .dark-mode .hero-title {
+        color: #ffffff !important;
+    }
+
+    .dark-mode .hero-subtitle {
+        color: #cbd5e0 !important;
+    }
+
+    .dark-mode .hero-description {
+        color: #a0aec0 !important;
+    }
+
+    .dark-mode .expertise-card {
+        background: #2d3748 !important;
+        border-color: #4a5568 !important;
+    }
+
+    .dark-mode .expertise-info h4 {
+        color: #ffffff !important;
+    }
+
+    .dark-mode .expertise-info p {
+        color: #cbd5e0 !important;
+    }
+
+    .dark-mode .tech-badge {
+        background: rgba(102, 126, 234, 0.2) !important;
+        border-color: rgba(102, 126, 234, 0.3) !important;
+    }
+
+    .dark-mode .tech-name {
+        color: #e2e8f0 !important;
+    }
+
+    .dark-mode .btn-outline {
+        border-color: #4a5568 !important;
+        color: #e2e8f0 !important;
+    }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* GPU acceleration */
+    .hero,
+    .hero-content,
+    .profile-card-3d,
+    .btn {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        will-change: transform !important;
+    }
+
+    /* Reduce animations on low-end devices */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Focus states */
+    .btn:focus,
+    .tech-badge:focus {
+        outline: 3px solid #667eea !important;
+        outline-offset: 2px !important;
+    }
+
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+        .hero-title,
+        .expertise-info h4 {
+            font-weight: 700 !important;
+        }
+
+        .btn {
+            border-width: 2px !important;
+        }
+    }
+
+    /* Touch target size (WCAG) */
+    .btn,
+    .tech-badge,
+    .expertise-card {
+        min-height: 44px !important;
+    }
+}
+
+/* ========================================
+   FIX COMMON ISSUES
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Prevent horizontal scroll */
+    body,
+    html {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
+    /* Fix text selection issues */
+    .hero-title,
+    .hero-subtitle,
+    .hero-description {
+        -webkit-user-select: text !important;
+        user-select: text !important;
+    }
+
+    /* Fix image loading */
+    #profile-photo {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+
+    /* Fix button text wrapping */
+    .btn-text {
+        white-space: nowrap !important;
+    }
+
+    /* Fix long words breaking layout */
+    .hero-description,
+    .expertise-info p {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+    }
+}

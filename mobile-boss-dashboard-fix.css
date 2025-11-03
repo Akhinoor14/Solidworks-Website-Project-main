@@ -1,0 +1,973 @@
+/**
+ * Mobile Only Boss Dashboard - Complete UX/UI Fix
+ * =================================================
+ * Comprehensive mobile optimization for entire dashboard
+ * - Dashboard header & navigation
+ * - Admin cards grid
+ * - Security panel
+ * - Modal/popup interfaces
+ * - Project management hub
+ * - Form inputs & buttons
+ * - Token manager interface
+ * - Upload interfaces
+ * - Touch-friendly interactions
+ * - Perfect mobile experience
+ */
+
+/* ========================================
+   DASHBOARD HEADER - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .header {
+        /* Layout */
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 20px 15px !important;
+        text-align: center !important;
+        
+        /* Background */
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.9), rgba(10, 0, 0, 0.95)) !important;
+        
+        /* Border */
+        border-bottom: 2px solid rgba(204, 0, 0, 0.4) !important;
+    }
+
+    .header h1 {
+        font-size: 1.4rem !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+        word-break: break-word !important;
+    }
+
+    .boss-icon {
+        font-size: 1.6rem !important;
+        margin-right: 6px !important;
+        vertical-align: -3px !important;
+    }
+
+    .header-info {
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .session-info {
+        font-size: 0.75rem !important;
+        text-align: center !important;
+        padding: 8px 12px !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+        border-radius: 8px !important;
+    }
+}
+
+/* ========================================
+   LOGOUT BUTTON - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .logout-btn,
+    #logoutBtn,
+    #dashboardLogoutBtn {
+        /* Size */
+        width: 100% !important;
+        min-height: 48px !important;
+        max-width: 280px !important;
+        
+        /* Typography */
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        
+        /* Spacing */
+        padding: 12px 20px !important;
+        margin: 0 auto !important;
+        
+        /* Display */
+        display: block !important;
+        
+        /* Border */
+        border-radius: 10px !important;
+        
+        /* Touch */
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .logout-btn:active {
+        transform: scale(0.95) !important;
+    }
+}
+
+/* ========================================
+   CONTAINER - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px !important;
+        max-width: 100% !important;
+    }
+
+    .container h2 {
+        font-size: 1.3rem !important;
+        margin-bottom: 10px !important;
+        text-align: center !important;
+    }
+
+    .container > p {
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        margin-bottom: 25px !important;
+    }
+}
+
+/* ========================================
+   ADMIN CARDS GRID - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .admin-grid,
+    .projects-grid {
+        /* Layout */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 18px !important;
+        
+        /* Remove grid */
+        grid-template-columns: none !important;
+        
+        /* Spacing */
+        margin-top: 20px !important;
+        padding: 0 !important;
+    }
+
+    .admin-card,
+    .project-card {
+        /* Size */
+        width: 100% !important;
+        min-height: auto !important;
+        
+        /* Spacing */
+        padding: 25px 20px !important;
+        margin: 0 !important;
+        
+        /* Border */
+        border-radius: 15px !important;
+        border: 2px solid rgba(204, 0, 0, 0.3) !important;
+        
+        /* Background */
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.7), rgba(10, 0, 0, 0.85)) !important;
+        
+        /* Display */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+        
+        /* Touch */
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .admin-card:active,
+    .project-card:active {
+        transform: scale(0.97) !important;
+        border-color: #cc0000 !important;
+    }
+
+    .admin-card.coming-soon:active,
+    .project-card.coming-soon:active {
+        transform: none !important;
+    }
+
+    /* Card Icon */
+    .card-icon {
+        font-size: 2.5rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Card Title */
+    .card-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 10px !important;
+        color: #cc0000 !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Card Description */
+    .card-description {
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        margin: 0 !important;
+    }
+
+    /* Active Card */
+    .admin-card.active,
+    .project-card.active {
+        border-color: #00cc00 !important;
+        box-shadow: 0 4px 15px rgba(0, 204, 0, 0.3) !important;
+    }
+
+    /* Coming Soon Card */
+    .admin-card.coming-soon,
+    .project-card.coming-soon {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+    }
+}
+
+/* ========================================
+   SECURITY PANEL - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .security-panel {
+        /* Spacing */
+        padding: 20px 15px !important;
+        margin-top: 25px !important;
+        
+        /* Border */
+        border-radius: 15px !important;
+        border: 2px solid rgba(204, 0, 0, 0.3) !important;
+        
+        /* Background */
+        background: rgba(204, 0, 0, 0.1) !important;
+    }
+
+    .security-panel h2 {
+        font-size: 1.3rem !important;
+        margin-bottom: 15px !important;
+        text-align: center !important;
+        color: #cc0000 !important;
+    }
+
+    .security-status {
+        /* Layout */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-top: 15px !important;
+    }
+
+    .status-item {
+        /* Spacing */
+        padding: 12px 15px !important;
+        
+        /* Border */
+        border-radius: 10px !important;
+        border-left: 4px solid #00cc00 !important;
+        
+        /* Background */
+        background: rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .status-item.warning {
+        border-left-color: #ff9900 !important;
+    }
+
+    .status-label {
+        font-size: 0.75rem !important;
+        margin-bottom: 4px !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .status-value {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #00cc00 !important;
+    }
+
+    .status-value.warning {
+        color: #ff9900 !important;
+    }
+}
+
+/* ========================================
+   MODAL/POPUP - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .modal {
+        /* Position */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        
+        /* Display */
+        display: none !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        
+        /* Background */
+        background: rgba(0, 0, 0, 0.9) !important;
+        
+        /* Z-index */
+        z-index: 10000 !important;
+        
+        /* Overflow */
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        
+        /* Padding */
+        padding: 20px 0 !important;
+    }
+
+    .modal.active {
+        display: flex !important;
+    }
+
+    .modal-content {
+        /* Size */
+        width: calc(100% - 30px) !important;
+        max-width: 500px !important;
+        max-height: none !important;
+        margin: auto 15px !important;
+        
+        /* Spacing */
+        padding: 25px 20px !important;
+        
+        /* Border */
+        border-radius: 20px !important;
+        border: 2px solid rgba(204, 0, 0, 0.5) !important;
+        
+        /* Background */
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.98), rgba(10, 0, 0, 0.99)) !important;
+        
+        /* Overflow */
+        overflow-y: visible !important;
+    }
+
+    .modal-header {
+        /* Layout */
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        
+        /* Spacing */
+        margin-bottom: 20px !important;
+        padding-bottom: 15px !important;
+        
+        /* Border */
+        border-bottom: 1px solid rgba(204, 0, 0, 0.3) !important;
+    }
+
+    .modal-title {
+        font-size: 1.3rem !important;
+        color: #cc0000 !important;
+        line-height: 1.3 !important;
+        padding-right: 10px !important;
+    }
+
+    .close-btn {
+        /* Size */
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        
+        /* Typography */
+        font-size: 1.8rem !important;
+        line-height: 1 !important;
+        
+        /* Display */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        /* Border */
+        border-radius: 50% !important;
+        
+        /* Background */
+        background: rgba(204, 0, 0, 0.1) !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Touch */
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .close-btn:active {
+        background: rgba(204, 0, 0, 0.2) !important;
+    }
+}
+
+/* ========================================
+   FORM GROUPS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 18px !important;
+        width: 100% !important;
+    }
+
+    .form-group label {
+        /* Display */
+        display: block !important;
+        
+        /* Typography */
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+        
+        /* Spacing */
+        margin-bottom: 8px !important;
+        
+        /* Color */
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        /* Size */
+        width: 100% !important;
+        min-height: 50px !important;
+        
+        /* Typography */
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        
+        /* Spacing */
+        padding: 12px 16px !important;
+        
+        /* Border */
+        border: 2px solid rgba(204, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+        
+        /* Background */
+        background: rgba(20, 0, 0, 0.5) !important;
+        
+        /* Color */
+        color: #ffffff !important;
+        
+        /* Transition */
+        transition: all 0.2s ease !important;
+        
+        /* Remove default */
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        
+        /* Box model */
+        box-sizing: border-box !important;
+    }
+
+    .form-group textarea {
+        min-height: 120px !important;
+        resize: vertical !important;
+        font-family: inherit !important;
+    }
+
+    /* Focus state */
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none !important;
+        border-color: #cc0000 !important;
+        box-shadow: 0 0 15px rgba(204, 0, 0, 0.4) !important;
+        background: rgba(20, 0, 0, 0.6) !important;
+    }
+
+    /* Placeholder */
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+        opacity: 1 !important;
+    }
+}
+
+/* ========================================
+   BUTTONS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .btn {
+        /* Size */
+        width: 100% !important;
+        min-height: 50px !important;
+        
+        /* Typography */
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        
+        /* Spacing */
+        padding: 14px 20px !important;
+        margin: 8px 0 !important;
+        
+        /* Border */
+        border-radius: 10px !important;
+        border: none !important;
+        
+        /* Display */
+        display: block !important;
+        text-align: center !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+        
+        /* Touch */
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #cc0000, #990000) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3) !important;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.97) !important;
+        box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2) !important;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .btn-secondary:active {
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .btn:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+    }
+
+    /* Button groups */
+    .modal-content > div:last-of-type {
+        margin-top: 25px !important;
+    }
+
+    .modal-content .btn {
+        margin-right: 0 !important;
+    }
+}
+
+/* ========================================
+   SUCCESS/ERROR MESSAGES - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .success-msg,
+    .error-msg {
+        /* Spacing */
+        padding: 14px 16px !important;
+        margin-top: 15px !important;
+        
+        /* Border */
+        border-radius: 10px !important;
+        border: 2px solid !important;
+        
+        /* Typography */
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+        text-align: center !important;
+    }
+
+    .success-msg {
+        background: rgba(0, 200, 0, 0.2) !important;
+        border-color: rgba(0, 200, 0, 0.5) !important;
+        color: #00ff00 !important;
+    }
+
+    .error-msg {
+        background: rgba(200, 0, 0, 0.2) !important;
+        border-color: rgba(200, 0, 0, 0.5) !important;
+        color: #ff6666 !important;
+    }
+}
+
+/* ========================================
+   HUB HEADER - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hub-header {
+        /* Spacing */
+        padding: 25px 20px !important;
+        margin-bottom: 25px !important;
+        
+        /* Border */
+        border-radius: 15px !important;
+        
+        /* Text */
+        text-align: center !important;
+    }
+
+    .hub-header h1 {
+        font-size: 1.5rem !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        line-height: 1.3 !important;
+    }
+
+    .hub-header p {
+        font-size: 0.9rem !important;
+        margin-top: 10px !important;
+    }
+}
+
+/* ========================================
+   BACK LINK - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .back-link {
+        /* Size */
+        width: 100% !important;
+        max-width: 200px !important;
+        
+        /* Display */
+        display: inline-flex !important;
+        justify-content: center !important;
+        
+        /* Spacing */
+        padding: 12px 16px !important;
+        margin: 0 auto 20px auto !important;
+        
+        /* Typography */
+        font-size: 0.9rem !important;
+        
+        /* Touch */
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .back-link:active {
+        transform: scale(0.95) !important;
+    }
+}
+
+/* ========================================
+   PROJECT CATEGORY BADGE - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-category {
+        /* Spacing */
+        padding: 6px 12px !important;
+        
+        /* Typography */
+        font-size: 0.75rem !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+    }
+}
+
+/* ========================================
+   PROJECT ACTIONS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .project-actions {
+        /* Layout */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 15px !important;
+    }
+
+    .project-actions .btn {
+        width: 100% !important;
+        min-height: 46px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ========================================
+   FILE UPLOAD AREA - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .upload-area,
+    .drop-zone {
+        /* Spacing */
+        padding: 30px 20px !important;
+        
+        /* Border */
+        border: 2px dashed rgba(204, 0, 0, 0.4) !important;
+        border-radius: 15px !important;
+        
+        /* Background */
+        background: rgba(204, 0, 0, 0.05) !important;
+        
+        /* Display */
+        text-align: center !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+        
+        /* Touch */
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .upload-area:active,
+    .drop-zone:active {
+        border-color: #cc0000 !important;
+        background: rgba(204, 0, 0, 0.1) !important;
+    }
+
+    .upload-icon {
+        font-size: 3rem !important;
+        margin-bottom: 15px !important;
+        color: #cc0000 !important;
+    }
+
+    .upload-text {
+        font-size: 0.9rem !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        margin-bottom: 10px !important;
+    }
+
+    .upload-hint {
+        font-size: 0.75rem !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* File input */
+    input[type="file"] {
+        width: 100% !important;
+        padding: 12px !important;
+        font-size: 14px !important;
+        background: rgba(20, 0, 0, 0.5) !important;
+        border: 2px solid rgba(204, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+    }
+}
+
+/* ========================================
+   PROGRESS BAR - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .progress-bar {
+        width: 100% !important;
+        height: 8px !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        margin: 15px 0 !important;
+    }
+
+    .progress-fill {
+        height: 100% !important;
+        background: linear-gradient(90deg, #cc0000, #ff0000) !important;
+        border-radius: 10px !important;
+        transition: width 0.3s ease !important;
+    }
+}
+
+/* ========================================
+   TOKEN MANAGER - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .token-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .token-item {
+        /* Spacing */
+        padding: 15px !important;
+        
+        /* Border */
+        border: 2px solid rgba(204, 0, 0, 0.3) !important;
+        border-radius: 12px !important;
+        
+        /* Background */
+        background: rgba(20, 0, 0, 0.5) !important;
+    }
+
+    .token-name {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: #cc0000 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .token-value {
+        font-size: 0.75rem !important;
+        font-family: 'Courier New', monospace !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        word-break: break-all !important;
+    }
+}
+
+/* ========================================
+   CODE BLOCKS - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    code {
+        /* Display */
+        display: inline-block !important;
+        
+        /* Spacing */
+        padding: 6px 10px !important;
+        margin: 5px 0 !important;
+        
+        /* Background */
+        background: rgba(0, 0, 0, 0.4) !important;
+        
+        /* Border */
+        border-radius: 6px !important;
+        
+        /* Typography */
+        font-size: 0.8rem !important;
+        font-family: 'Courier New', monospace !important;
+        
+        /* Color */
+        color: #00ff00 !important;
+        
+        /* Break */
+        word-break: break-all !important;
+    }
+
+    pre {
+        padding: 15px !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        border-radius: 10px !important;
+        overflow-x: auto !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ========================================
+   HORIZONTAL RULE - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    hr {
+        border: none !important;
+        border-top: 1px solid rgba(204, 0, 0, 0.3) !important;
+        margin: 25px 0 !important;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY - MOBILE
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Focus states */
+    .admin-card:focus,
+    .project-card:focus,
+    .btn:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: 3px solid #cc0000 !important;
+        outline-offset: 2px !important;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ========================================
+   SMALL PHONES (320px - 375px)
+   ======================================== */
+
+@media (max-width: 375px) {
+    .header h1 {
+        font-size: 1.2rem !important;
+    }
+
+    .boss-icon {
+        font-size: 1.4rem !important;
+    }
+
+    .admin-card,
+    .project-card {
+        padding: 20px 15px !important;
+    }
+
+    .card-icon {
+        font-size: 2.2rem !important;
+    }
+
+    .card-title {
+        font-size: 1.1rem !important;
+    }
+
+    .modal-content {
+        padding: 20px 15px !important;
+    }
+
+    .modal-title {
+        font-size: 1.1rem !important;
+    }
+
+    .btn {
+        min-height: 48px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ========================================
+   LANDSCAPE MODE
+   ======================================== */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .admin-grid,
+    .projects-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+
+    .security-status {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATION
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* GPU acceleration */
+    .admin-card,
+    .project-card,
+    .btn,
+    .modal-content {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        will-change: transform !important;
+    }
+
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth !important;
+    }
+}
