@@ -534,8 +534,7 @@
         if (selectedFiles.length === 0) return;
         
         const file = selectedFiles[0];
-        const isPng = (file.type && file.type.toLowerCase().includes('png')) || (/\.png$/i.test(file.name || ''));
-        const newName = `pp.${isPng ? 'png' : 'jpg'}`;
+        const newName = 'PP.jpg'; // Always PP.jpg
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
         
@@ -625,17 +624,13 @@
         }
     });
 
-    // Upload files to GitHub - SINGLE pp.jpg/pp.png UPLOAD
+    // Upload files to GitHub - SINGLE PP.jpg UPLOAD
     async function uploadToGitHub() {
         if (selectedFiles.length === 0) {
             throw new Error('No file selected');
         }
         
         const file = selectedFiles[0]; // Only one file
-        const isPng = (file.type && file.type.toLowerCase().includes('png')) || (/\.png$/i.test(file.name || ''));
-        const ext = isPng ? 'png' : 'jpg';
-        const targetName = `pp.${ext}`;
-        const otherExt = isPng ? 'jpg' : 'png';
         
         // Get GitHub credentials from localStorage
         let githubToken = localStorage.getItem('githubToken');
@@ -652,15 +647,14 @@
         const [owner, repo] = githubRepo.split('/');
         
         showNotification('📤 Uploading profile photo...', 'info', 2000);
-        showStatus(`📤 Uploading as ${targetName}...`, 'info');
+        showStatus('📤 Uploading as PP.jpg...', 'info');
         updateProgress(30);
 
         try {
-            // Check if target file already exists (to get sha for update)
-            let targetSha = null;
-            let otherSha = null;
+            // Check if PP.jpg already exists (to get sha for update)
+            let ppSha = null;
             try {
-                const checkRes = await window.fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images/${targetName}`, {
+                const checkRes = await window.fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images/PP.jpg`, {
                     headers: {
                         'Authorization': `token ${githubToken}`,
                         'Accept': 'application/vnd.github.v3+json'
@@ -668,56 +662,26 @@
                 });
                 if (checkRes.ok) {
                     const data = await checkRes.json();
-                    targetSha = data.sha;
+                    ppSha = data.sha;
                 }
             } catch (e) {
                 // File doesn't exist, will create new
             }
 
-            // Also check if the other extension exists (to remove it after upload for clarity)
-            try {
-                const otherRes = await window.fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images/pp.${otherExt}`, {
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                if (otherRes.ok) {
-                    const data = await otherRes.json();
-                    otherSha = data.sha;
-                }
-            } catch (e) {}
-
             updateProgress(50);
             
-            // Upload as pp.jpg or pp.png
-            await realGitHubUpload(file, targetName, githubToken, githubRepo, targetSha);
+            // Upload as PP.jpg
+            await realGitHubUpload(file, 'PP.jpg', githubToken, githubRepo, ppSha);
             
-            // If other variant exists (pp.jpg/pp.png), remove it to avoid ambiguity
-            if (otherSha) {
-                try {
-                    await window.fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images/pp.${otherExt}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `token ${githubToken}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/vnd.github.v3+json'
-                        },
-                        body: JSON.stringify({
-                            message: `Remove old profile photo pp.${otherExt}`,
-                            sha: otherSha,
-                            branch: 'main'
-                        })
-                    });
-                } catch (e) {
-                    console.warn('Could not remove other profile variant:', e.message);
-                }
-            }
-
             updateProgress(100);
             showNotification('✅ Profile photo uploaded successfully!', 'success', 4000);
             
-            // No auto-update; user can refresh to see changes
+            // Signal homepage to refresh
+            try {
+                const channel = new BroadcastChannel('websiteUpdates');
+                channel.postMessage({ type: 'PROFILE_UPDATED', at: Date.now() });
+                channel.close();
+            } catch (e) {}
             
         } catch (error) {
             throw new Error(`Failed to upload: ${error.message}`);
