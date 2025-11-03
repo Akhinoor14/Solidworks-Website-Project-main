@@ -223,11 +223,9 @@
         margin: 0 0 15px 0 !important;
         padding: 0 !important;
         
-            /* Color - Better readability on dark background */
-            color: rgba(255, 255, 255, 0.92) !important;
-            text-shadow: 
-                0 0 6px rgba(255, 255, 255, 0.15),
-                0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        /* Calm readability: white with subtle depth */
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
         
         /* Limit lines for better UX */
         display: -webkit-box !important;
@@ -271,15 +269,15 @@
         
         /* Border */
         border-radius: 12px !important;
-            border: 1px solid rgba(255, 80, 80, 0.5) !important;
+        border: 1px solid rgba(255, 0, 0, 0.35) !important;
         
         /* Background - Dark theme */
-            background: rgba(255, 40, 40, 0.25) !important;
-            color: #ffaaaa !important;
+        background: rgba(255, 0, 0, 0.18) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
         
-            /* Better visibility */
-            text-shadow: 0 0 6px rgba(255, 170, 170, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
-            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        /* Subtle depth */
+        text-shadow: none !important;
+        box-shadow: none !important;
         
         /* Display */
         display: inline-block !important;
@@ -289,26 +287,26 @@
     /* Tag colors - Dark theme variations */
     .tag.primary,
     .badge.primary {
-           background: rgba(255, 50, 50, 0.3) !important;
-           color: #ffaaaa !important;
-           border-color: rgba(255, 80, 80, 0.6) !important;
-           text-shadow: 0 0 8px rgba(255, 170, 170, 0.6), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+        background: rgba(255, 0, 0, 0.22) !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(255, 0, 0, 0.45) !important;
+        text-shadow: none !important;
     }
 
     .tag.success,
     .badge.success {
-           background: rgba(16, 185, 129, 0.25) !important;
-           color: #a7f3d0 !important;
-           border-color: rgba(16, 185, 129, 0.6) !important;
-           text-shadow: 0 0 6px rgba(167, 243, 208, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+        background: rgba(16, 185, 129, 0.22) !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(16, 185, 129, 0.5) !important;
+        text-shadow: none !important;
     }
 
     .tag.warning,
     .badge.warning {
-           background: rgba(245, 158, 11, 0.25) !important;
-           color: #fde68a !important;
-           border-color: rgba(245, 158, 11, 0.6) !important;
-           text-shadow: 0 0 6px rgba(253, 230, 138, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+        background: rgba(245, 158, 11, 0.22) !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(245, 158, 11, 0.5) !important;
+        text-shadow: none !important;
     }
 }
 
@@ -408,14 +406,14 @@
         font-size: 15px !important;
         font-weight: 600 !important;
         
-        /* Color - Brighter red for better readability */
-        color: #ff8888 !important;
+        /* Color - White for best readability; red as subtle accent */
+        color: #ffffff !important;
         text-decoration: underline !important;
-        text-decoration-color: rgba(255, 136, 136, 0.5) !important;
-        text-decoration-thickness: 2px !important;
+        text-decoration-color: rgba(255, 0, 0, 0.35) !important;
+        text-decoration-thickness: 1.5px !important;
         
-        /* Text shadow for better visibility on dark background */
-        text-shadow: 0 0 8px rgba(255, 136, 136, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        /* Subtle depth only */
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
         
         /* Spacing */
         padding: 8px 0 !important;
@@ -427,15 +425,15 @@
         min-height: 44px !important;
         line-height: 28px !important;
         
-        /* Hover/Active */
-        transition: all 0.2s ease !important;
+        /* Transition */
+        transition: text-decoration-color 0.2s ease, color 0.2s ease !important;
     }
     
     .project-card a:not(.btn):not(.button):active,
     .card a:not(.btn):not(.button):active {
-        color: #ffaaaa !important;
-        text-decoration-color: rgba(255, 170, 170, 0.7) !important;
-        text-shadow: 0 0 12px rgba(255, 170, 170, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+        text-decoration-color: rgba(255, 0, 0, 0.6) !important;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.75) !important;
     }
 }
 
@@ -601,21 +599,18 @@
         
         /* Border */
         border-radius: 12px !important;
-            border: 2px solid rgba(255, 80, 80, 0.6) !important;
+        border: 1px solid rgba(255, 0, 0, 0.4) !important;
         
         /* Background - Dark Red Theme */
-            background: linear-gradient(135deg, rgba(255, 40, 40, 0.3), rgba(220, 0, 0, 0.2)) !important;
-            color: #ffaaaa !important;
-        backdrop-filter: blur(10px) !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.5)) !important;
+        color: #ffffff !important;
+        backdrop-filter: blur(6px) !important;
         
         /* Box shadow */
-            box-shadow: 
-                0 4px 15px rgba(255, 0, 0, 0.25),
-                0 0 15px rgba(255, 50, 50, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
         
-            /* Text shadow for better readability */
-            text-shadow: 0 0 8px rgba(255, 170, 170, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        /* Subtle text shadow */
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
         
         /* Cursor */
         cursor: pointer !important;
@@ -629,26 +624,23 @@
     }
     
     .quick-jump-item:active {
-       background: linear-gradient(135deg, rgba(255, 60, 60, 0.45), rgba(230, 0, 0, 0.35)) !important;
-       border-color: rgba(255, 100, 100, 0.8) !important;
-       box-shadow: 
-          0 6px 20px rgba(255, 0, 0, 0.35),
-          0 0 20px rgba(255, 80, 80, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-        transform: scale(0.98) !important;
-       color: #ffcccc !important;
-       text-shadow: 0 0 12px rgba(255, 204, 204, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        background: linear-gradient(135deg, rgba(60, 0, 0, 0.7), rgba(30, 0, 0, 0.6)) !important;
+        border-color: rgba(255, 0, 0, 0.55) !important;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        transform: scale(0.985) !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.75) !important;
     }
     
     .quick-jump-item i {
         font-size: 16px !important;
-       color: #ffaaaa !important;
-       filter: drop-shadow(0 0 6px rgba(255, 170, 170, 0.6)) !important;
+        color: #ffffff !important;
+        filter: none !important;
     }
     
     .quick-jump-item:active i {
-       color: #ffcccc !important;
-       filter: drop-shadow(0 0 10px rgba(255, 204, 204, 0.8)) !important;
+        color: #ffffff !important;
+        filter: none !important;
     }
     
     /* Project Filters */
