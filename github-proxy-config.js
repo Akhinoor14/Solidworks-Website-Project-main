@@ -33,7 +33,8 @@ const GITHUB_PROXY_CONFIG = {
     PROXY_URL: 'https://solidworks-website-project-main-production.up.railway.app',
     
     // Auto-fallback to direct GitHub API if proxy fails
-    AUTO_FALLBACK: true,
+    // Security-first: keep this false so all traffic goes through backend only
+    AUTO_FALLBACK: false,
     
     // Cache responses for better performance
     ENABLE_CACHE: true,

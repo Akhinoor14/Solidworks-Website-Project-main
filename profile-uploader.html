@@ -841,6 +841,9 @@
             
             <div class="delete-modal-preview" id="deletePreview">
                 <img id="deletePreviewImg" src="" alt="Preview">
+                <div id="deleteLoadingSpinner" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+                    <span class="fa fa-spinner fa-spin" style="font-size:2rem; color:#cc0000;"></span>
+                </div>
             </div>
             
             <p id="deleteFileName" style="color: #cc0000; font-weight: 600; margin-bottom: 10px;"></p>
@@ -868,6 +871,7 @@
                 </div>
                 <div class="toolbar" style="display:flex; gap:10px; align-items:center;">
                     <button id="backBtn" class="header-btn" title="Back" aria-label="Back">⬅️ Back</button>
+                    <button id="galleryBtn" class="header-btn" title="Gallery" aria-label="Gallery">🖼️ Gallery</button>
                     <button id="settingsBtn" class="header-btn" title="Settings" aria-label="Settings">⚙️ Settings</button>
                     <button id="logoutBtn" class="header-btn" title="Logout" aria-label="Logout">🚪 Logout</button>
                 </div>

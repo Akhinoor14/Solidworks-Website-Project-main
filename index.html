@@ -296,6 +296,8 @@
 
     <!-- Backend Proxy Configuration (MUST load before script.js) -->
     <script src="github-proxy-config.js"></script>
+    <!-- Patch fetch to route GitHub GET calls through backend proxy -->
+    <script src="github-fetch-patch.js"></script>
     
     <!-- Auto-Update Systems -->
     <script src="github-projects-detector.js"></script>

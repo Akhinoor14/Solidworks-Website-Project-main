@@ -64,6 +64,31 @@
           <button class="filter-btn" data-filter="desktop">Desktop</button>
         </div>
 
+        <!-- Mobile search (shown on mobile, optional on desktop) -->
+        <div class="project-search" aria-label="Search projects">
+          <input id="project-search-input" type="search" placeholder="Search projects…" autocomplete="off" inputmode="search" />
+        </div>
+
+        <!-- Mobile quick jump to key project sections -->
+        <div class="project-quick-jump" aria-label="Quick jump to projects">
+          <a href="#solidworks-beginner-card" class="quick-jump-item" aria-label="Go to SOLIDWORKS">
+            <i class="fas fa-cube"></i>
+            <span>SolidWorks</span>
+          </a>
+          <a href="#card-electronics" class="quick-jump-item" aria-label="Go to Electronics Guide">
+            <i class="fas fa-microchip"></i>
+            <span>Electronics</span>
+          </a>
+          <a href="#card-arduino" class="quick-jump-item" aria-label="Go to Arduino">
+            <i class="fas fa-microchip"></i>
+            <span>Arduino</span>
+          </a>
+          <a href="#card-portfolio" class="quick-jump-item" aria-label="Go to Portfolio">
+            <i class="fas fa-globe"></i>
+            <span>Portfolio</span>
+          </a>
+        </div>
+
         <div class="projects-grid" id="projects-grid">
           <!-- SOLIDWORKS Beginner Projects Card (Embedded Navigation) -->
           <div class="project-card solidworks-featured desktop visible" id="solidworks-beginner-card" aria-labelledby="sw-heading" aria-describedby="sw-intro" role="group">
@@ -234,6 +259,7 @@
                 <i class="fas fa-download"></i> Download ZIP
               </a>
             </div>
+            <button class="btn-toggle-details" type="button" aria-expanded="false" aria-controls="card-electronics">More</button>
             
             <!-- Stats Box -->
             <div class="sw-tip-box" data-stats style="margin-top: 1rem; background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(255,0,0,0.05)); border-left: 3px solid #ff0000;">
@@ -306,6 +332,7 @@
                 <i class="fas fa-play-circle"></i> Live Demo
               </a>
             </div>
+            <button class="btn-toggle-details" type="button" aria-expanded="false" aria-controls="card-arduino">More</button>
             
             <!-- Stats Box -->
             <div class="sw-tip-box" data-stats style="margin-top: 1rem; background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(255,0,0,0.05)); border-left: 3px solid #ff0000;">
@@ -432,6 +459,7 @@
                 <i class="fas fa-play-circle"></i> Live Demo
               </a>
             </div>
+            <button class="btn-toggle-details" type="button" aria-expanded="false" aria-controls="card-portfolio">More</button>
             
             <!-- Stats Box -->
               <!-- Extra quick actions -->
@@ -488,12 +516,58 @@
 
   <!-- Backend Proxy Configuration (MUST load before script.js) -->
   <script src="github-proxy-config.js" defer></script>
+  <!-- Enforce proxy for all GitHub GET requests -->
+  <script src="github-fetch-patch.js" defer></script>
   
   <!-- Auto-Update Systems (matching index for dynamic repo cards) -->
   <script src="github-projects-detector.js" defer></script>
   <script src="auto-refresh.js" defer></script>
   <script src="realtime-github-sync.js" defer></script>
   <script src="script.js?v=20251020133251" defer></script>
+  <script>
+    // Lightweight mobile search filter (non-destructive)
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.getElementById('project-search-input');
+      if (!input) return;
+      const grid = document.getElementById('projects-grid');
+      if (!grid) return;
+      const mql = window.matchMedia('(max-width: 768px)');
+
+      function getCardText(card) {
+        const title = card.querySelector('[data-title], .sw-card-title, h3');
+        const desc = card.querySelector('[data-desc], .sw-intro, p');
+        return (
+          (title?.textContent || '') + ' ' + (desc?.textContent || '')
+        ).toLowerCase();
+      }
+
+      function applySearchFilter(q) {
+        const query = (q || '').trim().toLowerCase();
+        const cards = grid.querySelectorAll('.project-card');
+        cards.forEach(card => {
+          const hay = card.__haystack || (card.__haystack = getCardText(card));
+          const match = !query || hay.includes(query);
+          card.style.display = match ? '' : 'none';
+        });
+      }
+
+      // Only activate on mobile to avoid conflicting with desktop UX
+      if (mql.matches) {
+        input.addEventListener('input', (e) => applySearchFilter(e.target.value));
+
+        // Toggle details (More/Less) per card
+        document.querySelectorAll('.btn-toggle-details').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const card = btn.closest('.project-card');
+            if (!card) return;
+            const expanded = card.classList.toggle('expanded');
+            btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            btn.textContent = expanded ? 'Less' : 'More';
+          });
+        });
+      }
+    });
+  </script>
   
   <!-- Sync Notification System -->
   <script>

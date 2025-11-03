@@ -114,6 +114,9 @@
 /* Hide mobile quick icons on desktop by default; mobile CSS will show them */
 .nav-quick-icons { display: none; }
 
+/* Hide project search on desktop by default; shown on mobile via mobile-clean.css */
+.project-search { display: none; }
+
 .nav-item { display: flex; align-items: center; }
 
 .nav-link {

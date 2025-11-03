@@ -859,6 +859,16 @@
         currentDeleteTarget = null;
     }
 
+    // Show spinner when loading delete preview
+    function showDeleteLoadingSpinner(show) {
+        var spinner = document.getElementById('deleteLoadingSpinner');
+        var img = document.getElementById('deletePreviewImg');
+        if (spinner && img) {
+            spinner.style.display = show ? 'block' : 'none';
+            img.style.opacity = show ? '0.3' : '1';
+        }
+    }
+
     // Delete photo from GitHub and renumber
     async function deletePhotoAndRenumber() {
         if (!currentDeleteTarget) return;
@@ -1062,6 +1072,19 @@
         });
         
         observer.observe(mainContainer, { attributes: true });
+    }
+
+    // Gallery button logic
+    var galleryBtn = document.getElementById('galleryBtn');
+    if (galleryBtn && photoGallery) {
+        galleryBtn.addEventListener('click', function() {
+            if (photoGallery.style.display === 'none' || photoGallery.style.display === '') {
+                photoGallery.style.display = 'block';
+                photoGallery.scrollIntoView({behavior: 'smooth'});
+            } else {
+                photoGallery.style.display = 'none';
+            }
+        });
     }
 
     } // End initializeUploader

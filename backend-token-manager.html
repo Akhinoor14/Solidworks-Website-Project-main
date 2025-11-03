@@ -631,6 +631,8 @@ python secure-proxy-server.py</pre>
     </div>
 
     <script src="github-proxy-config.js"></script>
+    <!-- Route any accidental GitHub GETs through the proxy -->
+    <script src="github-fetch-patch.js"></script>
     <script>
         // Backend URL with proper fallback
         const BACKEND_URL = (typeof GITHUB_PROXY_CONFIG !== 'undefined' && GITHUB_PROXY_CONFIG.PROXY_URL) 
