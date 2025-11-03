@@ -809,6 +809,15 @@
 
       // Init bindings on DOM ready
       document.addEventListener('DOMContentLoaded', bind);
+      
+      // IMPORTANT: Ensure modal never auto-opens on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        // Force hide modal and remove modal-open class on initial load
+        if (el.modal) {
+          el.modal.hidden = true;
+        }
+        document.body.classList.remove('modal-open');
+      });
     })();
   </script>
   <script>

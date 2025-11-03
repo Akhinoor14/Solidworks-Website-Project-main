@@ -112,10 +112,18 @@
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Browser Modal - Full Screen Perfect */
+    /* Browser Modal - Hidden by default */
     #github-browser-modal,
     .github-browser-modal,
     .browser-modal {
+        display: none !important;
+    }
+
+    /* Browser Modal - Full Screen Perfect (only when NOT hidden) */
+    #github-browser-modal:not([hidden]),
+    .github-browser-modal:not([hidden]),
+    .browser-modal:not([hidden]) {
+        display: flex !important;
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -1713,11 +1721,4 @@
     }
 }
 
-/* Mobile-only modal activation */
-@media (max-width: 768px) {
-    /* Modal is already styled above in existing rules */
-    /* Just ensure it respects mobile-open state */
-    body.modal-open #github-browser-modal {
-        display: flex !important;
-    }
-}
+/* Mobile styles already defined above with :not([hidden]) selector */
