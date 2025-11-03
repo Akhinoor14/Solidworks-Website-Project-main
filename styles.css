@@ -4162,14 +4162,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
         justify-content: center;
     }
 }
-.profile-image { position:relative; }
-.profile-image:before { content:""; position:absolute; inset:-6px; border-radius:50%; background: var(--gradient-professional); filter:blur(8px); opacity:.15; z-index:1; pointer-events:none; }
-.profile-image .profile-fallback { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.2rem; font-weight:600; letter-spacing:1px; color:#ffffff; background:var(--gradient-professional); font-family:'Playfair Display',serif; }
-.dark .profile-image .profile-fallback { background:linear-gradient(135deg,#312e81,#4338ca); }
-.profile-image.loading img { opacity:0; transition:opacity .4s ease; }
-.profile-image.ready img { opacity:1; }
-
-/* Enhanced profile fallback */
+/* Simple profile fallback - only used if image fails to load */
 .profile-fallback {
     position: absolute;
     inset: 0;
@@ -4189,15 +4182,6 @@ h1, h2, h3, h4, h5, h6, p, span, div {
     background: linear-gradient(135deg, #4338ca, #7c3aed);
     color: #f1f5f9;
 }
-
-/* Profile upload controls */
-.profile-upload-controls { position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:.4rem; z-index:5; }
-.profile-upload-btn, .profile-reset-btn { appearance:none; border:none; cursor:pointer; font-family:inherit; }
-.profile-upload-btn { display:inline-flex; align-items:center; gap:.4rem; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; padding:6px 14px 6px 12px; border-radius:24px; font-size:.7rem; font-weight:600; letter-spacing:.6px; box-shadow:0 4px 12px -4px rgba(80,60,160,.45); position:relative; overflow:hidden; }
-.profile-upload-btn:hover { filter:brightness(1.07); }
-.profile-upload-btn:active { transform:translateY(1px); }
-.profile-reset-btn { background:#ffffff; color:#4f46e5; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.85rem; box-shadow:0 2px 6px rgba(0,0,0,.15); border:1px solid #d5d9ee; }
-.profile-reset-btn:hover { background:#f1f5f9; }
 .dark .profile-reset-btn { background:#1e293b; color:#a5b4fc; border-color:#334155; }
 .dark .profile-reset-btn:hover { background:#24324a; }
 .profile-upload-hint { font-size:.55rem; letter-spacing:.5px; background:rgba(255,255,255,.75); padding:4px 8px; border-radius:10px; color:#334155; backdrop-filter:blur(6px); border:1px solid #d8e2ec; }
