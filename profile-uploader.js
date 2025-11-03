@@ -857,19 +857,24 @@
             });
             if (!getPhotoRes.ok) throw new Error('Failed to read selected photo content');
             const photoData = await getPhotoRes.json();
-            const base64Content = photoData.content; // already base64
+            const base64Content = photoData.content.replace(/\n/g, ''); // Remove newlines from base64
 
             // 2) Get existing PP.jpg sha (if exists)
             let ppSha = null;
-            const getPpRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
-                headers: {
-                    'Authorization': `token ${githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json'
+            try {
+                const getPpRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (getPpRes.ok) {
+                    const ppData = await getPpRes.json();
+                    ppSha = ppData.sha;
                 }
-            });
-            if (getPpRes.ok) {
-                const ppData = await getPpRes.json();
-                ppSha = ppData.sha;
+            } catch (e) {
+                // PP.jpg doesn't exist yet, will create new
+                console.log('PP.jpg not found, creating new');
             }
 
             // 3) PUT content to PP.jpg (create or update)
@@ -878,7 +883,9 @@
                 content: base64Content,
                 branch: 'main'
             };
-            if (ppSha) putBody.sha = ppSha;
+            if (ppSha) {
+                putBody.sha = ppSha;
+            }
 
             const putRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
                 method: 'PUT',
