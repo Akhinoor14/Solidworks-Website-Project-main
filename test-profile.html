@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .test-wrapper {
+            width: 320px;
+            height: 320px;
+            border: 4px solid red;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+        }
+        .test-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .info {
+            color: white;
+            font-family: monospace;
+            padding: 10px;
+            background: #222;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: white;">Profile Picture Test</h1>
+    
+    <div class="info">Testing: https://raw.githubusercontent.com/Akhinoor14/Solidworks-Website-Project-main/main/images/PP.jpg</div>
+    
+    <div class="test-wrapper">
+        <img src="https://raw.githubusercontent.com/Akhinoor14/Solidworks-Website-Project-main/main/images/PP.jpg" 
+             alt="Profile Test"
+             onload="document.getElementById('status').textContent = '✅ Image loaded successfully!'; document.getElementById('status').style.color = 'lime';"
+             onerror="document.getElementById('status').textContent = '❌ Image failed to load'; document.getElementById('status').style.color = 'red';">
+    </div>
+    
+    <div class="info" id="status">⏳ Loading...</div>
+    
+    <div class="info">Alternative test with relative path:</div>
+    
+    <div class="test-wrapper">
+        <img src="./images/PP.jpg" 
+             alt="Profile Test Relative"
+             onload="document.getElementById('status2').textContent = '✅ Relative path works!'; document.getElementById('status2').style.color = 'lime';"
+             onerror="document.getElementById('status2').textContent = '❌ Relative path failed'; document.getElementById('status2').style.color = 'red';">
+    </div>
+    
+    <div class="info" id="status2">⏳ Loading...</div>
+</body>
+</html>
