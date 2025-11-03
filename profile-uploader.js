@@ -778,6 +778,10 @@
             
             existingPhotos = photos.map(p => p.name); // Update global list
             
+            // Determine current profile by PP.jpg sha
+            const ppFile = photos.find(p => (p.name || '').toLowerCase() === 'pp.jpg');
+            const currentSha = ppFile ? ppFile.sha : null;
+            
             showNotification(`✅ Loaded ${photos.length} photo${photos.length > 1 ? 's' : ''} from GitHub`, 'success', 3000);
             
             galleryGrid.innerHTML = photos.map(photo => {
