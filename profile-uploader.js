@@ -465,6 +465,9 @@
 
         try {
             const photos = await fetchGitHubPhotos(githubToken, githubRepo);
+            // Determine current profile by PP.jpg sha
+            const ppFile = photos.find(p => (p.name || '').toLowerCase() === 'pp.jpg');
+            const currentSha = ppFile ? ppFile.sha : null;
             existingPhotos = photos.map(p => p.name);
             console.log(`📋 Found ${existingPhotos.length} existing photos on GitHub:`, existingPhotos);
         } catch (err) {
@@ -777,8 +780,13 @@
             
             showNotification(`✅ Loaded ${photos.length} photo${photos.length > 1 ? 's' : ''} from GitHub`, 'success', 3000);
             
-            galleryGrid.innerHTML = photos.map(photo => `
-                <div class="gallery-photo" data-filename="${photo.name}">
+            galleryGrid.innerHTML = photos.map(photo => {
+                const isCurrent = !!currentSha && photo.sha === currentSha;
+                const badge = isCurrent ? `<div style="position:absolute; top:6px; left:6px; background: rgba(0,200,0,0.85); color:#fff; font-size: 0.7rem; padding: 3px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.15);">Current</div>` : '';
+                const setBtnAttrs = isCurrent ? 'disabled title="Already current"' : `data-photo='${JSON.stringify(photo)}' title="Set as Profile"`;
+                return `
+                <div class="gallery-photo" data-filename="${photo.name}" style="position:relative; ${isCurrent ? 'outline:2px solid #00aa00;' : ''}">
+                    ${badge}
                     <img src="${photo.download_url}" alt="${photo.name}" loading="lazy">
                     <div class="gallery-photo-info">
                         <div class="gallery-photo-name">${photo.name}</div>
@@ -786,22 +794,31 @@
                             <button class="gallery-btn gallery-btn-view" onclick="window.open('${photo.download_url}', '_blank')">
                                 👁️ View
                             </button>
+                            <button class="gallery-btn gallery-btn-profile" ${setBtnAttrs}>
+                                ⭐ ${isCurrent ? 'Current' : 'Set Profile'}
+                            </button>
                             <button class="gallery-btn gallery-btn-delete" data-photo='${JSON.stringify(photo)}'>
                                 🗑️ Delete
                             </button>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
             
             galleryStatus.textContent = `✅ Loaded ${photos.length} photo${photos.length > 1 ? 's' : ''}`;
             galleryStatus.style.color = '#00ff00';
             
-            // Attach delete handlers
+            // Attach action handlers
             document.querySelectorAll('.gallery-btn-delete').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const photoData = JSON.parse(this.dataset.photo);
                     showDeleteConfirmation(photoData);
+                });
+            });
+            document.querySelectorAll('.gallery-btn-profile').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const photoData = JSON.parse(this.dataset.photo);
+                    setAsProfile(photoData);
                 });
             });
             
@@ -811,6 +828,82 @@
             galleryStatus.textContent = errorMsg;
             galleryStatus.style.color = '#ff6666';
             showNotification(errorMsg, 'error', 6000);
+        }
+    }
+
+    // Set selected photo as hero profile (copies to images/PP.jpg)
+    async function setAsProfile(photo) {
+        try {
+            const githubToken = localStorage.getItem('githubToken') || localStorage.getItem('github_token');
+            const githubRepo = localStorage.getItem('githubRepo') || localStorage.getItem('github_repo');
+            if (!githubToken || !githubRepo) {
+                showNotification('❌ GitHub not configured in Settings', 'error');
+                return;
+            }
+            const [owner, repoName] = githubRepo.split('/');
+
+            showNotification(`⭐ Setting ${photo.name} as profile photo...`, 'info', 0);
+
+            // 1) Get selected photo content (base64)
+            const getPhotoRes = await fetch(photo.url, {
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (!getPhotoRes.ok) throw new Error('Failed to read selected photo content');
+            const photoData = await getPhotoRes.json();
+            const base64Content = photoData.content; // already base64
+
+            // 2) Get existing PP.jpg sha (if exists)
+            let ppSha = null;
+            const getPpRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (getPpRes.ok) {
+                const ppData = await getPpRes.json();
+                ppSha = ppData.sha;
+            }
+
+            // 3) PUT content to PP.jpg (create or update)
+            const putBody = {
+                message: `Set PP.jpg to ${photo.name}`,
+                content: base64Content,
+                branch: 'main'
+            };
+            if (ppSha) putBody.sha = ppSha;
+
+            const putRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(putBody)
+            });
+            if (!putRes.ok) {
+                const errData = await putRes.json().catch(() => ({}));
+                throw new Error(errData.message || 'Failed to update PP.jpg');
+            }
+
+            showNotification('✅ Profile photo updated! Homepage will show it next load.', 'success', 4000);
+            // Refresh gallery to reflect new Current badge
+            try { setTimeout(() => loadGallery(), 750); } catch (e) {}
+
+            // Optional: signal other tabs to refresh
+            try {
+                const channel = new BroadcastChannel('websiteUpdates');
+                channel.postMessage({ type: 'PROFILE_UPDATED', at: Date.now() });
+                channel.close();
+            } catch (e) {}
+
+        } catch (error) {
+            console.error('Set profile error:', error);
+            showNotification(`❌ Could not set profile: ${error.message}`, 'error', 6000);
         }
     }
 

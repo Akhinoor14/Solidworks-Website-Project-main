@@ -305,8 +305,28 @@
     <script src="realtime-github-sync.js"></script>
     <!-- CV viewer overlay (defines openCVViewer, cvDownload, etc.) -->
     <script src="CV_VIEWER_FIX.js"></script>
-    <!-- Profile photo slideshow (30s auto-rotate) -->
-    <script src="profile-slideshow.js"></script>
+        <!-- Disable slideshow: always show single hero photo -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    var img = document.getElementById('profile-photo');
+                    if (img) {
+                        // Cache-bust so latest PP.jpg shows after updates
+                        var base = './images/PP.jpg';
+                        img.src = base + '?t=' + Date.now();
+                    }
+                    // Listen for updates from uploader to refresh image without full reload
+                    try {
+                        const channel = new BroadcastChannel('websiteUpdates');
+                        channel.addEventListener('message', (event) => {
+                            if (event.data && event.data.type === 'PROFILE_UPDATED') {
+                                if (img) img.src = './images/PP.jpg?t=' + Date.now();
+                            }
+                        });
+                    } catch (e) {}
+                } catch (e) { console.warn(e); }
+            });
+        </script>
     <script src="script.js?v=20251020133251"></script>
 </body>
 </html>
