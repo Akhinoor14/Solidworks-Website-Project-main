@@ -20,9 +20,10 @@
       try {
         let url = typeof input === 'string' ? input : (input && input.url) || '';
         const method = (init && (init.method || init.METHOD)) || (typeof Request !== 'undefined' && input instanceof Request ? input.method : 'GET');
+        const upper = (method || 'GET').toUpperCase();
 
-        // Only reroute GET requests to GitHub API
-        if (url.startsWith(API_PREFIX) && (!method || method.toUpperCase() === 'GET')) {
+        // Reroute GET and HEAD requests to GitHub API via proxy
+        if (url.startsWith(API_PREFIX) && (upper === 'GET' || upper === 'HEAD')) {
           const path = url.substring(API_PREFIX.length); // everything after domain/
           const proxiedUrl = PROXY_PREFIX + path;
 

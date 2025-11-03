@@ -19,6 +19,46 @@
     let intervalId = null;
     let preloadedImages = new Map(); // Cache for preloaded images
 
+    // Loader overlay management
+    function getWrapper() {
+        return document.getElementById('profile-photo-wrapper');
+    }
+
+    function ensureLoader() {
+        const wrapper = getWrapper();
+        if (!wrapper) return null;
+        // Ensure wrapper can contain overlay
+        if (getComputedStyle(wrapper).position === 'static') {
+            wrapper.style.position = 'relative';
+        }
+        let loader = document.getElementById('profile-photo-loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'profile-photo-loader';
+            loader.setAttribute('aria-live', 'polite');
+            loader.style.cssText = 'position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.15);backdrop-filter:blur(1px);';
+            const spinner = document.createElement('div');
+            spinner.style.cssText = 'width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);border-top-color:#cc0000;animation:ppspin 0.9s linear infinite;';
+            loader.appendChild(spinner);
+            // Keyframes
+            const style = document.createElement('style');
+            style.textContent = '@keyframes ppspin{to{transform:rotate(360deg)}}';
+            document.head.appendChild(style);
+            wrapper.appendChild(loader);
+        }
+        return loader;
+    }
+
+    function showLoader() {
+        const loader = ensureLoader();
+        if (loader) loader.style.display = 'flex';
+    }
+
+    function hideLoader() {
+        const loader = ensureLoader();
+        if (loader) loader.style.display = 'none';
+    }
+
     // Get the profile photo element
     function getProfilePhoto() {
         return document.getElementById('profile-photo');
@@ -82,7 +122,7 @@
         
         // Check PP.jpg first
         try {
-            const response = await fetch(CONFIG.imageFolder + 'PP.jpg', { method: 'HEAD' });
+            const response = await fetch(CONFIG.imageFolder + 'PP.jpg?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
             if (response.ok) {
                 detected.push('PP.jpg');
             }
@@ -99,7 +139,7 @@
             const filename = `PP${currentNumber}.jpg`;
             
             try {
-                const response = await fetch(CONFIG.imageFolder + filename, { method: 'HEAD' });
+                const response = await fetch(CONFIG.imageFolder + filename + '?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
                 if (response.ok) {
                     detected.push(filename);
                     consecutiveMissing = 0; // Reset counter on success
@@ -179,7 +219,7 @@
 
         // Move to next photo (loop back to start)
         currentIndex = (currentIndex + 1) % detectedPhotos.length;
-        const nextPhoto = CONFIG.imageFolder + detectedPhotos[currentIndex];
+        const nextPhoto = CONFIG.imageFolder + detectedPhotos[currentIndex] + '?t=' + Date.now();
 
         console.log(`🔄 Shuffling to photo ${currentIndex + 1}/${detectedPhotos.length}:`, nextPhoto);
 
@@ -187,16 +227,36 @@
         img.style.transition = `opacity ${CONFIG.transitionDuration}ms ${CONFIG.easing}`;
         img.style.opacity = '0';
 
-        // Change image and fade in (image already preloaded for instant display)
-        setTimeout(() => {
-            img.src = nextPhoto;
+        // Show loader while switching
+        showLoader();
+
+        const prevSrc = img.src;
+        const cleanupHandlers = () => {
+            img.onload = null;
+            img.onerror = null;
+        };
+
+        img.onload = () => {
+            cleanupHandlers();
             // Force reflow to ensure transition works
             void img.offsetWidth;
             img.style.opacity = '1';
-            
+            hideLoader();
             // Preload the next image after current one loads
             preloadNextImage();
-        }, CONFIG.transitionDuration);
+        };
+        img.onerror = () => {
+            console.warn('⚠️ Failed to load image, reverting to previous src');
+            cleanupHandlers();
+            img.style.opacity = '1';
+            img.src = prevSrc; // revert
+            hideLoader();
+        };
+
+        // Change image after fade-out
+        setTimeout(() => {
+            img.src = nextPhoto;
+        }, Math.max(50, CONFIG.transitionDuration * 0.6));
     }
 
     // Start the slideshow
@@ -207,11 +267,17 @@
             return;
         }
 
+        // Defensive: ensure an initial image is visible and loader exists
+        ensureLoader();
+        showLoader();
+        img.style.opacity = '1';
+
         // Auto-detect photos first
         await detectProfilePhotos();
 
         if (detectedPhotos.length <= 1) {
             console.log('ℹ️ Only one photo detected, slideshow disabled');
+            hideLoader();
             return;
         }
 
@@ -225,6 +291,7 @@
         
         // Initialize smooth transition on profile photo
         img.style.transition = `opacity ${CONFIG.transitionDuration}ms ${CONFIG.easing}`;
+        hideLoader();
         
         // Shuffle at configured interval
         intervalId = setInterval(shufflePhoto, CONFIG.interval);
@@ -243,6 +310,8 @@
     async function refreshPhotos() {
         console.log('🔄 Refreshing photo list...');
         stopSlideshow();
+        // Clear caches to avoid stale images after upload
+        preloadedImages.clear();
         await startSlideshow();
     }
 
