@@ -30,7 +30,8 @@
         padding: 0 20px !important;
         text-align: center !important;
         font-weight: 700 !important;
-        color: #1a1a1a !important;
+        color: #ffffff !important;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
     }
 
     /* Section Subtitle */
@@ -40,7 +41,8 @@
         margin-bottom: 30px !important;
         padding: 0 20px !important;
         text-align: center !important;
-        color: #666666 !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
         line-height: 1.5 !important;
     }
 }
@@ -72,16 +74,18 @@
         
         /* Border */
         border-radius: 12px !important;
-        border: 2px solid transparent !important;
+        border: 2px solid rgba(255, 0, 0, 0.2) !important;
         
-        /* Background */
-        background: #f8f9fa !important;
+        /* Background - Dark theme */
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
         
         /* Typography */
         font-size: 13px !important;
         font-weight: 600 !important;
         text-decoration: none !important;
         text-align: center !important;
+        color: rgba(255, 255, 255, 0.9) !important;
         
         /* Transition */
         transition: all 0.3s ease !important;
@@ -101,77 +105,89 @@
         display: block !important;
         font-size: 12px !important;
         font-weight: 500 !important;
-    }
-
     /* WhatsApp */
     .quick-action.whatsapp {
-        background: #e8f5e9 !important;
-        color: #25D366 !important;
+        background: rgba(37, 211, 102, 0.1) !important;
+        color: #4ade80 !important;
+        border-color: rgba(37, 211, 102, 0.3) !important;
     }
 
     .quick-action.whatsapp:active {
-        background: #25D366 !important;
+        background: rgba(37, 211, 102, 0.3) !important;
         color: #ffffff !important;
         transform: scale(0.95) !important;
+        border-color: rgba(37, 211, 102, 0.5) !important;
     }
 
     /* Email */
     .quick-action.email {
-        background: #e3f2fd !important;
-        color: #1976d2 !important;
+        background: rgba(255, 0, 0, 0.1) !important;
+        color: #ff6666 !important;
+        border-color: rgba(255, 0, 0, 0.3) !important;
     }
 
     .quick-action.email:active {
-        background: #1976d2 !important;
+        background: rgba(255, 0, 0, 0.3) !important;
         color: #ffffff !important;
         transform: scale(0.95) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
     }
 
     /* Phone */
     .quick-action.phone {
-        background: #f3e5f5 !important;
-        color: #7b1fa2 !important;
+        background: rgba(123, 31, 162, 0.1) !important;
+        color: #d8b4fe !important;
+        border-color: rgba(123, 31, 162, 0.3) !important;
     }
 
     .quick-action.phone:active {
-        background: #7b1fa2 !important;
+        background: rgba(123, 31, 162, 0.3) !important;
         color: #ffffff !important;
         transform: scale(0.95) !important;
+        border-color: rgba(123, 31, 162, 0.5) !important;
     }
 
     /* LinkedIn */
     .quick-action.linkedin {
-        background: #e3f2fd !important;
-        color: #0077b5 !important;
+        background: rgba(0, 119, 181, 0.1) !important;
+        color: #60a5fa !important;
+        border-color: rgba(0, 119, 181, 0.3) !important;
     }
 
     .quick-action.linkedin:active {
-        background: #0077b5 !important;
+        background: rgba(0, 119, 181, 0.3) !important;
         color: #ffffff !important;
         transform: scale(0.95) !important;
+        border-color: rgba(0, 119, 181, 0.5) !important;
     }
 
     /* Facebook */
     .quick-action.facebook {
-        background: #e3f2fd !important;
-        color: #1877f2 !important;
+        background: rgba(24, 119, 242, 0.1) !important;
+        color: #60a5fa !important;
+        border-color: rgba(24, 119, 242, 0.3) !important;
     }
 
     .quick-action.facebook:active {
-        background: #1877f2 !important;
+        background: rgba(24, 119, 242, 0.3) !important;
         color: #ffffff !important;
         transform: scale(0.95) !important;
+        border-color: rgba(24, 119, 242, 0.5) !important;
     }
 
     /* YouTube */
     .quick-action.youtube {
-        background: #ffebee !important;
-        color: #ff0000 !important;
+        background: rgba(255, 0, 0, 0.1) !important;
+        color: #ff6666 !important;
+        border-color: rgba(255, 0, 0, 0.3) !important;
     }
 
     .quick-action.youtube:active {
-        background: #ff0000 !important;
+        background: rgba(255, 0, 0, 0.3) !important;
         color: #ffffff !important;
+        transform: scale(0.95) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
+    }   color: #ffffff !important;
         transform: scale(0.95) !important;
     }
 }
@@ -215,13 +231,13 @@
         
         /* Border */
         border-radius: 12px !important;
-        border: 1px solid #e5e7eb !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
         
-        /* Background */
-        background: #ffffff !important;
+        /* Background - Dark theme */
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.4)) !important;
         
         /* Shadow */
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.1) !important;
         
         /* Transition */
         transition: all 0.2s ease !important;
@@ -229,7 +245,8 @@
 
     .contact-item:active {
         transform: scale(0.98) !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.2) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
     }
 
     .contact-icon {
@@ -246,8 +263,9 @@
         /* Border */
         border-radius: 50% !important;
         
-        /* Background */
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        /* Background - Red gradient */
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3) !important;
         
         /* Color */
         color: #ffffff !important;
@@ -267,8 +285,9 @@
         font-weight: 600 !important;
         margin: 0 0 4px 0 !important;
         
-        /* Color */
-        color: #374151 !important;
+        /* Color - White */
+        color: #ffffff !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
     }
 
     .contact-details a {
@@ -276,8 +295,8 @@
         font-size: 13px !important;
         font-weight: 500 !important;
         
-        /* Color */
-        color: #2563eb !important;
+        /* Color - Red accent */
+        color: #ff6666 !important;
         text-decoration: none !important;
         
         /* Display */
@@ -287,7 +306,7 @@
     }
 
     .contact-details a:active {
-        color: #1d4ed8 !important;
+        color: #ff3333 !important;
     }
 }
 
@@ -322,14 +341,15 @@
         padding: 14px 16px !important;
         
         /* Border */
-        border: 2px solid #e5e7eb !important;
+        border: 2px solid rgba(255, 0, 0, 0.3) !important;
         border-radius: 10px !important;
         
-        /* Background */
-        background: #ffffff !important;
+        /* Background - Dark theme */
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
         
-        /* Color */
-        color: #1a1a1a !important;
+        /* Color - White text */
+        color: #ffffff !important;
         
         /* Transition */
         transition: all 0.2s ease !important;
@@ -353,14 +373,15 @@
     .form-group input:focus,
     .form-group textarea:focus {
         outline: none !important;
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        border-color: #ff0000 !important;
+        box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
     }
 
     /* Placeholder */
     .form-group input::placeholder,
     .form-group textarea::placeholder {
-        color: #9ca3af !important;
+        color: rgba(255, 255, 255, 0.5) !important;
         opacity: 1 !important;
     }
 
@@ -400,11 +421,12 @@
         border-radius: 12px !important;
         border: none !important;
         
-        /* Background */
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        /* Background - Red gradient */
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
         
         /* Color */
         color: #ffffff !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
         
         /* Display */
         display: flex !important;
@@ -423,12 +445,12 @@
         touch-action: manipulation !important;
         
         /* Shadow */
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4) !important;
     }
 
     .contact-form button[type="submit"]:active {
         transform: scale(0.98) !important;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3) !important;
     }
 
     .contact-form button[type="submit"]:disabled {

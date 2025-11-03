@@ -170,8 +170,9 @@
         /* Spacing */
         margin: 0 0 15px 0 !important;
         
-        /* Color */
-        color: #1a1a1a !important;
+        /* Color - White for dark theme */
+        color: #ffffff !important;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.3) !important;
     }
 
     .hero-title .title-line {
@@ -194,8 +195,8 @@
         /* Display */
         display: inline-block !important;
         
-        /* Color - Gradient */
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        /* Color - Red Gradient */
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -209,8 +210,8 @@
         /* Spacing */
         margin-top: 5px !important;
         
-        /* Background */
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        /* Background - Red gradient */
+        background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%) !important;
         
         /* Border */
         border-radius: 2px !important;
@@ -227,8 +228,9 @@
         margin: 0 0 15px 0 !important;
         padding: 0 10px !important;
         
-        /* Color */
-        color: #666666 !important;
+        /* Color - Light gray for dark theme */
+        color: rgba(255, 255, 255, 0.8) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
     }
 
     /* Hero Description */
@@ -241,12 +243,14 @@
         margin: 0 0 25px 0 !important;
         padding: 0 10px !important;
         
-        /* Color */
-        color: #4a5568 !important;
+        /* Color - Readable white */
+        color: rgba(255, 255, 255, 0.75) !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
         
         /* Max lines */
         display: -webkit-box !important;
         -webkit-line-clamp: 4 !important;
+        line-clamp: 4 !important;
         -webkit-box-orient: vertical !important;
         overflow: hidden !important;
     }
@@ -257,8 +261,8 @@
     }
 
     .text-highlight {
-        /* Color */
-        color: #667eea !important;
+        /* Color - Red accent */
+        color: #ff6666 !important;
         
         /* Weight */
         font-weight: 600 !important;
@@ -294,11 +298,11 @@
         align-items: center !important;
         gap: 6px !important;
         
-        /* Background */
-        background: rgba(102, 126, 234, 0.1) !important;
+        /* Background - Dark theme */
+        background: rgba(255, 0, 0, 0.1) !important;
         
         /* Border */
-        border: 1px solid rgba(102, 126, 234, 0.2) !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
         border-radius: 20px !important;
         
         /* Transition */
@@ -307,15 +311,16 @@
 
     .tech-badge:active {
         transform: scale(0.95) !important;
-        background: rgba(102, 126, 234, 0.2) !important;
+        background: rgba(255, 0, 0, 0.2) !important;
+        border-color: rgba(255, 0, 0, 0.4) !important;
     }
 
     .tech-icon {
         /* Size */
         font-size: 14px !important;
         
-        /* Color */
-        color: #667eea !important;
+        /* Color - Red */
+        color: #ff6666 !important;
     }
 
     .tech-name {
@@ -323,8 +328,8 @@
         font-size: 12px !important;
         font-weight: 500 !important;
         
-        /* Color */
-        color: #4a5568 !important;
+        /* Color - White */
+        color: rgba(255, 255, 255, 0.8) !important;
     }
 
     /* Hide pulse animation on mobile */
@@ -383,41 +388,44 @@
         touch-action: manipulation !important;
     }
 
-    /* Primary button */
+    /* Primary button - Red gradient theme */
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
     }
 
     .btn-primary:active {
         transform: scale(0.97) !important;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3) !important;
     }
 
-    /* Secondary button */
+    /* Secondary button - Dark theme */
     .btn-secondary {
-        background: #ffffff !important;
-        color: #667eea !important;
-        border: 2px solid #667eea !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
     }
 
     .btn-secondary:active {
         transform: scale(0.97) !important;
-        background: #f7fafc !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
     }
 
     /* Outline button */
     .btn-outline {
         background: transparent !important;
-        color: #4a5568 !important;
-        border: 2px solid #e2e8f0 !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        border: 2px solid rgba(255, 0, 0, 0.3) !important;
     }
 
     .btn-outline:active {
         transform: scale(0.97) !important;
-        background: #f7fafc !important;
+        background: rgba(255, 0, 0, 0.1) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
     }
 
     /* Button text & icon */
@@ -469,15 +477,15 @@
         /* Spacing */
         padding: 20px !important;
         
-        /* Background */
-        background: #ffffff !important;
+        /* Background - Dark theme */
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.4)) !important;
         
         /* Border */
-        border: 1px solid #e2e8f0 !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
         border-radius: 12px !important;
         
         /* Shadow */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.1) !important;
         
         /* Transition */
         transition: all 0.2s ease !important;
@@ -485,7 +493,8 @@
 
     .expertise-card:active {
         transform: scale(0.98) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.2) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
     }
 
     .expertise-icon {
@@ -498,11 +507,12 @@
         align-items: center !important;
         justify-content: center !important;
         
-        /* Background */
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        /* Background - Red gradient */
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
         
         /* Border */
         border-radius: 12px !important;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3) !important;
         
         /* Font */
         font-size: 24px !important;
@@ -528,8 +538,9 @@
         /* Spacing */
         margin: 0 0 5px 0 !important;
         
-        /* Color */
-        color: #1a1a1a !important;
+        /* Color - White */
+        color: #ffffff !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
     }
 
     .expertise-info p {
@@ -539,8 +550,9 @@
         /* Spacing */
         margin: 0 !important;
         
-        /* Color */
-        color: #718096 !important;
+        /* Color - Light gray */
+        color: rgba(255, 255, 255, 0.7) !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
     }
 }
 
@@ -700,6 +712,7 @@
     .hero-description {
         font-size: 14px !important;
         -webkit-line-clamp: 3 !important;
+        line-clamp: 3 !important;
     }
 
     .profile-container {
