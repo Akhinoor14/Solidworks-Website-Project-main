@@ -531,6 +531,35 @@
     </div>
   </footer>
 
+  <!-- GitHub Browser Modal (Mobile-optimized) -->
+  <div id="github-browser-modal" class="github-browser-modal" role="dialog" aria-modal="true" hidden>
+    <div class="github-browser-content browser-modal-content">
+      <button class="close-modal" id="gb-close" aria-label="Close">&times;</button>
+      <header class="github-browser-header">
+        <div class="repo-info">
+          <i class="fab fa-github" aria-hidden="true"></i>
+          <h2 id="gb-title" style="margin:0;">Repository</h2>
+          <div class="repo-path" id="gb-path">/</div>
+        </div>
+        <div class="browser-actions" role="tablist" aria-label="Browser tabs">
+          <button class="github-action-btn" id="gb-tab-files" role="tab" aria-selected="true"><i class="fas fa-folder-open"></i> Repository Files</button>
+          <button class="github-action-btn" id="gb-tab-preview" role="tab" aria-selected="false"><i class="fas fa-eye"></i> Preview Space</button>
+        </div>
+      </header>
+      <div class="github-browser-body">
+        <div class="file-explorer" id="gb-files-panel" role="tabpanel" aria-labelledby="gb-tab-files">
+          <div class="explorer-header"><i class="fas fa-folder" aria-hidden="true"></i> Files & Folders</div>
+          <div class="browser-search"><input id="gb-search" type="search" placeholder="Filter files…" autocomplete="off"></div>
+          <div class="file-tree" id="gb-list" aria-live="polite"></div>
+        </div>
+        <div class="file-viewer" id="gb-preview-panel" role="tabpanel" aria-labelledby="gb-tab-preview">
+          <div class="viewer-header"><i class="fas fa-file-alt" aria-hidden="true"></i> Preview</div>
+          <div class="file-content" id="gb-preview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Backend Proxy Configuration (MUST load before script.js) -->
   <script src="github-proxy-config.js" defer></script>
   <!-- Enforce proxy for all GitHub GET requests -->
@@ -541,6 +570,247 @@
   <script src="auto-refresh.js" defer></script>
   <script src="realtime-github-sync.js" defer></script>
   <script src="script.js?v=20251020133251" defer></script>
+  
+  <!-- Lightweight GitHub Browser Logic for Mobile -->
+  <script>
+    (function(){
+      const state = {
+        owner: null,
+        repo: null,
+        branch: 'main',
+        path: '',
+        items: [],
+        currentFile: null,
+      };
+
+      const el = {
+        modal: null,
+        title: null,
+        path: null,
+        list: null,
+        preview: null,
+        tabFiles: null,
+        tabPreview: null,
+        panelFiles: null,
+        panelPreview: null,
+        search: null,
+        close: null,
+      };
+
+      function qs(id){ return document.getElementById(id); }
+
+      function showModal(){
+        document.body.classList.add('modal-open');
+        el.modal.hidden = false;
+      }
+
+      function hideModal(){
+        el.modal.hidden = true;
+        document.body.classList.remove('modal-open');
+      }
+
+      function setTabs(active){
+        const isFiles = active === 'files';
+        el.tabFiles.setAttribute('aria-selected', isFiles ? 'true' : 'false');
+        el.tabPreview.setAttribute('aria-selected', !isFiles ? 'true' : 'false');
+        if (isFiles) {
+          el.panelFiles.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          el.panelPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function breadcrumbHTML(path){
+        const parts = path ? path.split('/') : [];
+        let acc = '';
+        const items = ['<span class="path-item" data-path="">/</span>'];
+        parts.forEach((p, idx) => {
+          acc = acc ? acc + '/' + p : p;
+          items.push(`<span class="path-separator">›</span><span class="path-item" data-path="${acc}">${p}</span>`);
+        });
+        return items.join(' ');
+      }
+
+      async function githubJson(url){
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        return res.json();
+      }
+
+      function rawUrl(path){
+        return `https://raw.githubusercontent.com/${state.owner}/${state.repo}/${state.branch}/${path}`;
+      }
+
+      async function loadDir(path){
+        state.path = path || '';
+        el.path.innerHTML = breadcrumbHTML(state.path);
+        el.list.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i><p>Loading files…</p></div>';
+        try {
+          const api = `https://api.github.com/repos/${state.owner}/${state.repo}/contents/${state.path ? state.path : ''}`;
+          let items = await githubJson(api);
+          if (!Array.isArray(items)) items = [];
+          // Sort: folders first, then files
+          items.sort((a,b)=> (a.type===b.type ? a.name.localeCompare(b.name) : (a.type==='dir'?-1:1)));
+          state.items = items;
+          renderList(items);
+        } catch (err) {
+          console.error(err);
+          el.list.innerHTML = '<div class="browser-error"><i class="fas fa-triangle-exclamation"></i><p>Could not load directory. Please try again.</p></div>';
+        }
+      }
+
+      function renderList(items){
+        if (!items.length) {
+          el.list.innerHTML = '<div class="browser-empty"><i class="far fa-folder-open"></i><p>Folder is empty</p></div>';
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = `browser-item ${item.type === 'dir' ? 'folder' : 'file'}`;
+          row.innerHTML = `
+            <div class="item-icon"><i class="fas fa-${item.type==='dir'?'folder':'file'}"></i></div>
+            <div class="item-info">
+              <div class="item-name">${item.name}</div>
+              <div class="item-meta">${item.type.toUpperCase()}</div>
+            </div>
+            <div class="item-actions">
+              ${item.type==='file' ? '<button class="item-action-btn view" title="Preview"><i class="fas fa-eye"></i></button>' : ''}
+              ${item.type==='file' ? '<a class="item-action-btn download" title="Download" href="'+item.download_url+'" target="_blank"><i class="fas fa-download"></i></a>' : ''}
+              ${item.type==='dir' ? '<button class="item-action-btn" title="Open"><i class="fas fa-arrow-right"></i></button>' : ''}
+            </div>
+          `;
+
+          // Row click behavior
+          row.addEventListener('click', (e) => {
+            // Ignore clicks on action buttons, handle separately
+            const actionBtn = e.target.closest('.item-action-btn');
+            if (actionBtn) return; 
+            if (item.type === 'dir') {
+              const next = state.path ? `${state.path}/${item.name}` : item.name;
+              loadDir(next);
+            } else {
+              previewFile(item);
+            }
+          });
+          // Action buttons
+          row.querySelectorAll('.item-action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (btn.classList.contains('view')) previewFile(item);
+              // download is an anchor, default allowed
+              if (!btn.href && item.type === 'dir') {
+                const next = state.path ? `${state.path}/${item.name}` : item.name;
+                loadDir(next);
+              }
+            });
+          });
+
+          frag.appendChild(row);
+        });
+        el.list.innerHTML = '';
+        el.list.appendChild(frag);
+
+        // Breadcrumb click
+        el.path.querySelectorAll('.path-item').forEach(pi => {
+          pi.addEventListener('click', () => loadDir(pi.dataset.path || ''));
+        });
+      }
+
+      async function previewFile(item){
+        try {
+          state.currentFile = item;
+          setTabs('preview');
+          el.preview.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i><p>Loading preview…</p></div>';
+          const name = item.name.toLowerCase();
+          const path = state.path ? `${state.path}/${item.name}` : item.name;
+          const url = rawUrl(path);
+          if (name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.gif') || name.endsWith('.svg')) {
+            el.preview.innerHTML = `<div style="display:flex;justify-content:center;"><img src="${url}" alt="${item.name}" style="max-width:100%;height:auto;border-radius:8px"/></div>`;
+            return;
+          }
+          if (name.endsWith('.pdf')) {
+            el.preview.innerHTML = `<iframe src="${url}" class="pdf-viewer" style="width:100%;height:70vh;border:none;border-radius:8px;" title="${item.name}"></iframe>`;
+            return;
+          }
+          // Text-like files (md, txt, json, code)
+          const res = await fetch(url);
+          const text = await res.text();
+          if (name.endsWith('.md') || name.endsWith('.markdown')) {
+            const html = window.marked ? marked.parse(text) : `<pre>${text.replace(/[&<>]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[s]))}</pre>`;
+            el.preview.innerHTML = `<article class="markdown-body">${html}</article>`;
+            if (window.hljs) setTimeout(()=>hljs.highlightAll(), 0);
+            return;
+          }
+          const safe = text.replace(/[&<>]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[s]));
+          el.preview.innerHTML = `<pre><code class="hljs">${safe}</code></pre>`;
+          if (window.hljs) setTimeout(()=>hljs.highlightAll(), 0);
+        } catch (e) {
+          console.error(e);
+          el.preview.innerHTML = '<div class="browser-error"><i class="fas fa-triangle-exclamation"></i><p>Could not load preview.</p></div>';
+        }
+      }
+
+      function filterList(value){
+        const q = (value||'').toLowerCase();
+        const rows = el.list.querySelectorAll('.browser-item');
+        rows.forEach(r => {
+          const name = r.querySelector('.item-name')?.textContent.toLowerCase() || '';
+          r.style.display = (!q || name.includes(q)) ? '' : 'none';
+        });
+      }
+
+      function bind(){
+        el.modal = qs('github-browser-modal');
+        el.title = qs('gb-title');
+        el.path = qs('gb-path');
+        el.list = qs('gb-list');
+        el.preview = qs('gb-preview');
+        el.tabFiles = qs('gb-tab-files');
+        el.tabPreview = qs('gb-tab-preview');
+        el.panelFiles = qs('gb-files-panel');
+        el.panelPreview = qs('gb-preview-panel');
+        el.search = qs('gb-search');
+        el.close = qs('gb-close');
+
+        el.close.addEventListener('click', hideModal);
+        el.tabFiles.addEventListener('click', () => setTabs('files'));
+        el.tabPreview.addEventListener('click', () => setTabs('preview'));
+        el.search.addEventListener('input', (e)=> filterList(e.target.value));
+        // Close on backdrop click
+        el.modal.addEventListener('click', (e)=>{ if(e.target === el.modal) hideModal(); });
+
+        // Wire generic browse buttons on other cards
+        document.querySelectorAll('.repo-auto-card .btn-sw-browse').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const card = btn.closest('.repo-auto-card');
+            const owner = card?.dataset.owner;
+            const repo = card?.dataset.repo;
+            const title = card?.querySelector('[data-title]')?.textContent?.trim() || `${owner}/${repo}`;
+            if (owner && repo) openGitHubBrowser(owner, repo, title);
+          });
+        });
+      }
+
+      // Public API
+      window.openGitHubBrowser = function(owner, repo, title){
+        if (!el.modal) bind();
+        state.owner = owner;
+        state.repo = repo;
+        state.path = '';
+        state.currentFile = null;
+        el.title.textContent = title || `${owner}/${repo}`;
+        el.preview.innerHTML = '<div class="empty-state"><i class="far fa-eye"></i><p>Select a file to preview</p></div>';
+        setTabs('files');
+        showModal();
+        loadDir('');
+      };
+
+      // Init bindings on DOM ready
+      document.addEventListener('DOMContentLoaded', bind);
+    })();
+  </script>
   <script>
     // Lightweight mobile search filter (non-destructive)
     document.addEventListener('DOMContentLoaded', function () {
@@ -637,9 +907,12 @@
         });
       });
 
-      // Initialize default view based on aria-current, fallback to root
+      // Initialize default view: CW instead of root on mobile
       const current = Array.from(buttons).find(b => b.getAttribute('aria-current') === 'true');
-      showView(current ? current.dataset.target : 'root');
+      const mql = window.matchMedia('(max-width: 768px)');
+      // On mobile, show CW by default; on desktop, respect current or fallback to root
+      const defaultView = mql.matches ? 'cw' : (current ? current.dataset.target : 'root');
+      showView(defaultView);
 
       // Lightweight empty states for file containers if nothing injected yet
       const containers = [

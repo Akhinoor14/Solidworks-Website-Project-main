@@ -948,123 +948,139 @@
 
     /* SW View Container - Each Section (Overview, CW, HW, Solo) */
     .sw-view {
-        padding: 18px 15px !important;
+        padding: 0 !important;
         width: 100% !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        min-height: 100vh !important;
     }
 
     /* SW View Header - Back Button + Title + Folder Link */
     .sw-view-header {
-        padding: 14px 16px !important;
+        padding: 16px 18px !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        gap: 12px !important;
-        background: linear-gradient(135deg, rgba(40, 0, 0, 0.65), rgba(20, 0, 0, 0.45)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.35) !important;
-        border-radius: 12px !important;
-        margin-bottom: 18px !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+        gap: 14px !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.95), rgba(20, 0, 0, 0.85)) !important;
+        border: none !important;
+        border-bottom: 3px solid rgba(255, 0, 0, 0.5) !important;
+        border-radius: 0 !important;
+        margin-bottom: 0 !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6) !important;
         position: sticky !important;
         top: 0 !important;
-        z-index: 5 !important;
-        backdrop-filter: blur(6px) !important;
-        -webkit-backdrop-filter: blur(6px) !important;
+        z-index: 10 !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
     }
 
     .sw-view-header h4 {
-        font-size: 1.2rem !important;
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
         color: #ffffff !important;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+        text-shadow: 0 2px 10px rgba(255, 0, 0, 0.5) !important;
         display: flex !important;
         align-items: center !important;
-        gap: 10px !important;
+        gap: 12px !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .sw-view-header h4::before {
+        content: '📂' !important;
+        font-size: 1.5rem !important;
+        filter: drop-shadow(0 2px 8px rgba(255, 0, 0, 0.4)) !important;
     }
 
     /* Back Button - Top of Header */
     .sw-back {
         width: 100% !important;
-        padding: 12px 18px !important;
-        min-height: 50px !important;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        background: linear-gradient(135deg, rgba(60, 0, 0, 0.7), rgba(30, 0, 0, 0.5)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.45) !important;
-        border-radius: 10px !important;
+        padding: 14px 20px !important;
+        min-height: 54px !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        background: linear-gradient(135deg, rgba(80, 0, 0, 0.8), rgba(40, 0, 0, 0.6)) !important;
+        border: 2px solid rgba(255, 0, 0, 0.6) !important;
+        border-radius: 12px !important;
         color: #ffffff !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 12px !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        letter-spacing: 0.5px !important;
     }
 
     .sw-back:active {
-        transform: scale(0.98) !important;
-        background: linear-gradient(135deg, rgba(80, 0, 0, 0.8), rgba(40, 0, 0, 0.6)) !important;
-        border-color: rgba(255, 0, 0, 0.65) !important;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+        transform: scale(0.97) !important;
+        background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+        border-color: rgba(255, 0, 0, 0.8) !important;
+        box-shadow: 0 8px 22px rgba(255, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
     }
 
     .sw-back i {
-        font-size: 1.1rem !important;
+        font-size: 1.2rem !important;
+        filter: drop-shadow(0 2px 6px rgba(255, 0, 0, 0.5)) !important;
     }
 
     /* Folder Link - Open on GitHub */
     .folder-link {
         width: 100% !important;
-        padding: 12px 18px !important;
-        min-height: 48px !important;
-        font-size: 0.95rem !important;
-        font-weight: 600 !important;
+        padding: 14px 20px !important;
+        min-height: 52px !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
-        background: linear-gradient(135deg, rgba(60, 0, 0, 0.55), rgba(30, 0, 0, 0.4)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.45) !important;
-        border-radius: 10px !important;
+        gap: 10px !important;
+        background: linear-gradient(135deg, rgba(60, 0, 0, 0.7), rgba(30, 0, 0, 0.5)) !important;
+        border: 2px solid rgba(255, 0, 0, 0.5) !important;
+        border-radius: 12px !important;
         color: #ffffff !important;
         text-decoration: none !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        letter-spacing: 0.5px !important;
     }
 
     .folder-link:active {
         transform: scale(0.97) !important;
-        background: linear-gradient(135deg, rgba(80, 0, 0, 0.7), rgba(40, 0, 0, 0.5)) !important;
-        border-color: rgba(255, 0, 0, 0.6) !important;
-        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.5) !important;
+        background: linear-gradient(135deg, rgba(100, 0, 0, 0.9), rgba(50, 0, 0, 0.7)) !important;
+        border-color: rgba(255, 0, 0, 0.7) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 0, 0, 0.3) !important;
     }
 
     .folder-link::before {
         content: '\f09b' !important; /* GitHub icon */
         font-family: 'Font Awesome 5 Free' !important;
         font-weight: 900 !important;
-        font-size: 1.1rem !important;
+        font-size: 1.2rem !important;
+        filter: drop-shadow(0 2px 8px rgba(255, 0, 0, 0.4)) !important;
     }
 
     /* Files Wrap - Container for Day Folders */
     .sw-files-wrap {
-        padding: 0 !important;
+        padding: 20px 16px !important;
         width: 100% !important;
+        background: transparent !important;
     }
 
     /* Day Folders - Day 01, Day 02, etc. */
     .sw-day-folder {
-        margin-bottom: 22px !important;
-        background: linear-gradient(135deg, rgba(30, 0, 0, 0.45), rgba(15, 0, 0, 0.25)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
-        border-radius: 14px !important;
-        padding: 16px !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+        margin-bottom: 20px !important;
+        background: linear-gradient(135deg, rgba(25, 0, 0, 0.7), rgba(12, 0, 0, 0.5)) !important;
+        border: 2px solid rgba(255, 0, 0, 0.35) !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        overflow: hidden !important;
     }
 
     .sw-day-folder:last-child {
@@ -1072,22 +1088,25 @@
     }
 
     .sw-day-title {
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-        padding: 12px 0 !important;
-        margin: 0 0 14px 0 !important;
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        padding: 0 0 14px 0 !important;
+        margin: 0 0 16px 0 !important;
         color: #ffffff !important;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
-        border-bottom: 2px solid rgba(255, 0, 0, 0.3) !important;
+        text-shadow: 0 2px 10px rgba(255, 0, 0, 0.6) !important;
+        border-bottom: 2.5px solid rgba(255, 0, 0, 0.4) !important;
         display: flex !important;
         align-items: center !important;
-        gap: 10px !important;
+        gap: 12px !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
+        font-size: 1rem !important;
     }
 
     .sw-day-title::before {
         content: '📅' !important;
-        font-size: 1.3rem !important;
-        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)) !important;
+        font-size: 1.4rem !important;
+        filter: drop-shadow(0 3px 10px rgba(255, 0, 0, 0.5)) !important;
     }
 
     /* File List - CW1, CW2, HW1, HW2 items */
@@ -1101,162 +1120,202 @@
 
     /* Individual File Item - Each CW/HW Assignment */
     .sw-file-item {
-        padding: 14px 16px !important;
-        min-height: 68px !important;
-        border-radius: 10px !important;
-        background: linear-gradient(135deg, rgba(50, 0, 0, 0.4), rgba(25, 0, 0, 0.2)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
+        padding: 16px 18px !important;
+        min-height: 72px !important;
+        border-radius: 12px !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.4)) !important;
+        border: 2px solid rgba(255, 0, 0, 0.3) !important;
         display: flex !important;
         flex-direction: column !important;
-        gap: 12px !important;
+        gap: 14px !important;
         cursor: pointer !important;
         transition: all 0.25s ease !important;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    /* Subtle shine effect on hover/active */
+    .sw-file-item::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent) !important;
+        transition: left 0.5s ease !important;
     }
 
     .sw-file-item:active {
         transform: scale(0.98) !important;
-        background: linear-gradient(135deg, rgba(70, 0, 0, 0.6), rgba(35, 0, 0, 0.4)) !important;
-        border-color: rgba(255, 0, 0, 0.5) !important;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.2) !important;
+        background: linear-gradient(135deg, rgba(80, 0, 0, 0.8), rgba(40, 0, 0, 0.6)) !important;
+        border-color: rgba(255, 0, 0, 0.6) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    .sw-file-item:active::before {
+        left: 100% !important;
     }
 
     /* File Name - CW 1 - Day 01, etc. */
     .sw-file-name {
-        font-size: 1rem !important;
-        font-weight: 600 !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
         color: #ffffff !important;
         margin: 0 !important;
         padding: 0 !important;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
-        line-height: 1.4 !important;
+        gap: 10px !important;
+        line-height: 1.5 !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+        letter-spacing: 0.3px !important;
     }
 
     .sw-file-name::before {
         content: '\f1c2' !important; /* File icon */
         font-family: 'Font Awesome 5 Free' !important;
         font-weight: 900 !important;
-        color: rgba(255, 100, 0, 0.8) !important;
-        font-size: 1.1rem !important;
-        filter: drop-shadow(0 2px 6px rgba(255, 100, 0, 0.3)) !important;
+        color: rgba(255, 100, 0, 0.9) !important;
+        font-size: 1.2rem !important;
+        filter: drop-shadow(0 2px 8px rgba(255, 100, 0, 0.5)) !important;
+        flex-shrink: 0 !important;
     }
 
     /* File Actions - Download, View, Preview Buttons */
     .sw-file-actions {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 8px !important;
+        gap: 10px !important;
         width: 100% !important;
     }
 
     .sw-file-btn {
         min-width: 0 !important;
-        padding: 10px 14px !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        min-height: 44px !important;
-        background: linear-gradient(135deg, rgba(0, 150, 100, 0.3), rgba(0, 120, 80, 0.2)) !important;
-        border: 1.5px solid rgba(0, 200, 130, 0.45) !important;
-        border-radius: 8px !important;
-        color: #ffffff !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 6px !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .sw-file-btn:active {
-        transform: scale(0.96) !important;
-        background: linear-gradient(135deg, rgba(0, 180, 120, 0.4), rgba(0, 150, 100, 0.3)) !important;
-        border-color: rgba(0, 200, 130, 0.65) !important;
-        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    .sw-file-btn i {
-        font-size: 0.95rem !important;
-    }
-
-    /* View Button - README/Docs */
-    .sw-file-btn[data-action="view"],
-    .sw-file-btn.btn-view {
-        background: linear-gradient(135deg, rgba(0, 100, 200, 0.3), rgba(0, 80, 160, 0.2)) !important;
-        border-color: rgba(0, 150, 255, 0.45) !important;
-    }
-
-    .sw-file-btn[data-action="view"]:active,
-    .sw-file-btn.btn-view:active {
-        background: linear-gradient(135deg, rgba(0, 120, 240, 0.4), rgba(0, 100, 200, 0.3)) !important;
-        border-color: rgba(0, 150, 255, 0.65) !important;
-    }
-
-    /* Download Button - .SLDPRT files */
-    .sw-file-btn[data-action="download"],
-    .sw-file-btn.btn-download {
-        background: linear-gradient(135deg, rgba(0, 150, 100, 0.3), rgba(0, 120, 80, 0.2)) !important;
-        border-color: rgba(0, 200, 130, 0.45) !important;
-    }
-
-    .sw-file-btn[data-action="download"]:active,
-    .sw-file-btn.btn-download:active {
-        background: linear-gradient(135deg, rgba(0, 180, 120, 0.4), rgba(0, 150, 100, 0.3)) !important;
-        border-color: rgba(0, 200, 130, 0.65) !important;
-    }
-
-    /* Preview Button - Screenshots */
-    .sw-file-btn[data-action="preview"],
-    .sw-file-btn.btn-preview {
-        background: linear-gradient(135deg, rgba(150, 0, 150, 0.3), rgba(120, 0, 120, 0.2)) !important;
-        border-color: rgba(200, 0, 200, 0.45) !important;
-    }
-
-    .sw-file-btn[data-action="preview"]:active,
-    .sw-file-btn.btn-preview:active {
-        background: linear-gradient(135deg, rgba(180, 0, 180, 0.4), rgba(150, 0, 150, 0.3)) !important;
-        border-color: rgba(200, 0, 200, 0.65) !important;
-    }
-
-    /* View Footer - Bottom Back Button */
-    .sw-view-footer {
-        margin-top: 20px !important;
-        padding-top: 16px !important;
-        border-top: 2px solid rgba(255, 0, 0, 0.2) !important;
-    }
-
-    .sw-back-bottom {
-        width: 100% !important;
-        padding: 14px 18px !important;
-        min-height: 52px !important;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        background: linear-gradient(135deg, rgba(50, 0, 0, 0.6), rgba(25, 0, 0, 0.4)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.4) !important;
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        min-height: 48px !important;
+        background: linear-gradient(135deg, rgba(0, 150, 100, 0.4), rgba(0, 120, 80, 0.3)) !important;
+        border: 2px solid rgba(0, 200, 130, 0.5) !important;
         border-radius: 10px !important;
         color: #ffffff !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 8px !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        letter-spacing: 0.3px !important;
+        text-transform: uppercase !important;
+        font-size: 0.8rem !important;
+    }
+
+    .sw-file-btn:active {
+        transform: scale(0.96) !important;
+        background: linear-gradient(135deg, rgba(0, 200, 140, 0.5), rgba(0, 160, 110, 0.4)) !important;
+        border-color: rgba(0, 255, 160, 0.7) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 200, 130, 0.3) !important;
+    }
+
+    .sw-file-btn i {
+        font-size: 1rem !important;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)) !important;
+    }
+
+    /* View Button - README/Docs */
+    .sw-file-btn[data-action="view"],
+    .sw-file-btn.btn-view {
+        background: linear-gradient(135deg, rgba(0, 120, 220, 0.4), rgba(0, 90, 180, 0.3)) !important;
+        border-color: rgba(0, 150, 255, 0.5) !important;
+    }
+
+    .sw-file-btn[data-action="view"]:active,
+    .sw-file-btn.btn-view:active {
+        background: linear-gradient(135deg, rgba(0, 150, 255, 0.5), rgba(0, 120, 220, 0.4)) !important;
+        border-color: rgba(0, 180, 255, 0.7) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 150, 255, 0.3) !important;
+    }
+
+    /* Download Button - .SLDPRT files */
+    .sw-file-btn[data-action="download"],
+    .sw-file-btn.btn-download {
+        background: linear-gradient(135deg, rgba(0, 150, 100, 0.4), rgba(0, 120, 80, 0.3)) !important;
+        border-color: rgba(0, 200, 130, 0.5) !important;
+    }
+
+    .sw-file-btn[data-action="download"]:active,
+    .sw-file-btn.btn-download:active {
+        background: linear-gradient(135deg, rgba(0, 200, 140, 0.5), rgba(0, 160, 110, 0.4)) !important;
+        border-color: rgba(0, 255, 160, 0.7) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 200, 130, 0.3) !important;
+    }
+
+    /* Preview Button - Screenshots */
+    .sw-file-btn[data-action="preview"],
+    .sw-file-btn.btn-preview {
+        background: linear-gradient(135deg, rgba(180, 0, 180, 0.4), rgba(140, 0, 140, 0.3)) !important;
+        border-color: rgba(220, 0, 220, 0.5) !important;
+    }
+
+    .sw-file-btn[data-action="preview"]:active,
+    .sw-file-btn.btn-preview:active {
+        background: linear-gradient(135deg, rgba(220, 0, 220, 0.5), rgba(180, 0, 180, 0.4)) !important;
+        border-color: rgba(255, 0, 255, 0.7) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 15px rgba(200, 0, 200, 0.3) !important;
+    }
+
+    /* View Footer - Bottom Back Button */
+    .sw-view-footer {
+        margin-top: 0 !important;
+        padding: 18px 16px !important;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(20, 0, 0, 0.4)) !important;
+        border-top: 3px solid rgba(255, 0, 0, 0.5) !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+    }
+
+    .sw-back-bottom {
+        width: 100% !important;
+        padding: 16px 24px !important;
+        min-height: 56px !important;
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+        background: linear-gradient(135deg, rgba(80, 0, 0, 0.8), rgba(40, 0, 0, 0.6)) !important;
+        border: 2px solid rgba(255, 0, 0, 0.6) !important;
+        border-radius: 14px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 0, 0, 0.5) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
     }
 
     .sw-back-bottom:active {
-        transform: scale(0.98) !important;
-        background: linear-gradient(135deg, rgba(70, 0, 0, 0.75), rgba(35, 0, 0, 0.55)) !important;
-        border-color: rgba(255, 0, 0, 0.6) !important;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+        transform: scale(0.97) !important;
+        background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+        border-color: rgba(255, 50, 50, 0.9) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+    }
+
+    .sw-back-bottom i {
+        font-size: 1.3rem !important;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(255, 0, 0, 0.5)) !important;
     }
 
     /* Spot Test Badge */
@@ -1637,5 +1696,28 @@
 @media (max-width: 360px) {
     .sw-file-actions {
         grid-template-columns: 1fr !important;
+    }
+}
+
+/* ========================================
+   GITHUB BROWSER MODAL - MOBILE ONLY
+   Ensure PC view remains untouched
+   ======================================== */
+
+/* Hide modal completely on desktop - NO IMPACT on PC */
+@media (min-width: 769px) {
+    #github-browser-modal,
+    .github-browser-modal {
+        display: none !important;
+        visibility: hidden !important;
+    }
+}
+
+/* Mobile-only modal activation */
+@media (max-width: 768px) {
+    /* Modal is already styled above in existing rules */
+    /* Just ensure it respects mobile-open state */
+    body.modal-open #github-browser-modal {
+        display: flex !important;
     }
 }

@@ -904,8 +904,13 @@
         text-overflow: ellipsis !important;
     }
 
-    /* Hide the Overview tab so only CW/HW/SOLO remain */
+    /* Hide the Overview tab AND Overview content - only show CW/HW/SOLO */
     #solidworks-beginner-card .sw-mode-switch .sw-mode-btn[data-target="root"] {
+        display: none !important;
+    }
+    
+    /* Hide entire root/overview section on mobile */
+    #solidworks-beginner-card .sw-view.sw-root {
         display: none !important;
     }
 
@@ -916,6 +921,34 @@
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         gap: 6px !important;
+    }
+    
+    /* CW/HW/Solo buttons - independent, PC-like appearance */
+    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn {
+        flex: 1 !important;
+        min-width: 100px !important;
+        padding: 12px 16px !important;
+        min-height: 50px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.5)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.35) !important;
+        color: #ffffff !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn[aria-current="true"],
+    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn.active {
+        background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+        border-color: rgba(255, 0, 0, 0.65) !important;
+        box-shadow: 0 6px 16px rgba(255, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn:active {
+        transform: scale(0.97) !important;
     }
 
     /* Remove duplicate navigations and heavy sections */
