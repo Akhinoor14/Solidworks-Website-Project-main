@@ -794,17 +794,17 @@
       }
 
       // Public API
-      window.openGitHubBrowser = function(owner, repo, title){
+      window.openGitHubBrowser = function(owner, repo, title, startPath){
         if (!el.modal) bind();
         state.owner = owner;
         state.repo = repo;
-        state.path = '';
+        state.path = startPath || '';
         state.currentFile = null;
         el.title.textContent = title || `${owner}/${repo}`;
         el.preview.innerHTML = '<div class="empty-state"><i class="far fa-eye"></i><p>Select a file to preview</p></div>';
         setTabs('files');
         showModal();
-        loadDir('');
+        loadDir(state.path || '');
       };
 
       // Init bindings on DOM ready
@@ -916,12 +916,32 @@
         });
       });
 
-      // Initialize default view: CW instead of root on mobile
+      // Initialize default view: on mobile avoid embedded views; desktop shows normal panels
       const current = Array.from(buttons).find(b => b.getAttribute('aria-current') === 'true');
       const mql = window.matchMedia('(max-width: 768px)');
-      // On mobile, show CW by default; on desktop, respect current or fallback to root
-      const defaultView = mql.matches ? 'cw' : (current ? current.dataset.target : 'root');
-      showView(defaultView);
+      if (mql.matches) {
+        // Hide all internal views; mobile actions will open a dedicated interface instead
+        views.forEach(v => v.hidden = true);
+      } else {
+        const defaultView = current ? current.dataset.target : 'root';
+        showView(defaultView);
+      }
+
+      // On mobile, intercept CW/HW/Solo tabs to open GitHub browser directly
+      if (mql.matches) {
+        const sectionMap = { cw: 'CW', hw: 'HW', solo: 'Solo' };
+        buttons.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const target = btn.dataset.target;
+            if (sectionMap[target]) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              const section = sectionMap[target];
+              window.openGitHubBrowser('Akhinoor14', 'SOLIDWORKS-Projects', `SOLIDWORKS Projects – ${section}`, section);
+            }
+          }, true);
+        });
+      }
 
       // Lightweight empty states for file containers if nothing injected yet
       const containers = [

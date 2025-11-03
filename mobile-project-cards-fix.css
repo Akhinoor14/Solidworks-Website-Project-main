@@ -914,6 +914,13 @@
         display: none !important;
     }
 
+    /* Also hide CW/HW/Solo embedded views on mobile; actions open dedicated interface */
+    #solidworks-beginner-card .sw-view.sw-cw,
+    #solidworks-beginner-card .sw-view.sw-hw,
+    #solidworks-beginner-card .sw-view.sw-solo {
+        display: none !important;
+    }
+
     /* Make the mode switch compact and scrollable if needed */
     #solidworks-beginner-card .sw-mode-switch {
         margin: 6px 0 8px 0 !important;
@@ -1025,5 +1032,74 @@
 
     #solidworks-beginner-card .sw-root-panels {
         margin-top: 4px !important;
+    }
+
+    /* View headers (CW/HW/Solo): compact, stacked controls */
+    #solidworks-beginner-card .sw-view-header {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        padding: 6px 0 10px 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    }
+
+    #solidworks-beginner-card .sw-view-header h4 {
+        margin: 0 !important;
+        text-align: center !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        opacity: 0.95 !important;
+    }
+
+    /* Back buttons: full-width pill style */
+    #solidworks-beginner-card .sw-back,
+    #solidworks-beginner-card .sw-back-bottom {
+        width: 100% !important;
+        min-height: 48px !important;
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        background: rgba(255,255,255,0.06) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
+    }
+
+    #solidworks-beginner-card .sw-back:active,
+    #solidworks-beginner-card .sw-back-bottom:active {
+        transform: scale(0.985) !important;
+    }
+
+    /* Folder link styled like a neutral action */
+    #solidworks-beginner-card .folder-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        min-height: 48px !important;
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        background: rgba(255,255,255,0.06) !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
+    }
+
+    /* Files container spacing */
+    #solidworks-beginner-card .sw-files-wrap {
+        margin-top: 8px !important;
+        display: grid !important;
+        gap: 10px !important;
+    }
+
+    #solidworks-beginner-card .sw-view-footer {
+        margin-top: 10px !important;
     }
 }
