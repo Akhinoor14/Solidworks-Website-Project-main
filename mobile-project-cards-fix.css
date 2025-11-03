@@ -865,241 +865,190 @@
 }
 
 /* ========================================
-   SOLIDWORKS CARD – MOBILE CLEANUP
-   Focus the card to only 4 primary actions on small screens:
-   - CW, HW, SOLO (mode buttons)
-   - Browse Files (primary CTA)
-   Hide extras: Overview tab, tiles, quick links, repo button, download zip, long lists, badges, heavy dividers.
+   SOLIDWORKS CARD – MOBILE RESPONSIVE
+   Keep all PC features, just optimize for mobile touch/layout
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Scope: only the SOLIDWORKS card */
+    /* Card container: maintain structure, just adjust spacing */
     #solidworks-beginner-card {
-        /* tighten vertical rhythm */
-        padding-top: 16px !important;
-        padding-bottom: 16px !important;
+        padding: 18px !important;
     }
 
-    /* Header simplification */
-    #solidworks-beginner-card .sw-header-icon,
-    #solidworks-beginner-card .sw-badge-new {
-        display: none !important;
+    /* Header: keep all elements, just scale for mobile */
+    #solidworks-beginner-card .sw-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    #solidworks-beginner-card .sw-header-icon {
+        font-size: 1.8rem !important;
     }
 
     #solidworks-beginner-card .sw-card-title {
-        font-size: 18px !important;
-        margin-bottom: 6px !important;
+        font-size: 1.15rem !important;
+        line-height: 1.3 !important;
     }
 
     #solidworks-beginner-card .sw-intro {
-        font-size: 14px !important;
-        opacity: 0.9 !important;
-        margin-bottom: 8px !important;
-        /* clamp text to keep the card compact */
-        display: -webkit-box !important;
-        -webkit-line-clamp: 2 !important;
-        line-clamp: 2 !important;
-        -webkit-box-orient: vertical !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
     }
 
-    /* Hide the Overview tab AND Overview content - only show CW/HW/SOLO */
-    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn[data-target="root"] {
-        display: none !important;
-    }
-    
-    /* Hide entire root/overview section on mobile */
-    #solidworks-beginner-card .sw-view.sw-root {
-        display: none !important;
-    }
-
-    /* Also hide CW/HW/Solo embedded views on mobile; actions open dedicated interface */
-    #solidworks-beginner-card .sw-view.sw-cw,
-    #solidworks-beginner-card .sw-view.sw-hw,
-    #solidworks-beginner-card .sw-view.sw-solo {
-        display: none !important;
-    }
-
-    /* Make the mode switch compact and scrollable if needed */
+    /* Mode switch: keep all tabs (Overview/CW/HW/Solo), make scrollable */
     #solidworks-beginner-card .sw-mode-switch {
-        margin: 6px 0 8px 0 !important;
-        padding: 0 !important;
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         gap: 6px !important;
+        padding-bottom: 2px !important;
+    }
+
+    #solidworks-beginner-card .sw-mode-switch::-webkit-scrollbar {
+        height: 3px !important;
     }
     
-    /* CW/HW/Solo buttons - independent, PC-like appearance */
-    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn {
-        flex: 1 !important;
+    #solidworks-beginner-card .sw-mode-btn {
+        flex: 0 0 auto !important;
         min-width: 100px !important;
-        padding: 12px 16px !important;
-        min-height: 50px !important;
-        font-size: 0.95rem !important;
-        font-weight: 600 !important;
-        border-radius: 10px !important;
-        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.5)) !important;
-        border: 1.5px solid rgba(255, 0, 0, 0.35) !important;
-        color: #ffffff !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn[aria-current="true"],
-    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn.active {
-        background: linear-gradient(135deg, #ff0000, #cc0000) !important;
-        border-color: rgba(255, 0, 0, 0.65) !important;
-        box-shadow: 0 6px 16px rgba(255, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-    }
-    
-    #solidworks-beginner-card .sw-mode-switch .sw-mode-btn:active {
-        transform: scale(0.97) !important;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
     }
 
-    /* Remove duplicate navigations and heavy sections */
-    #solidworks-beginner-card .sw-divider,
-    #solidworks-beginner-card .sw-section-buttons,
-    #solidworks-beginner-card .sw-quick-links,
-    #solidworks-beginner-card .sw-ext-actions,
-    #solidworks-beginner-card .sw-focus-points,
-    #solidworks-beginner-card .sw-tip-box {
-        display: none !important;
+    /* Dividers: keep visible */
+    #solidworks-beginner-card .sw-divider {
+        margin: 12px 0 !important;
     }
 
-    /* Quick actions: show both Browse and Download as a compact 2-column grid */
-    #solidworks-beginner-card .sw-quick-actions {
+    /* Root/Overview view: stack layout for mobile */
+    #solidworks-beginner-card .sw-root-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    #solidworks-beginner-card .sw-root-info {
+        order: 1 !important;
+    }
+
+    #solidworks-beginner-card .sw-root-panels {
+        order: 2 !important;
+    }
+
+    /* Section buttons (CW/HW/Solo tiles): keep them, stack on mobile */
+    #solidworks-beginner-card .sw-section-buttons {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    #solidworks-beginner-card .sw-tile {
+        padding: 14px !important;
+        min-height: 64px !important;
+    }
+
+    /* Quick links: keep visible, stack buttons */
+    #solidworks-beginner-card .sw-quick-links {
+        margin-top: 16px !important;
+    }
+
+    #solidworks-beginner-card .sw-quick-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    #solidworks-beginner-card .sw-quick-btn {
+        width: 100% !important;
+        padding: 12px 16px !important;
+        min-height: 56px !important;
+    }
+
+    /* External actions: keep visible, stack */
+    #solidworks-beginner-card .sw-ext-actions {
+        display: flex !important;
+        flex-direction: column !important;
         gap: 8px !important;
-        margin-top: 8px !important;
-        align-items: stretch !important;
+        margin-top: 12px !important;
+    }
+
+    #solidworks-beginner-card .sw-ext-actions .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Quick actions (Browse/Download): keep both, stack on small screens */
+    #solidworks-beginner-card .sw-quick-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 12px !important;
     }
 
     #solidworks-beginner-card .btn-sw-browse,
     #solidworks-beginner-card .btn-sw-download {
         width: 100% !important;
         min-height: 48px !important;
-        font-size: 16px !important;
-        font-weight: 700 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        text-decoration: none !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255, 0, 0, 0.35) !important;
-        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.5)) !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
     }
 
-    /* Make Browse Files stand out as primary */
-    #solidworks-beginner-card .btn-sw-browse {
-        background: linear-gradient(135deg, #ff0000, #cc0000) !important;
-        border-color: rgba(255, 0, 0, 0.55) !important;
-        box-shadow: 0 6px 16px rgba(255, 0, 0, 0.22), 0 2px 10px rgba(0, 0, 0, 0.45) !important;
-        min-height: 52px !important;
+    /* Focus points list: keep visible */
+    #solidworks-beginner-card .sw-focus-points {
+        font-size: 0.9rem !important;
+        padding-left: 20px !important;
     }
 
-    #solidworks-beginner-card .btn-sw-browse:focus-visible {
-        outline: 3px solid rgba(255, 0, 0, 0.6) !important;
-        outline-offset: 2px !important;
-        box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.25), 0 8px 20px rgba(255, 0, 0, 0.25) !important;
+    /* Tip boxes: keep visible */
+    #solidworks-beginner-card .sw-tip-box {
+        padding: 10px 12px !important;
+        font-size: 0.85rem !important;
     }
 
-    /* Keep Download neutral to reduce visual weight */
-    #solidworks-beginner-card .btn-sw-download {
-        border-color: rgba(255, 255, 255, 0.25) !important;
-        background: rgba(255, 255, 255, 0.06) !important;
-    }
-
-    #solidworks-beginner-card .btn-sw-browse:active,
-    #solidworks-beginner-card .btn-sw-download:active {
-        transform: scale(0.985) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    /* Stack root layout cleanly */
-    #solidworks-beginner-card .sw-root-layout {
-        display: block !important;
-    }
-
-    #solidworks-beginner-card .sw-root-info {
-        margin-bottom: 6px !important;
-    }
-
-    #solidworks-beginner-card .sw-root-panels {
-        margin-top: 4px !important;
-    }
-
-    /* View headers (CW/HW/Solo): compact, stacked controls */
+    /* View headers (CW/HW/Solo): keep structure, optimize spacing */
     #solidworks-beginner-card .sw-view-header {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 8px !important;
-        padding: 6px 0 10px 0 !important;
-        border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 8px 0 12px 0 !important;
     }
 
     #solidworks-beginner-card .sw-view-header h4 {
+        font-size: 1.1rem !important;
         margin: 0 !important;
-        text-align: center !important;
-        font-size: 1rem !important;
-        font-weight: 700 !important;
-        color: #ffffff !important;
-        opacity: 0.95 !important;
     }
 
-    /* Back buttons: full-width pill style */
-    #solidworks-beginner-card .sw-back,
+    #solidworks-beginner-card .sw-back {
+        align-self: flex-start !important;
+    }
+
+    #solidworks-beginner-card .folder-link {
+        align-self: flex-end !important;
+    }
+
+    /* Files wrap: keep structure */
+    #solidworks-beginner-card .sw-files-wrap {
+        margin-top: 12px !important;
+    }
+
+    /* View footer: keep back button */
+    #solidworks-beginner-card .sw-view-footer {
+        margin-top: 16px !important;
+    }
+
     #solidworks-beginner-card .sw-back-bottom {
         width: 100% !important;
         min-height: 48px !important;
-        padding: 12px 14px !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255,255,255,0.25) !important;
-        background: rgba(255,255,255,0.06) !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 15px !important;
-        text-align: center !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
     }
 
-    #solidworks-beginner-card .sw-back:active,
-    #solidworks-beginner-card .sw-back-bottom:active {
-        transform: scale(0.985) !important;
+    /* Lede text */
+    #solidworks-beginner-card .sw-lede {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
     }
 
-    /* Folder link styled like a neutral action */
-    #solidworks-beginner-card .folder-link {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        width: 100% !important;
-        min-height: 48px !important;
-        padding: 12px 14px !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255,255,255,0.25) !important;
-        background: rgba(255,255,255,0.06) !important;
-        color: #ffffff !important;
-        text-decoration: none !important;
-        font-weight: 700 !important;
-        font-size: 15px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
-    }
-
-    /* Files container spacing */
-    #solidworks-beginner-card .sw-files-wrap {
-        margin-top: 8px !important;
-        display: grid !important;
-        gap: 10px !important;
-    }
-
-    #solidworks-beginner-card .sw-view-footer {
-        margin-top: 10px !important;
+    /* Quick title */
+    #solidworks-beginner-card .sw-quick-title {
+        font-size: 1rem !important;
     }
 }
