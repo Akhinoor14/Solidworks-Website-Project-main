@@ -216,7 +216,7 @@
                                     </div>
                                     <div class="frame-glow"></div>
                                     <picture id="profile-photo-wrapper">
-                                        <img id="profile-photo" src="./images/pp.jpg" 
+                                        <img id="profile-photo" src="./images/PP.jpg" 
                                             alt="Md Akhinoor Islam Profile Picture" 
                                             decoding="async" loading="lazy" data-fallback="placeholder">
                                     </picture>
@@ -312,16 +312,19 @@
                 if (!img) return;
 
                 async function resolveProfile() {
+                    const names = ['pp', 'PP'];
                     const exts = ['webp', 'jpg', 'jpeg', 'png'];
-                    for (const ext of exts) {
-                        const url = `./images/pp.${ext}?t=${Date.now()}`;
-                        try {
-                            const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-                            if (res.ok) {
-                                img.src = url;
-                                return;
-                            }
-                        } catch (_) { /* ignore and try next */ }
+                    for (const name of names) {
+                        for (const ext of exts) {
+                            const url = `./images/${name}.${ext}?t=${Date.now()}`;
+                            try {
+                                const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+                                if (res.ok) {
+                                    img.src = url;
+                                    return;
+                                }
+                            } catch (_) { /* ignore and try next */ }
+                        }
                     }
                     // If none found, keep whatever is there
                 }
