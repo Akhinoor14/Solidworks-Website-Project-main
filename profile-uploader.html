@@ -871,12 +871,11 @@
                 </div>
                 <div class="toolbar" style="display:flex; gap:10px; align-items:center;">
                     <button id="backBtn" class="header-btn" title="Back" aria-label="Back">⬅️ Back</button>
-                    <button id="galleryBtn" class="header-btn" title="Gallery" aria-label="Gallery">🖼️ Gallery</button>
                     <button id="settingsBtn" class="header-btn" title="Settings" aria-label="Settings">⚙️ Settings</button>
                     <button id="logoutBtn" class="header-btn" title="Logout" aria-label="Logout">🚪 Logout</button>
                 </div>
             </div>
-        <p class="subtitle">Private Upload Interface - Auto-rename & GitHub Sync</p>
+        <p class="subtitle">Upload Single Profile Photo - Auto-saves as PP.jpg</p>
 
         <!-- Password Change Panel (hidden) -->
         <div id="passwordChangePanel" style="display: none; background: rgba(204,0,0,0.1); border: 2px solid rgba(204,0,0,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
@@ -1006,43 +1005,30 @@
             </div>
         </div>
 
-        <!-- Photo Gallery Section -->
-        <div id="photoGallery" style="margin-bottom: 20px; display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="color: #cc0000; margin: 0; font-size: 1.1rem;">📸 Uploaded Photos</h3>
-                <button id="refreshGallery" class="header-btn" style="padding: 6px 12px; font-size: 0.85rem;">
-                    🔄 Refresh
-                </button>
-            </div>
-            <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(204,0,0,0.2);">
-                <!-- Photos will be dynamically loaded here -->
-            </div>
-            <div id="galleryStatus" style="padding: 10px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;"></div>
-        </div>
+        <!-- Photo Gallery Section - REMOVED -->
 
         <div class="info-box">
             <h3>How it works:</h3>
             <ul>
-                <li>Select or drag multiple photos</li>
-                <li>Auto-renamed as PP1.jpg, PP2.jpg, PP3.jpg...</li>
-                <li>Automatically uploaded to GitHub images/ folder</li>
-                <li>Slideshow will detect them automatically</li>
-                <li>Delete removes from GitHub and fills gaps automatically</li>
+                <li>Select or drag ONE profile photo</li>
+                <li>Automatically saved as PP.jpg</li>
+                <li>Replaces previous profile photo</li>
+                <li>Homepage shows this photo immediately</li>
             </ul>
         </div>
 
         <div class="upload-area" id="uploadArea">
             <div class="upload-icon">📤</div>
-            <p style="font-size: 1.1rem; margin-bottom: 8px;">Click or drag photos here</p>
-            <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.5);">Supports JPG, PNG, WebP</p>
-            <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" multiple>
+            <p style="font-size: 1.1rem; margin-bottom: 8px;">Click or drag your profile photo here</p>
+            <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.5);">Supports JPG, PNG, WebP • Single photo only</p>
+            <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp">
         </div>
 
         <div class="file-list" id="fileList"></div>
 
         <div class="actions">
-            <button class="btn-clear" id="clearBtn">Clear All</button>
-            <button class="btn-upload" id="uploadBtn" disabled>Upload to GitHub</button>
+            <button class="btn-clear" id="clearBtn">Clear</button>
+            <button class="btn-upload" id="uploadBtn" disabled>Upload as Profile Photo</button>
         </div>
 
         <div class="progress" id="progress">

@@ -503,64 +503,69 @@
         handleFiles(e.dataTransfer.files);
     });
 
-    // Handle selected files
+    // Handle selected files - SINGLE FILE ONLY
     function handleFiles(files) {
-        const validFiles = Array.from(files).filter(file => {
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-            if (!validTypes.includes(file.type)) {
-                showStatus(`❌ ${file.name} is not a supported image format`, 'error');
-                return false;
-            }
-            if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                showStatus(`❌ ${file.name} is too large (max 10MB)`, 'error');
-                return false;
-            }
-            return true;
-        });
+        if (files.length === 0) return;
+        
+        // Only take first file
+        const file = files[0];
+        
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            showStatus(`❌ ${file.name} is not a supported image format`, 'error');
+            showNotification('❌ Only JPG, PNG, WebP supported', 'error');
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            showStatus(`❌ ${file.name} is too large (max 10MB)`, 'error');
+            showNotification('❌ File too large (max 10MB)', 'error');
+            return;
+        }
 
-        selectedFiles = [...selectedFiles, ...validFiles];
+        selectedFiles = [file]; // Only one file
         updateFileList();
-        uploadBtn.disabled = selectedFiles.length === 0;
+        uploadBtn.disabled = false;
     }
 
-    // Update file list UI
+    // Update file list UI - SINGLE FILE VERSION
     function updateFileList() {
         fileList.innerHTML = '';
         
-        selectedFiles.forEach((file, index) => {
-            const newName = `PP${existingPhotos.length + index + 1}.jpg`;
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                fileItem.innerHTML = `
-                    <div class="file-info">
-                        <img src="${e.target.result}" alt="Preview" class="file-preview">
-                        <div class="file-details">
-                            <div class="file-name">Original: ${file.name}</div>
-                            <div class="file-name" style="color: #cc0000;">Rename to: ${newName}</div>
-                            <div class="file-size">${(file.size / 1024).toFixed(1)} KB</div>
-                        </div>
+        if (selectedFiles.length === 0) return;
+        
+        const file = selectedFiles[0];
+        const newName = 'PP.jpg'; // Always PP.jpg
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <img src="${e.target.result}" alt="Preview" class="file-preview">
+                    <div class="file-details">
+                        <div class="file-name">Selected: ${file.name}</div>
+                        <div class="file-name" style="color: #cc0000;">Will save as: ${newName}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(1)} KB</div>
                     </div>
-                    <button class="remove-btn" onclick="window.removeFile(${index})">Remove</button>
-                `;
-            };
-            reader.readAsDataURL(file);
+                </div>
+                <button class="remove-btn" onclick="window.removeFile(0)">Remove</button>
+            `;
+        };
+        reader.readAsDataURL(file);
             
-            fileList.appendChild(fileItem);
-            // animate new file item
-            try {
-                fileItem.classList.add('file-enter');
-                setTimeout(() => fileItem.classList.remove('file-enter'), 600);
-            } catch (err) {}
-        });
+        fileList.appendChild(fileItem);
+        // animate new file item
+        try {
+            fileItem.classList.add('file-enter');
+            setTimeout(() => fileItem.classList.remove('file-enter'), 600);
+        } catch (err) {}
     }
 
     // Remove file from list
     window.removeFile = function(index) {
-        selectedFiles.splice(index, 1);
+        selectedFiles = [];
         updateFileList();
         uploadBtn.disabled = selectedFiles.length === 0;
     };
@@ -619,9 +624,13 @@
         }
     });
 
-    // Upload files to GitHub - REAL implementation with auto-rename
+    // Upload files to GitHub - SINGLE PP.jpg UPLOAD
     async function uploadToGitHub() {
-        const totalFiles = selectedFiles.length;
+        if (selectedFiles.length === 0) {
+            throw new Error('No file selected');
+        }
+        
+        const file = selectedFiles[0]; // Only one file
         
         // Get GitHub credentials from localStorage
         let githubToken = localStorage.getItem('githubToken');
@@ -635,55 +644,70 @@
             throw new Error('GitHub credentials not configured. Please configure in Settings panel first.');
         }
         
-        // Validate token format
-        if (!githubToken.startsWith('ghp_') && !githubToken.startsWith('github_pat_')) {
-            const proceed = confirm(
-                '⚠️ Token format looks unusual.\n\n' +
-                'GitHub tokens typically start with "ghp_" or "github_pat_"\n\n' +
-                'Continue anyway?'
-            );
-            if (!proceed) {
-                throw new Error('Upload cancelled - please check your GitHub token');
-            }
-        }
+        const [owner, repo] = githubRepo.split('/');
         
-        showNotification('🔍 Checking existing photos...', 'info', 2000);
-        showNotification('🔍 Checking existing photos...', 'info', 2000);
-        
-        // Refresh existing photos count before upload
-        await fetchExistingPhotos();
-        
-        const startNumber = existingPhotos.length + 1;
-        showNotification(`📋 Found ${existingPhotos.length} existing photos. New photos will start from PP${startNumber}.jpg`, 'info', 3000);
-        
-        for (let i = 0; i < totalFiles; i++) {
-            const file = selectedFiles[i];
-            const newName = `PP${existingPhotos.length + i + 1}.jpg`;
-            
-            const uploadMsg = `📤 Uploading ${i + 1}/${totalFiles}: ${file.name} → ${newName}`;
-            showNotification(uploadMsg, 'info', 2000);
-            showStatus(uploadMsg, 'info');
-            updateProgress((i / totalFiles) * 100);
-            
+        showNotification('📤 Uploading profile photo...', 'info', 2000);
+        showStatus('📤 Uploading as PP.jpg...', 'info');
+        updateProgress(30);
+
+        try {
+            // Check if PP.jpg already exists (to get sha for update)
+            let ppSha = null;
             try {
-                await realGitHubUpload(file, newName, githubToken, githubRepo);
-                console.log(`✅ Successfully uploaded ${newName}`);
-                existingPhotos.push(newName);
-            } catch (error) {
-                throw new Error(`Failed to upload ${file.name}: ${error.message}`);
+                const checkRes = await window.fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images/PP.jpg`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (checkRes.ok) {
+                    const data = await checkRes.json();
+                    ppSha = data.sha;
+                }
+            } catch (e) {
+                // File doesn't exist, will create new
             }
+
+            updateProgress(50);
+            
+            // Upload as PP.jpg
+            await realGitHubUpload(file, 'PP.jpg', githubToken, githubRepo, ppSha);
+            
+            updateProgress(100);
+            showNotification('✅ Profile photo uploaded successfully!', 'success', 4000);
+            
+            // Signal homepage to refresh
+            try {
+                const channel = new BroadcastChannel('websiteUpdates');
+                channel.postMessage({ type: 'PROFILE_UPDATED', at: Date.now() });
+                channel.close();
+            } catch (e) {}
+            
+        } catch (error) {
+            throw new Error(`Failed to upload: ${error.message}`);
         }
-        
-        updateProgress(100);
-        showNotification(`🎉 All ${totalFiles} photos uploaded successfully!`, 'success', 4000);
-    }    // Real GitHub API upload
-    function realGitHubUpload(file, newName, token, repo) {
+    }
+
+    // Real GitHub API upload - modified to support sha for updates
+    function realGitHubUpload(file, newName, token, repo, existingSha = null) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = async () => {
                 try {
                     const base64Content = reader.result.split(',')[1];
                     
+                       // Build request body
+                       const requestBody = {
+                           message: existingSha ? `Update profile photo ${newName}` : `Add profile photo ${newName}`,
+                           content: base64Content,
+                           branch: 'main'
+                       };
+                   
+                       // Include sha if updating existing file
+                       if (existingSha) {
+                           requestBody.sha = existingSha;
+                       }
+                   
                     const response = await fetch(`https://api.github.com/repos/${repo}/contents/images/${newName}`, {
                         method: 'PUT',
                         headers: {
@@ -691,11 +715,7 @@
                             'Content-Type': 'application/json',
                             'Accept': 'application/vnd.github.v3+json'
                         },
-                        body: JSON.stringify({
-                            message: `Add profile photo ${newName}`,
-                            content: base64Content,
-                            branch: 'main'
-                        })
+                           body: JSON.stringify(requestBody)
                     });
                     
                     if (!response.ok) {
@@ -848,8 +868,8 @@
 
             showNotification(`⭐ Setting ${photo.name} as profile photo...`, 'info', 0);
 
-            // 1) Get selected photo content (base64)
-            const getPhotoRes = await fetch(photo.url, {
+            // 1) Get selected photo content (base64) - use direct API with token for admin operations
+            const getPhotoRes = await window.fetch(photo.url, {
                 headers: {
                     'Authorization': `token ${githubToken}`,
                     'Accept': 'application/vnd.github.v3+json'
@@ -859,10 +879,10 @@
             const photoData = await getPhotoRes.json();
             const base64Content = photoData.content.replace(/\n/g, ''); // Remove newlines from base64
 
-            // 2) Get existing PP.jpg sha (if exists)
+            // 2) Get existing PP.jpg sha (if exists) - use direct GitHub API to bypass proxy for admin operations
             let ppSha = null;
             try {
-                const getPpRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
+                const getPpRes = await window.fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
                     headers: {
                         'Authorization': `token ${githubToken}`,
                         'Accept': 'application/vnd.github.v3+json'
@@ -871,10 +891,15 @@
                 if (getPpRes.ok) {
                     const ppData = await getPpRes.json();
                     ppSha = ppData.sha;
+                    console.log('Found existing PP.jpg, sha:', ppSha);
+                } else if (getPpRes.status === 404) {
+                    console.log('PP.jpg not found (404), will create new');
+                } else {
+                    console.warn('PP.jpg check returned:', getPpRes.status);
                 }
             } catch (e) {
                 // PP.jpg doesn't exist yet, will create new
-                console.log('PP.jpg not found, creating new');
+                console.log('PP.jpg check error (likely does not exist):', e.message);
             }
 
             // 3) PUT content to PP.jpg (create or update)
@@ -887,7 +912,8 @@
                 putBody.sha = ppSha;
             }
 
-            const putRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
+            // PUT is an admin write operation - must use direct API with token (not proxy)
+            const putRes = await window.fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/images/PP.jpg`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `token ${githubToken}`,
