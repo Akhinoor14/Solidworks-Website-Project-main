@@ -204,6 +204,21 @@
                 </button>
               </div>
             </div>
+            <div class="sw-view sw-solo" data-view="solo" hidden>
+              <div class="sw-view-header">
+                <button class="sw-back" data-back="root" aria-label="Back to main SOLIDWORKS view">← Back</button>
+                <h4>Solo Projects</h4>
+                <a class="folder-link" href="https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Solo" target="_blank">Open Folder</a>
+              </div>
+              <div class="sw-files-wrap" id="solo-files-wrap">
+                <!-- JS can inject Solo project lists here -->
+              </div>
+              <div class="sw-view-footer">
+                <button class="sw-back sw-back-bottom" data-back="root" aria-label="Back to main view">
+                  <i class="fas fa-arrow-left"></i> Back to Overview
+                </button>
+              </div>
+            </div>
           </div>
           <!-- End SOLIDWORKS Beginner Projects Card (Embedded) -->
 
@@ -568,6 +583,80 @@
           });
         });
       }
+    });
+  </script>
+  
+  <!-- SOLIDWORKS Card: Tab Controller (CW/HW/Solo) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const card = document.getElementById('solidworks-beginner-card');
+      if (!card) return;
+
+      const switcher = card.querySelector('.sw-mode-switch');
+      const buttons = switcher ? switcher.querySelectorAll('.sw-mode-btn') : [];
+      const views = card.querySelectorAll('.sw-view');
+
+      // Accessibility semantics
+      if (switcher) switcher.setAttribute('role', 'tablist');
+      buttons.forEach(btn => {
+        btn.setAttribute('role', 'tab');
+        const target = btn.dataset.target;
+        const panel = card.querySelector(`.sw-view[data-view="${target}"]`);
+        if (panel) {
+          const tabId = `sw-tab-${target}`;
+          const panelId = `sw-panel-${target}`;
+          btn.id = tabId;
+          panel.id = panelId;
+          btn.setAttribute('aria-controls', panelId);
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', tabId);
+        }
+      });
+
+      function showView(target) {
+        views.forEach(v => {
+          v.hidden = v.getAttribute('data-view') !== target;
+        });
+        buttons.forEach(b => {
+          const isCurrent = b.dataset.target === target;
+          b.setAttribute('aria-current', isCurrent ? 'true' : 'false');
+          b.classList.toggle('active', isCurrent);
+        });
+      }
+
+      // Tab click handlers
+      buttons.forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.target)));
+
+      // Back buttons
+      card.querySelectorAll('.sw-back').forEach(backBtn => {
+        backBtn.addEventListener('click', () => {
+          const target = backBtn.getAttribute('data-back') || 'root';
+          showView(target);
+          const focusTab = card.querySelector(`.sw-mode-btn[data-target="${target}"]`) || buttons[0];
+          if (focusTab) focusTab.focus({ preventScroll: true });
+        });
+      });
+
+      // Initialize default view based on aria-current, fallback to root
+      const current = Array.from(buttons).find(b => b.getAttribute('aria-current') === 'true');
+      showView(current ? current.dataset.target : 'root');
+
+      // Lightweight empty states for file containers if nothing injected yet
+      const containers = [
+        { sel: '#cw-files-wrap', label: 'Class Work (CW)', href: 'https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/CW' },
+        { sel: '#hw-files-wrap', label: 'Home Work (HW)', href: 'https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/HW' },
+        { sel: '#solo-files-wrap', label: 'Solo Projects', href: 'https://github.com/Akhinoor14/SOLIDWORKS-Projects/tree/main/Solo' },
+      ];
+      containers.forEach(({ sel, label, href }) => {
+        const wrap = card.querySelector(sel);
+        if (wrap && wrap.children.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'sw-empty';
+          div.style.cssText = 'padding:12px 14px;border:1px dashed rgba(255,255,255,.2);border-radius:10px;color:rgba(255,255,255,.85);font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(0,0,0,.25);';
+          div.innerHTML = `<span>Files for <strong>${label}</strong> will appear here.</span><a href="${href}" target="_blank" class="btn-sw-download" style="padding:8px 12px;border:1px solid rgba(255,255,255,.25);border-radius:8px;text-decoration:none;color:#fff;">Open Folder</a>`;
+          wrap.appendChild(div);
+        }
+      });
     });
   </script>
   
