@@ -108,26 +108,36 @@
 }
 
 /* ========================================
-   GITHUB FILE BROWSER - MOBILE FIX
+   GITHUB FILE BROWSER - MOBILE FIX (COMPLETE)
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Browser Modal */
-    #github-browser-modal {
+    /* Browser Modal - Full Screen Perfect */
+    #github-browser-modal,
+    .github-browser-modal,
+    .browser-modal {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
         z-index: 10000 !important;
-        background: rgba(0, 0, 0, 0.95) !important;
+        background: rgba(0, 0, 0, 0.96) !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
-    .browser-modal-content {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
+    .browser-modal-content,
+    .github-browser-content {
+        position: relative !important;
         width: 100% !important;
         height: 100% !important;
         max-width: 100% !important;
@@ -138,266 +148,1131 @@
         background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%) !important;
         display: flex !important;
         flex-direction: column !important;
+        overflow: hidden !important;
+        box-shadow: none !important;
     }
 
-    /* Browser Header */
-    .browser-header {
-        padding: 12px 15px !important;
-        min-height: 60px !important;
+    /* Browser Header - Better Touch & Visibility */
+    .browser-header,
+    .github-browser-header {
+        position: relative !important;
+        padding: 16px 60px 16px 18px !important;
+        min-height: 70px !important;
+        max-height: auto !important;
         flex-shrink: 0 !important;
-        border-bottom: 2px solid rgba(255, 0, 0, 0.3) !important;
+        border-bottom: 2px solid rgba(255, 0, 0, 0.35) !important;
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.7), rgba(15, 0, 0, 0.5)) !important;
+        z-index: 10 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
     }
 
-    .browser-header h2 {
-        font-size: 1.1rem !important;
-        line-height: 1.3 !important;
-        margin-bottom: 8px !important;
+    .browser-header h2,
+    .browser-header h3,
+    .github-browser-header h2,
+    .github-browser-header h3 {
+        font-size: 1.25rem !important;
+        line-height: 1.4 !important;
+        margin: 0 0 10px 0 !important;
+        padding: 0 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
 
-    /* Breadcrumb */
-    .browser-breadcrumb {
+    /* Breadcrumb - Better Responsive */
+    .browser-breadcrumb,
+    .breadcrumb,
+    .path-breadcrumb {
+        display: flex !important;
         flex-wrap: wrap !important;
-        gap: 6px !important;
-        font-size: 0.75rem !important;
-        padding: 8px 0 !important;
+        gap: 8px !important;
+        font-size: 0.8rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        align-items: center !important;
+        line-height: 1.5 !important;
     }
 
-    .breadcrumb-item {
-        max-width: 120px !important;
+    .breadcrumb-item,
+    .path-item {
+        max-width: 100px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-    }
-
-    .breadcrumb-separator {
-        margin: 0 4px !important;
-    }
-
-    /* Browser Body */
-    .browser-body {
-        flex: 1 !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding: 15px !important;
-    }
-
-    /* File List */
-    .browser-files {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 10px !important;
-    }
-
-    .file-item {
-        padding: 14px 16px !important;
-        min-height: 56px !important;
-        border-radius: 10px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
-        background: linear-gradient(135deg, rgba(30, 0, 0, 0.5), rgba(10, 0, 0, 0.3)) !important;
-        border: 1px solid rgba(255, 0, 0, 0.2) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 4px 8px !important;
+        background: rgba(255, 0, 0, 0.15) !important;
+        border-radius: 6px !important;
+        border: 1px solid rgba(255, 0, 0, 0.25) !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
     }
 
-    .file-item:active {
-        transform: scale(0.98) !important;
-        border-color: rgba(255, 0, 0, 0.5) !important;
-        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.4)) !important;
+    .breadcrumb-item:active,
+    .path-item:active {
+        background: rgba(255, 0, 0, 0.25) !important;
+        border-color: rgba(255, 0, 0, 0.4) !important;
+        transform: scale(0.96) !important;
     }
 
-    .file-icon {
-        font-size: 1.5rem !important;
-        width: 36px !important;
-        height: 36px !important;
+    .breadcrumb-separator,
+    .path-separator {
+        margin: 0 2px !important;
+        color: rgba(255, 0, 0, 0.5) !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Browser Body - Perfect Scroll */
+    .browser-body,
+    .github-browser-body,
+    .browser-content {
+        position: relative !important;
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 18px 15px 80px 15px !important;
+        background: transparent !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Custom Scrollbar - Mobile Friendly */
+    .browser-body::-webkit-scrollbar,
+    .github-browser-body::-webkit-scrollbar {
+        width: 8px !important;
+    }
+
+    .browser-body::-webkit-scrollbar-track,
+    .github-browser-body::-webkit-scrollbar-track {
+        background: rgba(255, 0, 0, 0.05) !important;
+        border-radius: 10px !important;
+    }
+
+    .browser-body::-webkit-scrollbar-thumb,
+    .github-browser-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+    }
+
+    .browser-body::-webkit-scrollbar-thumb:active,
+    .github-browser-body::-webkit-scrollbar-thumb:active {
+        background: rgba(255, 0, 0, 0.5) !important;
+    }
+
+    /* File/Folder List Container */
+    .browser-files,
+    .file-list,
+    .folder-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Individual File/Folder Item - PERFECT TOUCH */
+    .file-item,
+    .folder-item,
+    .browser-item {
+        position: relative !important;
+        padding: 16px 18px !important;
+        min-height: 62px !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.5), rgba(10, 0, 0, 0.3)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
+        cursor: pointer !important;
+        transition: all 0.25s ease !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4) !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .file-item:active,
+    .folder-item:active,
+    .browser-item:active {
+        transform: scale(0.97) !important;
+        border-color: rgba(255, 0, 0, 0.55) !important;
+        background: linear-gradient(135deg, rgba(50, 0, 0, 0.7), rgba(25, 0, 0, 0.5)) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 0, 0, 0.2) !important;
+    }
+
+    /* Folder Item Special Styling */
+    .folder-item,
+    .file-item.folder,
+    .browser-item.folder {
+        background: linear-gradient(135deg, rgba(40, 10, 0, 0.6), rgba(20, 5, 0, 0.4)) !important;
+        border-color: rgba(255, 100, 0, 0.3) !important;
+    }
+
+    .folder-item:active,
+    .file-item.folder:active {
+        border-color: rgba(255, 100, 0, 0.6) !important;
+        background: linear-gradient(135deg, rgba(60, 15, 0, 0.8), rgba(30, 8, 0, 0.6)) !important;
+    }
+
+    /* Icon Styling - Clear & Big */
+    .file-icon,
+    .folder-icon,
+    .item-icon {
+        font-size: 1.8rem !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
+        color: #ffffff !important;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)) !important;
     }
 
-    .file-info {
-        flex: 1 !important;
+    .folder-icon,
+    .file-icon.fa-folder {
+        color: #ffa500 !important;
+        filter: drop-shadow(0 2px 8px rgba(255, 165, 0, 0.4)) !important;
+    }
+
+    /* File/Folder Info Section */
+    .file-info,
+    .folder-info,
+    .item-info {
+        flex: 1 1 auto !important;
         min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        overflow: hidden !important;
     }
 
-    .file-name {
-        font-size: 0.95rem !important;
+    .file-name,
+    .folder-name,
+    .item-name {
+        font-size: 1rem !important;
         font-weight: 600 !important;
         color: #ffffff !important;
-        margin-bottom: 4px !important;
+        margin: 0 !important;
+        padding: 0 !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+        line-height: 1.4 !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
     }
 
-    .file-size {
-        font-size: 0.75rem !important;
-        color: rgba(255, 255, 255, 0.6) !important;
+    .file-size,
+    .file-meta,
+    .item-meta {
+        font-size: 0.8rem !important;
+        color: rgba(255, 255, 255, 0.65) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.3 !important;
     }
 
-    /* Action Buttons */
-    .file-actions {
+    /* Action Buttons - Better Touch Targets */
+    .file-actions,
+    .folder-actions,
+    .item-actions {
         display: flex !important;
         gap: 8px !important;
         flex-shrink: 0 !important;
+        align-items: center !important;
     }
 
-    .file-action-btn {
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
+    .file-action-btn,
+    .folder-action-btn,
+    .item-action-btn {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 8px !important;
-        font-size: 1rem !important;
+        border-radius: 10px !important;
+        font-size: 1.1rem !important;
+        background: rgba(255, 0, 0, 0.15) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.3) !important;
+        color: #ffffff !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
     }
 
-    /* Close Button */
+    .file-action-btn:active,
+    .folder-action-btn:active,
+    .item-action-btn:active {
+        transform: scale(0.92) !important;
+        background: rgba(255, 0, 0, 0.3) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Download Button Specific */
+    .file-action-btn.download,
+    .btn-download {
+        background: rgba(0, 200, 100, 0.2) !important;
+        border-color: rgba(0, 200, 100, 0.4) !important;
+    }
+
+    .file-action-btn.download:active {
+        background: rgba(0, 200, 100, 0.35) !important;
+        border-color: rgba(0, 200, 100, 0.6) !important;
+    }
+
+    /* View/Preview Button Specific */
+    .file-action-btn.view,
+    .file-action-btn.preview,
+    .btn-view {
+        background: rgba(0, 150, 255, 0.2) !important;
+        border-color: rgba(0, 150, 255, 0.4) !important;
+    }
+
+    .file-action-btn.view:active,
+    .file-action-btn.preview:active {
+        background: rgba(0, 150, 255, 0.35) !important;
+        border-color: rgba(0, 150, 255, 0.6) !important;
+    }
+
+    /* Close Button - PROMINENT */
     .browser-close,
-    .modal-close {
+    .modal-close,
+    .close-btn {
         position: absolute !important;
-        top: 12px !important;
-        right: 12px !important;
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1.5rem !important;
+        top: 16px !important;
+        right: 16px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        font-size: 1.6rem !important;
         z-index: 10001 !important;
-        background: rgba(255, 0, 0, 0.2) !important;
-        border: 1px solid rgba(255, 0, 0, 0.4) !important;
+        background: rgba(255, 0, 0, 0.25) !important;
+        border: 2px solid rgba(255, 0, 0, 0.5) !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         color: #ffffff !important;
         cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
     }
 
     .browser-close:active,
-    .modal-close:active {
+    .modal-close:active,
+    .close-btn:active {
         transform: scale(0.9) !important;
-        background: rgba(255, 0, 0, 0.4) !important;
+        background: rgba(255, 0, 0, 0.5) !important;
+        border-color: rgba(255, 0, 0, 0.8) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.3) !important;
     }
 
-    /* Loading State */
-    .browser-loading {
+    /* Back/Up Button */
+    .browser-back,
+    .back-btn,
+    .up-btn {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        min-height: 52px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, rgba(50, 0, 0, 0.6), rgba(25, 0, 0, 0.4)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.4) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .browser-back:active,
+    .back-btn:active,
+    .up-btn:active {
+        transform: scale(0.98) !important;
+        background: linear-gradient(135deg, rgba(70, 0, 0, 0.8), rgba(35, 0, 0, 0.6)) !important;
+        border-color: rgba(255, 0, 0, 0.6) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Loading State - Better UX */
+    .browser-loading,
+    .loading-state {
+        padding: 80px 20px !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px !important;
+    }
+
+    .browser-loading i,
+    .loading-state i {
+        font-size: 3.5rem !important;
+        color: rgba(255, 0, 0, 0.7) !important;
+        animation: spin 1.5s linear infinite !important;
+        filter: drop-shadow(0 4px 12px rgba(255, 0, 0, 0.4)) !important;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .browser-loading p,
+    .loading-state p {
+        font-size: 1.1rem !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        margin: 0 !important;
+    }
+
+    /* Empty State - Better UX */
+    .browser-empty,
+    .empty-state {
+        padding: 80px 20px !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+    }
+
+    .browser-empty i,
+    .empty-state i {
+        font-size: 4rem !important;
+        color: rgba(255, 255, 255, 0.3) !important;
+        margin-bottom: 10px !important;
+    }
+
+    .browser-empty p,
+    .empty-state p {
+        font-size: 1rem !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        margin: 0 !important;
+    }
+
+    /* Error State */
+    .browser-error,
+    .error-state {
         padding: 60px 20px !important;
         text-align: center !important;
+        background: rgba(255, 0, 0, 0.1) !important;
+        border: 2px solid rgba(255, 0, 0, 0.3) !important;
+        border-radius: 12px !important;
+        margin: 20px !important;
     }
 
-    .browser-loading i {
+    .browser-error i,
+    .error-state i {
         font-size: 3rem !important;
+        color: rgba(255, 0, 0, 0.8) !important;
+        margin-bottom: 16px !important;
+    }
+
+    .browser-error p,
+    .error-state p {
+        font-size: 1rem !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        margin: 0 !important;
+    }
+
+    /* Search/Filter Bar in Browser */
+    .browser-search,
+    .file-search {
+        padding: 0 !important;
+        margin-bottom: 16px !important;
+    }
+
+    .browser-search input,
+    .file-search input {
+        width: 100% !important;
+        padding: 12px 16px !important;
+        min-height: 48px !important;
+        font-size: 1rem !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        outline: none !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .browser-search input:focus,
+    .file-search input:focus {
+        border-color: rgba(255, 0, 0, 0.5) !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15) !important;
+    }
+
+    .browser-search input::placeholder,
+    .file-search input::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* Folder Path Display */
+    .current-path,
+    .folder-path {
+        padding: 10px 15px !important;
+        margin-bottom: 12px !important;
+        background: rgba(255, 0, 0, 0.08) !important;
+        border-left: 4px solid rgba(255, 0, 0, 0.5) !important;
+        border-radius: 6px !important;
+        font-size: 0.85rem !important;
+        color: rgba(255, 255, 255, 0.75) !important;
+        font-family: 'Courier New', monospace !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    /* File Type Badges */
+    .file-type,
+    .file-extension {
+        padding: 3px 8px !important;
+        background: rgba(255, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 0, 0, 0.35) !important;
+        border-radius: 6px !important;
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-transform: uppercase !important;
+        margin-left: 8px !important;
+    }
+
+    /* Modal Close Button (.close-modal) - REAL CLASS */
+    .close-modal {
+        position: absolute !important;
+        top: 16px !important;
+        right: 16px !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 1.8rem !important;
+        z-index: 10002 !important;
+        background: rgba(255, 0, 0, 0.3) !important;
+        border: 2px solid rgba(255, 0, 0, 0.6) !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #ffffff !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .close-modal:active {
+        transform: scale(0.88) !important;
+        background: rgba(255, 0, 0, 0.6) !important;
+        border-color: rgba(255, 0, 0, 0.9) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 0, 0, 0.4) !important;
+    }
+
+    /* GitHub Browser Header Components */
+    .github-browser-header .repo-info {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .github-browser-header .repo-info i.fab.fa-github {
+        font-size: 1.4rem !important;
+        color: rgba(255, 0, 0, 0.8) !important;
+        margin-bottom: 4px !important;
+        filter: drop-shadow(0 2px 6px rgba(255, 0, 0, 0.4)) !important;
+    }
+
+    .github-browser-header .repo-path {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        background: rgba(255, 0, 0, 0.12) !important;
+        border: 1px solid rgba(255, 0, 0, 0.25) !important;
+        border-radius: 6px !important;
+        font-size: 0.75rem !important;
+        color: rgba(255, 255, 255, 0.75) !important;
+        font-family: 'Courier New', monospace !important;
+        width: fit-content !important;
+    }
+
+    .browser-actions,
+    .github-browser-header .browser-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        margin-top: 12px !important;
+        width: 100% !important;
+    }
+
+    .github-action-btn {
+        flex: 1 1 calc(50% - 4px) !important;
+        min-width: 140px !important;
+        padding: 12px 16px !important;
+        min-height: 48px !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.6), rgba(20, 0, 0, 0.4)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.4) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .github-action-btn:active {
+        transform: scale(0.97) !important;
+        background: linear-gradient(135deg, rgba(60, 0, 0, 0.75), rgba(30, 0, 0, 0.55)) !important;
+        border-color: rgba(255, 0, 0, 0.6) !important;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .github-action-btn i {
+        font-size: 1rem !important;
+    }
+
+    /* File Explorer Components */
+    .file-explorer {
+        width: 100% !important;
+        background: transparent !important;
+        padding: 0 !important;
         margin-bottom: 20px !important;
     }
 
-    /* Empty State */
-    .browser-empty {
-        padding: 60px 20px !important;
-        text-align: center !important;
+    .explorer-header {
+        padding: 12px 15px !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.5), rgba(20, 0, 0, 0.3)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px 10px 0 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .explorer-header i {
+        font-size: 1.2rem !important;
+        color: rgba(255, 165, 0, 0.9) !important;
+        filter: drop-shadow(0 2px 6px rgba(255, 165, 0, 0.4)) !important;
+    }
+
+    .file-tree {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.3) !important;
+        border-top: none !important;
+        border-radius: 0 0 10px 10px !important;
+        padding: 12px !important;
+        min-height: 200px !important;
+        max-height: 50vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .file-tree::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    .file-tree::-webkit-scrollbar-track {
+        background: rgba(255, 0, 0, 0.05) !important;
+        border-radius: 10px !important;
+    }
+
+    .file-tree::-webkit-scrollbar-thumb {
+        background: rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+    }
+
+    .file-tree::-webkit-scrollbar-thumb:active {
+        background: rgba(255, 0, 0, 0.5) !important;
+    }
+
+    /* File Viewer Components */
+    .file-viewer {
+        width: 100% !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+    .viewer-header {
+        padding: 12px 15px !important;
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(15, 0, 0, 0.4)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px 10px 0 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .viewer-header i {
+        font-size: 1.1rem !important;
+        color: rgba(0, 150, 255, 0.9) !important;
+    }
+
+    .file-content {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.3) !important;
+        border-top: none !important;
+        border-radius: 0 0 10px 10px !important;
+        padding: 16px !important;
+        min-height: 300px !important;
+        max-height: 60vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+    }
+
+    .file-content::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    .file-content::-webkit-scrollbar-track {
+        background: rgba(255, 0, 0, 0.05) !important;
+        border-radius: 10px !important;
+    }
+
+    .file-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+    }
+
+    .file-content::-webkit-scrollbar-thumb:active {
+        background: rgba(255, 0, 0, 0.5) !important;
+    }
+
+    /* Browser Body Layout - 2 Column on Mobile */
+    .github-browser-body {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
     }
 }
 
 /* ========================================
-   SOLIDWORKS CW/HW/SOLO VIEWERS - MOBILE
+   SOLIDWORKS CW/HW/SOLO VIEWERS - MOBILE (COMPLETE)
    ======================================== */
 
 @media (max-width: 768px) {
-    /* SW Card Views */
-    .sw-view {
+    /* SW Main Card Container */
+    .sw-card,
+    .solidworks-card {
         padding: 15px !important;
+        border-radius: 12px !important;
+        margin-bottom: 20px !important;
     }
 
-    .sw-view-header {
+    /* SW Mode Switch Tabs - Horizontal Scroll */
+    .sw-mode-switch {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 10px !important;
         padding: 12px 15px !important;
+        margin: 0 -15px 15px -15px !important;
+        scrollbar-width: none !important;
+        border-bottom: 2px solid rgba(255, 0, 0, 0.2) !important;
+        background: linear-gradient(135deg, rgba(20, 0, 0, 0.4), rgba(10, 0, 0, 0.2)) !important;
+    }
+
+    .sw-mode-switch::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .sw-mode-btn {
+        flex: 0 0 auto !important;
+        min-width: 110px !important;
+        padding: 12px 18px !important;
+        min-height: 48px !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+    }
+
+    .sw-mode-btn[aria-current="true"],
+    .sw-mode-btn.active {
+        background: linear-gradient(135deg, rgba(255, 0, 0, 0.35), rgba(200, 0, 0, 0.25)) !important;
+        border-color: rgba(255, 0, 0, 0.65) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 16px rgba(255, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .sw-mode-btn:active {
+        transform: scale(0.96) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* SW View Container - Each Section (Overview, CW, HW, Solo) */
+    .sw-view {
+        padding: 18px 15px !important;
+        width: 100% !important;
+    }
+
+    /* SW View Header - Back Button + Title + Folder Link */
+    .sw-view-header {
+        padding: 14px 16px !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        gap: 10px !important;
-        background: linear-gradient(135deg, rgba(30, 0, 0, 0.6), rgba(10, 0, 0, 0.4)) !important;
-        border-radius: 10px !important;
-        margin-bottom: 15px !important;
+        gap: 12px !important;
+        background: linear-gradient(135deg, rgba(40, 0, 0, 0.65), rgba(20, 0, 0, 0.45)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.35) !important;
+        border-radius: 12px !important;
+        margin-bottom: 18px !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
     }
 
     .sw-view-header h4 {
-        font-size: 1.1rem !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
         width: 100% !important;
-    }
-
-    .sw-back {
-        width: 100% !important;
-        padding: 10px 16px !important;
-        min-height: 44px !important;
-        font-size: 0.95rem !important;
-        justify-content: center !important;
-        margin-bottom: 10px !important;
-    }
-
-    .folder-link {
-        width: 100% !important;
-        padding: 10px 16px !important;
-        min-height: 44px !important;
-        text-align: center !important;
-        display: block !important;
-    }
-
-    /* Files Wrap */
-    .sw-files-wrap {
+        margin: 0 !important;
         padding: 0 !important;
-    }
-
-    /* Day Folders */
-    .sw-day-folder {
-        margin-bottom: 20px !important;
-        background: linear-gradient(135deg, rgba(30, 0, 0, 0.4), rgba(10, 0, 0, 0.2)) !important;
-        border: 1px solid rgba(255, 0, 0, 0.2) !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-    }
-
-    .sw-day-title {
-        font-size: 1rem !important;
-        padding: 10px 0 !important;
-        margin-bottom: 12px !important;
-    }
-
-    .sw-file-list {
+        color: #ffffff !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
         display: flex !important;
-        flex-direction: column !important;
+        align-items: center !important;
         gap: 10px !important;
     }
 
+    /* Back Button - Top of Header */
+    .sw-back {
+        width: 100% !important;
+        padding: 12px 18px !important;
+        min-height: 50px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, rgba(60, 0, 0, 0.7), rgba(30, 0, 0, 0.5)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.45) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .sw-back:active {
+        transform: scale(0.98) !important;
+        background: linear-gradient(135deg, rgba(80, 0, 0, 0.8), rgba(40, 0, 0, 0.6)) !important;
+        border-color: rgba(255, 0, 0, 0.65) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .sw-back i {
+        font-size: 1.1rem !important;
+    }
+
+    /* Folder Link - Open on GitHub */
+    .folder-link {
+        width: 100% !important;
+        padding: 12px 18px !important;
+        min-height: 48px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        background: linear-gradient(135deg, rgba(0, 100, 200, 0.3), rgba(0, 80, 160, 0.2)) !important;
+        border: 1.5px solid rgba(0, 150, 255, 0.45) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 3px 12px rgba(0, 100, 200, 0.3) !important;
+    }
+
+    .folder-link:active {
+        transform: scale(0.97) !important;
+        background: linear-gradient(135deg, rgba(0, 120, 240, 0.4), rgba(0, 100, 200, 0.3)) !important;
+        border-color: rgba(0, 150, 255, 0.65) !important;
+        box-shadow: 0 5px 16px rgba(0, 100, 200, 0.5) !important;
+    }
+
+    .folder-link::before {
+        content: '\f09b' !important; /* GitHub icon */
+        font-family: 'Font Awesome 5 Free' !important;
+        font-weight: 900 !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* Files Wrap - Container for Day Folders */
+    .sw-files-wrap {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Day Folders - Day 01, Day 02, etc. */
+    .sw-day-folder {
+        margin-bottom: 22px !important;
+        background: linear-gradient(135deg, rgba(30, 0, 0, 0.45), rgba(15, 0, 0, 0.25)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
+        border-radius: 14px !important;
+        padding: 16px !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .sw-day-folder:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    .sw-day-title {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        padding: 12px 0 !important;
+        margin: 0 0 14px 0 !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+        border-bottom: 2px solid rgba(255, 0, 0, 0.3) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .sw-day-title::before {
+        content: '📅' !important;
+        font-size: 1.3rem !important;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)) !important;
+    }
+
+    /* File List - CW1, CW2, HW1, HW2 items */
+    .sw-file-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Individual File Item - Each CW/HW Assignment */
     .sw-file-item {
-        padding: 12px 14px !important;
-        min-height: 52px !important;
-        border-radius: 8px !important;
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 14px 16px !important;
+        min-height: 68px !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, rgba(50, 0, 0, 0.4), rgba(25, 0, 0, 0.2)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.25) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        cursor: pointer !important;
+        transition: all 0.25s ease !important;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4) !important;
     }
 
     .sw-file-item:active {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border-color: rgba(255, 0, 0, 0.4) !important;
         transform: scale(0.98) !important;
+        background: linear-gradient(135deg, rgba(70, 0, 0, 0.6), rgba(35, 0, 0, 0.4)) !important;
+        border-color: rgba(255, 0, 0, 0.5) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.2) !important;
     }
 
+    /* File Name - CW 1 - Day 01, etc. */
     .sw-file-name {
-        font-size: 0.9rem !important;
-        margin-bottom: 6px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        line-height: 1.4 !important;
     }
 
+    .sw-file-name::before {
+        content: '\f1c2' !important; /* File icon */
+        font-family: 'Font Awesome 5 Free' !important;
+        font-weight: 900 !important;
+        color: rgba(255, 100, 0, 0.8) !important;
+        font-size: 1.1rem !important;
+        filter: drop-shadow(0 2px 6px rgba(255, 100, 0, 0.3)) !important;
+    }
+
+    /* File Actions - Download, View, Preview Buttons */
     .sw-file-actions {
+        display: flex !important;
         flex-wrap: wrap !important;
-        gap: 6px !important;
+        gap: 8px !important;
+        width: 100% !important;
     }
 
     .sw-file-btn {
-        padding: 6px 12px !important;
-        font-size: 0.8rem !important;
-        min-height: 36px !important;
-        flex: 1 !important;
-        min-width: 80px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+        min-width: 100px !important;
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        min-height: 44px !important;
+        background: linear-gradient(135deg, rgba(0, 150, 100, 0.3), rgba(0, 120, 80, 0.2)) !important;
+        border: 1.5px solid rgba(0, 200, 130, 0.45) !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .sw-file-btn:active {
+        transform: scale(0.96) !important;
+        background: linear-gradient(135deg, rgba(0, 180, 120, 0.4), rgba(0, 150, 100, 0.3)) !important;
+        border-color: rgba(0, 200, 130, 0.65) !important;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .sw-file-btn i {
+        font-size: 0.95rem !important;
+    }
+
+    /* View Button - README/Docs */
+    .sw-file-btn[data-action="view"],
+    .sw-file-btn.btn-view {
+        background: linear-gradient(135deg, rgba(0, 100, 200, 0.3), rgba(0, 80, 160, 0.2)) !important;
+        border-color: rgba(0, 150, 255, 0.45) !important;
+    }
+
+    .sw-file-btn[data-action="view"]:active,
+    .sw-file-btn.btn-view:active {
+        background: linear-gradient(135deg, rgba(0, 120, 240, 0.4), rgba(0, 100, 200, 0.3)) !important;
+        border-color: rgba(0, 150, 255, 0.65) !important;
+    }
+
+    /* Download Button - .SLDPRT files */
+    .sw-file-btn[data-action="download"],
+    .sw-file-btn.btn-download {
+        background: linear-gradient(135deg, rgba(0, 150, 100, 0.3), rgba(0, 120, 80, 0.2)) !important;
+        border-color: rgba(0, 200, 130, 0.45) !important;
+    }
+
+    .sw-file-btn[data-action="download"]:active,
+    .sw-file-btn.btn-download:active {
+        background: linear-gradient(135deg, rgba(0, 180, 120, 0.4), rgba(0, 150, 100, 0.3)) !important;
+        border-color: rgba(0, 200, 130, 0.65) !important;
+    }
+
+    /* Preview Button - Screenshots */
+    .sw-file-btn[data-action="preview"],
+    .sw-file-btn.btn-preview {
+        background: linear-gradient(135deg, rgba(150, 0, 150, 0.3), rgba(120, 0, 120, 0.2)) !important;
+        border-color: rgba(200, 0, 200, 0.45) !important;
+    }
+
+    .sw-file-btn[data-action="preview"]:active,
+    .sw-file-btn.btn-preview:active {
+        background: linear-gradient(135deg, rgba(180, 0, 180, 0.4), rgba(150, 0, 150, 0.3)) !important;
+        border-color: rgba(200, 0, 200, 0.65) !important;
+    }
+
+    /* View Footer - Bottom Back Button */
+    .sw-view-footer {
+        margin-top: 20px !important;
+        padding-top: 16px !important;
+        border-top: 2px solid rgba(255, 0, 0, 0.2) !important;
+    }
+
+    .sw-back-bottom {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        min-height: 52px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, rgba(50, 0, 0, 0.6), rgba(25, 0, 0, 0.4)) !important;
+        border: 1.5px solid rgba(255, 0, 0, 0.4) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .sw-back-bottom:active {
+        transform: scale(0.98) !important;
+        background: linear-gradient(135deg, rgba(70, 0, 0, 0.75), rgba(35, 0, 0, 0.55)) !important;
+        border-color: rgba(255, 0, 0, 0.6) !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Spot Test Badge */
+    .sw-file-item[data-spot-test="true"] .sw-file-name::before,
+    .sw-file-item.spot-test .sw-file-name::before {
+        content: '⭐' !important;
+        font-family: system-ui !important;
+        color: #ffc107 !important;
+        filter: drop-shadow(0 2px 8px rgba(255, 193, 7, 0.5)) !important;
+    }
+
+    /* Assembly Badge - Multiple Files */
+    .sw-file-item[data-type="assembly"] .sw-file-name::after,
+    .sw-file-item.assembly .sw-file-name::after {
+        content: 'Assembly' !important;
+        font-size: 0.7rem !important;
+        padding: 3px 8px !important;
+        background: rgba(150, 0, 200, 0.25) !important;
+        border: 1px solid rgba(150, 0, 200, 0.45) !important;
+        border-radius: 6px !important;
+        margin-left: auto !important;
+        text-transform: uppercase !important;
+        font-weight: 700 !important;
     }
 }
 
