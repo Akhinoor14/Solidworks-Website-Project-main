@@ -223,9 +223,11 @@
         margin: 0 0 15px 0 !important;
         padding: 0 !important;
         
-        /* Color - Light gray for readability */
-        color: rgba(255, 255, 255, 0.85) !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+            /* Color - Better readability on dark background */
+            color: rgba(255, 255, 255, 0.92) !important;
+            text-shadow: 
+                0 0 6px rgba(255, 255, 255, 0.15),
+                0 2px 4px rgba(0, 0, 0, 0.8) !important;
         
         /* Limit lines for better UX */
         display: -webkit-box !important;
@@ -269,11 +271,15 @@
         
         /* Border */
         border-radius: 12px !important;
-        border: 1px solid rgba(255, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 80, 80, 0.5) !important;
         
         /* Background - Dark theme */
-        background: rgba(255, 0, 0, 0.15) !important;
-        color: #ff6666 !important;
+            background: rgba(255, 40, 40, 0.25) !important;
+            color: #ffaaaa !important;
+        
+            /* Better visibility */
+            text-shadow: 0 0 6px rgba(255, 170, 170, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
         
         /* Display */
         display: inline-block !important;
@@ -283,23 +289,26 @@
     /* Tag colors - Dark theme variations */
     .tag.primary,
     .badge.primary {
-        background: rgba(255, 0, 0, 0.2) !important;
-        color: #ff3333 !important;
-        border-color: rgba(255, 0, 0, 0.4) !important;
+           background: rgba(255, 50, 50, 0.3) !important;
+           color: #ffaaaa !important;
+           border-color: rgba(255, 80, 80, 0.6) !important;
+           text-shadow: 0 0 8px rgba(255, 170, 170, 0.6), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
     }
 
     .tag.success,
     .badge.success {
-        background: rgba(16, 185, 129, 0.15) !important;
-        color: #86efac !important;
-        border-color: rgba(16, 185, 129, 0.4) !important;
+           background: rgba(16, 185, 129, 0.25) !important;
+           color: #a7f3d0 !important;
+           border-color: rgba(16, 185, 129, 0.6) !important;
+           text-shadow: 0 0 6px rgba(167, 243, 208, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
     }
 
     .tag.warning,
     .badge.warning {
-        background: rgba(245, 158, 11, 0.15) !important;
-        color: #fbbf24 !important;
-        border-color: rgba(245, 158, 11, 0.4) !important;
+           background: rgba(245, 158, 11, 0.25) !important;
+           color: #fde68a !important;
+           border-color: rgba(245, 158, 11, 0.6) !important;
+           text-shadow: 0 0 6px rgba(253, 230, 138, 0.5), 0 1px 2px rgba(0, 0, 0, 0.8) !important;
     }
 }
 
@@ -396,11 +405,17 @@
     .project-card a:not(.btn):not(.button),
     .card a:not(.btn):not(.button) {
         /* Typography */
-        font-size: 14px !important;
-        font-weight: 500 !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
         
-        /* Color */
-        color: #2563eb !important;
+        /* Color - Brighter red for better readability */
+        color: #ff8888 !important;
+        text-decoration: underline !important;
+        text-decoration-color: rgba(255, 136, 136, 0.5) !important;
+        text-decoration-thickness: 2px !important;
+        
+        /* Text shadow for better visibility on dark background */
+        text-shadow: 0 0 8px rgba(255, 136, 136, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
         
         /* Spacing */
         padding: 8px 0 !important;
@@ -411,6 +426,16 @@
         /* Touch target */
         min-height: 44px !important;
         line-height: 28px !important;
+        
+        /* Hover/Active */
+        transition: all 0.2s ease !important;
+    }
+    
+    .project-card a:not(.btn):not(.button):active,
+    .card a:not(.btn):not(.button):active {
+        color: #ffaaaa !important;
+        text-decoration-color: rgba(255, 170, 170, 0.7) !important;
+        text-shadow: 0 0 12px rgba(255, 170, 170, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
     }
 }
 
@@ -503,6 +528,130 @@
    ======================================== */
 
 @media (max-width: 768px) {
+    /* Project Search Bar - Mobile */
+    .project-search {
+        padding: 0 15px 20px 15px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #project-search-input {
+        /* Size */
+        width: 100% !important;
+        min-height: 48px !important;
+        
+        /* Spacing */
+        padding: 12px 18px !important;
+        
+        /* Typography */
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        
+        /* Background - Dark theme */
+        background: rgba(0, 0, 0, 0.4) !important;
+        color: #ffffff !important;
+        
+        /* Backdrop */
+        backdrop-filter: blur(10px) !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+    }
+    
+    #project-search-input::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    #project-search-input:focus {
+        outline: none !important;
+        border-color: rgba(255, 0, 0, 0.6) !important;
+        box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15), 0 4px 12px rgba(255, 0, 0, 0.2) !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* Quick Jump Buttons - SolidWorks, Electronics, Arduino, Portfolio */
+    .project-quick-jump {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        padding: 0 15px 25px 15px !important;
+        margin-bottom: 15px !important;
+        justify-content: center !important;
+    }
+    
+    .quick-jump-item {
+        /* Layout */
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        
+        /* Size */
+        padding: 12px 18px !important;
+        min-height: 48px !important;
+        flex: 1 1 calc(50% - 5px) !important;
+        max-width: calc(50% - 5px) !important;
+        
+        /* Typography */
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+        
+        /* Border */
+        border-radius: 12px !important;
+            border: 2px solid rgba(255, 80, 80, 0.6) !important;
+        
+        /* Background - Dark Red Theme */
+            background: linear-gradient(135deg, rgba(255, 40, 40, 0.3), rgba(220, 0, 0, 0.2)) !important;
+            color: #ffaaaa !important;
+        backdrop-filter: blur(10px) !important;
+        
+        /* Box shadow */
+            box-shadow: 
+                0 4px 15px rgba(255, 0, 0, 0.25),
+                0 0 15px rgba(255, 50, 50, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        
+            /* Text shadow for better readability */
+            text-shadow: 0 0 8px rgba(255, 170, 170, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        
+        /* Cursor */
+        cursor: pointer !important;
+        
+        /* Transition */
+        transition: all 0.3s ease !important;
+        
+        /* Text alignment */
+        justify-content: center !important;
+        text-align: center !important;
+    }
+    
+    .quick-jump-item:active {
+       background: linear-gradient(135deg, rgba(255, 60, 60, 0.45), rgba(230, 0, 0, 0.35)) !important;
+       border-color: rgba(255, 100, 100, 0.8) !important;
+       box-shadow: 
+          0 6px 20px rgba(255, 0, 0, 0.35),
+          0 0 20px rgba(255, 80, 80, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        transform: scale(0.98) !important;
+       color: #ffcccc !important;
+       text-shadow: 0 0 12px rgba(255, 204, 204, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+    }
+    
+    .quick-jump-item i {
+        font-size: 16px !important;
+       color: #ffaaaa !important;
+       filter: drop-shadow(0 0 6px rgba(255, 170, 170, 0.6)) !important;
+    }
+    
+    .quick-jump-item:active i {
+       color: #ffcccc !important;
+       filter: drop-shadow(0 0 10px rgba(255, 204, 204, 0.8)) !important;
+    }
+    
+    /* Project Filters */
     .project-filters,
     .project-categories,
     .filter-buttons {
@@ -692,20 +841,21 @@
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Focus states for keyboard navigation */
+    /* Focus states for keyboard navigation - Red theme */
     .project-card:focus,
     .card:focus,
     button:focus,
     a:focus {
-        outline: 3px solid #2563eb !important;
+        outline: 3px solid #ff3333 !important;
         outline-offset: 2px !important;
+        box-shadow: 0 0 0 5px rgba(255, 51, 51, 0.2) !important;
     }
 
     /* High contrast mode support */
     @media (prefers-contrast: high) {
         .project-card,
         .card {
-            border: 2px solid #000000 !important;
+            border: 2px solid #ff0000 !important;
         }
     }
 }
