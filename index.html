@@ -216,7 +216,7 @@
                                     </div>
                                     <div class="frame-glow"></div>
                                     <picture id="profile-photo-wrapper">
-                                        <img id="profile-photo" src="./images/PP.jpg" 
+                                        <img id="profile-photo" src="./images/pp.jpg" 
                                             alt="Md Akhinoor Islam Profile Picture" 
                                             decoding="async" loading="lazy" data-fallback="placeholder">
                                     </picture>
@@ -305,26 +305,38 @@
     <script src="realtime-github-sync.js"></script>
     <!-- CV viewer overlay (defines openCVViewer, cvDownload, etc.) -->
     <script src="CV_VIEWER_FIX.js"></script>
-        <!-- Disable slideshow: always show single hero photo -->
+        <!-- Always show single hero photo: images/pp.(webp|jpg|jpeg|png) -->
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                try {
-                    var img = document.getElementById('profile-photo');
-                    if (img) {
-                        // Cache-bust so latest PP.jpg shows after updates
-                        var base = './images/PP.jpg';
-                        img.src = base + '?t=' + Date.now();
-                    }
-                    // Listen for updates from uploader to refresh image without full reload
-                    try {
-                        const channel = new BroadcastChannel('websiteUpdates');
-                        channel.addEventListener('message', (event) => {
-                            if (event.data && event.data.type === 'PROFILE_UPDATED') {
-                                if (img) img.src = './images/PP.jpg?t=' + Date.now();
+            document.addEventListener('DOMContentLoaded', function () {
+                const img = document.getElementById('profile-photo');
+                if (!img) return;
+
+                async function resolveProfile() {
+                    const exts = ['webp', 'jpg', 'jpeg', 'png'];
+                    for (const ext of exts) {
+                        const url = `./images/pp.${ext}?t=${Date.now()}`;
+                        try {
+                            const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+                            if (res.ok) {
+                                img.src = url;
+                                return;
                             }
-                        });
-                    } catch (e) {}
-                } catch (e) { console.warn(e); }
+                        } catch (_) { /* ignore and try next */ }
+                    }
+                    // If none found, keep whatever is there
+                }
+
+                resolveProfile();
+
+                // Listen for updates to refresh image without full reload
+                try {
+                    const channel = new BroadcastChannel('websiteUpdates');
+                    channel.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'PROFILE_UPDATED') {
+                            resolveProfile();
+                        }
+                    });
+                } catch (_) {}
             });
         </script>
     <script src="script.js?v=20251020133251"></script>
